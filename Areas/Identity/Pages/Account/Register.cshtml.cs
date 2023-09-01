@@ -98,6 +98,21 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Full name")]
+            public string Name { get; set; }
+
+            [Required]
+            [Display(Name = "Birth Date")]
+            [DataType(DataType.Date)]
+            public DateTime DOB { get; set; }
+
+            [Required]
+            [Display(Name = "Gender")]
+            public GenderType Gender { get; set; }
+            public DateTime RegistrationDate { get; set; }
         }
 
 
@@ -113,7 +128,15 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
+                var user = new OnlineShopUser
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    Name = Input.Name,
+                    DOB = Input.DOB,
+                    Gender = Input.Gender,
+                    RegistrationDate = DateTime.Today
+                };
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -121,6 +144,8 @@ namespace OnlineShop.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    // 建立使用者，與給予其權限
+                    _userManager.AddToRoleAsync(user, "User").Wait();
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);

@@ -26,7 +26,21 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">商品列表</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">管理商品列表</a>
+                        </li>
+                        <!---->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">帳戶管理</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"></div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="UserList">帳戶列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="RoleList">角色列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="CreateRole">角色新增</a>
                         </li>
                     </ul>
                 </div>
