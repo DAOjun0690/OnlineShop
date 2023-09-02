@@ -22,6 +22,8 @@ builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
     options.Password.RequireNonAlphanumeric = false;
     // ¥]§t¼Æ¦r
     options.Password.RequireDigit = false;
+
+    //options.SignIn.RequireConfirmedAccount = false;
 })
     .AddRoles<IdentityRole>() //¨¤¦â
     .AddEntityFrameworkStores<OnlineShopUserContext>();
