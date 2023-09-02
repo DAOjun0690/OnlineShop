@@ -1,4 +1,6 @@
-﻿namespace OnlineShop.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace OnlineShop.Models;
 
 public class Product
 {
@@ -6,7 +8,8 @@ public class Product
     /// <summary>
     /// 商品名稱
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    [Required]
+    public string Name { get; set; }
     /// <summary>
     /// 商品簡介
     /// </summary>

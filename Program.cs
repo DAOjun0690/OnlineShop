@@ -9,6 +9,8 @@ builder.Services
         options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")))
     .AddDbContext<OnlineShopUserContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")));
+// 啟用 Session
+builder.Services.AddSession();
 
 builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
 {
@@ -22,8 +24,6 @@ builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
     options.Password.RequireNonAlphanumeric = false;
     // 包含數字
     options.Password.RequireDigit = false;
-
-    //options.SignIn.RequireConfirmedAccount = false;
 })
     .AddRoles<IdentityRole>() //角色
     .AddEntityFrameworkStores<OnlineShopUserContext>();
@@ -45,6 +45,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
