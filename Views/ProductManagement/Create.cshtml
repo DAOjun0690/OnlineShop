@@ -12,28 +12,28 @@
     <div class="col-md-4">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @* 商品名稱 *@
             <div class="form-group">
-                @* 商品名稱 *@
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
             </div>
+            @* 簡介 *@
             <div class="form-group">
-                @* 簡介 *@
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" class="form-control"></textarea>
             </div>
+            @* 內容 *@
             <div class="form-group">
-                @* 內容 *@
                 <label asp-for="Content" class="control-label"></label>
                 <textarea asp-for="Content" class="form-control"></textarea>
             </div>
+            @* 單價 *@
             <div class="form-group">
-                @* 單價 *@
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />
             </div>
+            @* 庫存 *@
             <div class="form-group">
-                @* 庫存 *@
                 <label asp-for="Stock" class="control-label"></label>
                 <input asp-for="Stock" class="form-control" />
             </div>
@@ -54,11 +54,24 @@
                     </div>
                 </div>
             </div>
+            @* 類別 *@
             <div class="form-group">
-                @* 類別 *@
                 <label asp-for="CategoryId" class="control-label"></label>
                 <select class="form-control" asp-for="CategoryId" asp-items="ViewBag.Categories"></select>
             </div>
+            @* 款式 *@
+            <div class="form-group">
+                <label class="control-label"></label>
+                <select class="form-control" asp-items="ViewBag.ProductStyles" name="productStyleId" id="productStyleId">
+                    @foreach (var item in ViewBag.ProductStyles)
+                    {
+                        <option>@item</option>
+                    }
+                </select>
+                <input type="text" id="newProductStyleOption" />
+                <button type="button" id="addProductStyleOptionButton">添加選項</button>
+            </div>
+            @* 送出 *@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -74,12 +87,40 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // 圖片使用
+        $('#myimg').on('change', function (e) {
+            const file = this.files[0];
+            const objectURL = URL.createObjectURL(file);    // 使用 createObjectURL 產生圖片url
+            $('#preview').attr('src', objectURL);
+        });
+
+        /**
+         * 增加 款式 選項
+         */
+        function addOption() {
+            var select = document.getElementById("productStyleId");
+            var newOption = document.createElement("option");
+            newOption.text = document.getElementById("newProductStyleOption").value;
+            select.add(newOption);
+        }
+        document.getElementById("addProductStyleOptionButton").onclick = addOption;
+        /**
+         * 改寫 submit事件
+         */
+        document.querySelector("form").addEventListener("submit", function (event) {
+            var select = document.getElementById("productStyleId");
+            var selectedOptions = Array.from(select.selectedOptions).map(option => option.value);
+            selectedOptions.forEach(value => {
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "productStyles";
+                input.value = value;
+                this.appendChild(input);
+            });
+        });
+    </script>
 }
 
-<script>
-    $('#myimg').on('change', function (e) {
-        const file = this.files[0];
-        const objectURL = URL.createObjectURL(file);    // 使用 createObjectURL 產生圖片url
-        $('#preview').attr('src', objectURL);
-    });
-</script>
+

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineShop.Data;
 
@@ -11,9 +12,10 @@ using OnlineShop.Data;
 namespace OnlineShop.Migrations
 {
     [DbContext(typeof(OnlineShopContext))]
-    partial class OnlineShopContextModelSnapshot : ModelSnapshot
+    [Migration("20230905075447_addProductStyle")]
+    partial class addProductStyle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,6 +71,9 @@ namespace OnlineShop.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
+                    b.Property<int>("ProductStyleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Promotion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -79,6 +84,8 @@ namespace OnlineShop.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductStyleId");
 
                     b.ToTable("Product");
                 });
@@ -100,8 +107,6 @@ namespace OnlineShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
-
                     b.ToTable("ProductStyle");
                 });
 
@@ -113,21 +118,23 @@ namespace OnlineShop.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("OnlineShop.Models.ProductStyle", b =>
-                {
-                    b.HasOne("OnlineShop.Models.Product", "Products")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                    b.HasOne("OnlineShop.Models.ProductStyle", "ProductStyle")
+                        .WithMany("Products")
+                        .HasForeignKey("ProductStyleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Products");
+                    b.Navigation("Category");
+
+                    b.Navigation("ProductStyle");
                 });
 
             modelBuilder.Entity("OnlineShop.Models.Category", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("OnlineShop.Models.ProductStyle", b =>
                 {
                     b.Navigation("Products");
                 });

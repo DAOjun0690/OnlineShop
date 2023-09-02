@@ -15,6 +15,7 @@ namespace OnlineShop.Controllers
 
         public IActionResult Index()
         {
+            Console.WriteLine("進入首頁紀錄");
             return View();
         }
 

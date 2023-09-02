@@ -15,7 +15,11 @@ public class Product
     /// </summary>
     public string Description { get; set; }
     /// <summary>
-    /// 商品內容
+    /// 商品促銷
+    /// </summary>
+    public string Promotion { get; set; }
+    /// <summary>
+    /// 商品描述
     /// </summary>
     public string Content { get; set; }
     /// <summary>

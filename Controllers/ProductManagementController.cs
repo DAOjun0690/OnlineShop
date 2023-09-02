@@ -87,6 +87,7 @@ public class ProductManagementController : Controller
     public IActionResult Create()
     {
         ViewData["Categories"] = new SelectList(_context.Set<Category>(), "Id", "Name");
+        ViewData["ProductStyles"] = new SelectList(_context.Set<ProductStyle>(), "Id", "Name") ?? new SelectList(Enumerable.Empty<SelectListItem>());
         return View();
     }
 
@@ -95,9 +96,11 @@ public class ProductManagementController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Product product, IFormFile myimg)
+    public async Task<IActionResult> Create(Product product, IFormFile myimg, IList<string> productStyles)
     {
-        //if (ModelState.IsValid)
+        ModelState.Remove("Image");
+        ModelState.Remove("Category");
+        if (ModelState.IsValid)
         {
             if (myimg != null)
             {
