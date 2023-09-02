@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OnlineShop.Models;
 
 namespace OnlineShop.Controllers;
@@ -129,6 +129,68 @@ public class UsersController : Controller
         }
 
         return View("ListUsers");
+
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditUser(string id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var user = await _userManager.FindByIdAsync(id);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var userRoles = await _userManager.GetRolesAsync(user);
+        ViewData["Roles"] = new SelectList(_roleManager.Roles, "Name", "Name", userRoles.FirstOrDefault());
+
+        return View(user);
+    }
+
+    /// <summary>
+    /// 更新使用者 基本資料 & 授權
+    /// </summary>
+    /// <param name="viewData">要更新 user Data 的 Model bind</param>
+    /// <param name="selectedRole">設定的角色權限</param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<IActionResult> EditUser(OnlineShopUser viewData, string selectedRole)
+    {
+        // 根據使用者ID查找使用者
+        var user = await _userManager.FindByIdAsync(viewData.Id);
+        if (user == null)
+        {
+            // 如果找不到使用者，返回NotFound結果
+            return new NotFoundResult();
+        }
+
+        // 更新使用者資訊
+        user.Name = user.Name;
+
+        var resultU = await _userManager.UpdateAsync(user);
+
+        // Update user's role
+        var userRoles = await _userManager.GetRolesAsync(user);
+        await _userManager.RemoveFromRolesAsync(user, userRoles);
+        var resultR = await _userManager.AddToRoleAsync(user, selectedRole);
+
+        if (resultU.Succeeded && resultR.Succeeded)
+        {
+            // 如果更新成功，返回Ok結果
+            //return new OkResult();
+            return RedirectToAction(nameof(UserList));
+        }
+        else
+        {
+            // 如果更新失敗，返回BadRequest結果並附帶錯誤信息
+            return new BadRequestObjectResult(resultU.Errors);
+        }
 
     }
 }
