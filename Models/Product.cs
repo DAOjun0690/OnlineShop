@@ -13,15 +13,15 @@ public class Product
     /// <summary>
     /// 商品簡介
     /// </summary>
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
     /// <summary>
     /// 商品促銷
     /// </summary>
-    public string Promotion { get; set; }
+    public string Promotion { get; set; } = string.Empty;
     /// <summary>
     /// 商品描述
     /// </summary>
-    public string Content { get; set; }
+    public string Content { get; set; } = string.Empty;
     /// <summary>
     /// 商品價格
     /// </summary>
@@ -34,10 +34,14 @@ public class Product
     /// 商品圖片
     /// </summary>
     public byte[] Image { get; set; }
+
     /// <summary>
     /// 類別 (Foreign Key)
     /// </summary>
     public int CategoryId { get; set; }
 
+    public IList<ProductStyle> ProductStyles { get; set; }
+
+    //導覽屬性
     public Category Category { get; set; }
 }

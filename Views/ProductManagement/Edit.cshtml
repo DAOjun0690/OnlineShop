@@ -76,6 +76,30 @@
             </div>
         </div>
     </div>
+    @* 款式 *@
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label>款式</label>
+                <table id="prodectStyleTable">
+                    <tr>
+                        <th style="display:none;">Id</th>
+                        <th>Name</th>
+                        <th>Delete</th>
+                    </tr>
+                    @for (int i = 0; i < (Model.ProductStyles?.Count ?? 0); i++)
+                    {
+                        <tr>
+                            <td>@Html.HiddenFor(model => model.ProductStyles[i].Id)</td>
+                            <td>@Html.EditorFor(model => model.ProductStyles[i].Name)</td>
+                            <td><button type="button" onclick="deleteRow(this)">刪除</button></td>
+                        </tr>
+                    }
+                </table>
+                <button type="button" onclick="addRow()">Add Row</button>
+            </div>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col">
@@ -102,6 +126,9 @@
     }
 
     <script>
+        /**
+         * 加入 CKEditor 使用
+         */
         ClassicEditor
             .create(document.querySelector('#editor'), {
                 toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'numberedList', 'bulletedList', '|', 'Alignment', 'Outdent', 'Indent', '|', 'BlockQuote', 'InsertTable', 'undo', 'redo']
@@ -117,5 +144,27 @@
 
             $('#preview').attr('src', objectURL);
         });
+
+        /**
+          * 增加 款式 選項
+         */
+        function addRow() {
+            var table = document.getElementById("prodectStyleTable");
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            cell1.innerHTML = '<input type="hidden" name="ProductStyles[' + (table.rows.length - 2) + '].Id" />';
+            cell2.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
+            cell3.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
+        }
+
+        /**
+          * 刪除 款式 選項
+         */
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
     </script>
 }

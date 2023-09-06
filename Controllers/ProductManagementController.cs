@@ -7,7 +7,7 @@ using OnlineShop.Models;
 
 namespace OnlineShop.Controllers;
 
-[Authorize(Roles = "Administrator")]
+//[Authorize(Roles = "Administrator")]
 public class ProductManagementController : Controller
 {
     private readonly OnlineShopContext _context;
@@ -87,7 +87,6 @@ public class ProductManagementController : Controller
     public IActionResult Create()
     {
         ViewData["Categories"] = new SelectList(_context.Set<Category>(), "Id", "Name");
-        ViewData["ProductStyles"] = new SelectList(_context.Set<ProductStyle>(), "Id", "Name") ?? new SelectList(Enumerable.Empty<SelectListItem>());
         return View();
     }
 
@@ -96,10 +95,12 @@ public class ProductManagementController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Product product, IFormFile myimg, IList<string> productStyles)
+    public async Task<IActionResult> Create(Product product, IFormFile myimg)
     {
+        ModelState.Remove("myimg");
         ModelState.Remove("Image");
         ModelState.Remove("Category");
+        ModelState.Remove("ProductStyles");
         if (ModelState.IsValid)
         {
             if (myimg != null)
@@ -140,6 +141,10 @@ public class ProductManagementController : Controller
                 ViewBag.Image = ViewImage(product.Image);
             }
         }
+        var productStyles = 
+            _context.ProductStyle.Where(x => x.ProductId == product.Id).ToList();
+        product.ProductStyles = productStyles;
+
         //設定seleccted項目
         ViewData["Categories"] = new SelectList(_context.Set<Category>(), "Id", "Name", product.CategoryId);
 

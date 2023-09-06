@@ -8,10 +8,18 @@
 
 <h4>Product</h4>
 <hr />
+
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* 送出 *@
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+
             @* 商品名稱 *@
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -20,12 +28,8 @@
             @* 簡介 *@
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-            </div>
-            @* 內容 *@
-            <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <textarea asp-for="Content" class="form-control"></textarea>
+                <textarea asp-for="Description" class="form-control" style="height:150px"></textarea>
+                <span asp-validation-for="Description" class="text-danger" id="editor01"></span>
             </div>
             @* 單價 *@
             <div class="form-group">
@@ -61,19 +65,21 @@
             </div>
             @* 款式 *@
             <div class="form-group">
-                <label class="control-label"></label>
-                <select class="form-control" asp-items="ViewBag.ProductStyles" name="productStyleId" id="productStyleId">
-                    @foreach (var item in ViewBag.ProductStyles)
-                    {
-                        <option>@item</option>
-                    }
-                </select>
-                <input type="text" id="newProductStyleOption" />
-                <button type="button" id="addProductStyleOptionButton">添加選項</button>
+                <label>款式</label>
+                <table id="prodectStyleTable">
+                    <tr>
+                        <th>款式名稱</th>
+                        <th>功能按鈕</th>
+                    </tr>
+                </table>
+                <button type="button" onclick="addRow()">增加款式</button>
             </div>
-            @* 送出 *@
+
+            @* 內容 *@
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label asp-for="Content" class="control-label">商品描述</label>
+                <textarea asp-for="Content" class="form-control" id="editor"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
             </div>
         </form>
     </div>
@@ -89,6 +95,17 @@
     }
 
     <script>
+        /**
+         * 加入 CKEditor 使用
+         */
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'numberedList', 'bulletedList', '|', 'Alignment', 'Outdent', 'Indent', '|', 'BlockQuote', 'InsertTable', 'undo', 'redo']
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
         // 圖片使用
         $('#myimg').on('change', function (e) {
             const file = this.files[0];
@@ -97,29 +114,24 @@
         });
 
         /**
-         * 增加 款式 選項
+          * 增加 款式 選項
          */
-        function addOption() {
-            var select = document.getElementById("productStyleId");
-            var newOption = document.createElement("option");
-            newOption.text = document.getElementById("newProductStyleOption").value;
-            select.add(newOption);
+        function addRow() {
+            var table = document.getElementById("prodectStyleTable");
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
+            cell2.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
         }
-        document.getElementById("addProductStyleOptionButton").onclick = addOption;
+
         /**
-         * 改寫 submit事件
+          * 刪除 款式 選項
          */
-        document.querySelector("form").addEventListener("submit", function (event) {
-            var select = document.getElementById("productStyleId");
-            var selectedOptions = Array.from(select.selectedOptions).map(option => option.value);
-            selectedOptions.forEach(value => {
-                var input = document.createElement("input");
-                input.type = "hidden";
-                input.name = "productStyles";
-                input.value = value;
-                this.appendChild(input);
-            });
-        });
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
     </script>
 }
 
