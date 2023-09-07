@@ -83,11 +83,16 @@ public class ProductManagementController : Controller
         return "data:image/png;base64," + base64String;
     }
 
-    // GET: ProductManagement/Create
+    /// <summary>
+    /// ProductManagement/Create
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
     public IActionResult Create()
     {
-        ViewData["Categories"] = new SelectList(_context.Set<Category>(), "Id", "Name");
-        return View();
+        ProductIndexViewModel vm = new ProductIndexViewModel();
+        vm.Categories = new SelectList(_context.Set<Category>(), "Id", "Name");
+        return View("CreateEdit", vm);
     }
 
     // POST: ProductManagement/Create
@@ -95,22 +100,15 @@ public class ProductManagementController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Product product, IFormFile myimg)
+    public async Task<IActionResult> Save(ProductIndexViewModel product, IFormFile myimg)
     {
-        ModelState.Remove("myimg");
-        ModelState.Remove("Image");
-        ModelState.Remove("Category");
-        ModelState.Remove("ProductStyles");
         if (ModelState.IsValid)
         {
-            if (myimg != null)
-            {
-                using (var ms = new MemoryStream())
-                {
-                    myimg.CopyTo(ms);
-                    product.Image = ms.ToArray();
-                }
-            }
+            // 確認是否是現有 db 資料
+
+            // auto mapper 
+
+
             _context.Add(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -141,7 +139,7 @@ public class ProductManagementController : Controller
                 ViewBag.Image = ViewImage(product.Image);
             }
         }
-        var productStyles = 
+        var productStyles =
             _context.ProductStyle.Where(x => x.ProductId == product.Id).ToList();
         product.ProductStyles = productStyles;
 

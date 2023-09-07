@@ -1,0 +1,149 @@
+﻿@model OnlineShop.Models.ProductIndexViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Product</h4>
+<hr />
+
+<form asp-action="Save">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <div class="col-8">
+            <div class="row">
+                <div class="col-8">
+                    @* 商品名稱 *@
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    @* 類別 *@
+                    <div class="form-group">
+                        <label class="control-label">Category</label>
+                        <select class="form-control" asp-for="CategoryId" asp-items="Model.Categories"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    @* 簡介 *@
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea asp-for="Description" class="form-control" style="height:150px"></textarea>
+                        <span asp-validation-for="Description" class="text-danger" id="editor01"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    @* 促銷 *@
+                    <div class="form-group">
+                        <label asp-for="Promotion" class="control-label"></label>
+                        <textarea asp-for="Promotion" class="form-control" style="height:150px"></textarea>
+                        <span asp-validation-for="Promotion" class="text-danger" id="editor01"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            @* 單價 *@
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col">
+            @* 庫存 *@
+            <div class="form-group">
+                <label asp-for="Stock" class="control-label"></label>
+                <input asp-for="Stock" class="form-control" />
+                <span asp-validation-for="Stock" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            @* 款式 *@
+            <div class="form-group">
+                <label>款式</label>
+                <table id="prodectStyleTable">
+                    <tr>
+                        <th>款式名稱</th>
+                        <th>功能按鈕</th>
+                    </tr>
+                </table>
+                <button type="button" onclick="addRow()">增加款式</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            @* 內容 *@
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content" class="form-control" id="editor"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        // 前端驗證
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        /**
+         * 加入 CKEditor 使用
+         */
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'numberedList', 'bulletedList', '|', 'Alignment', 'Outdent', 'Indent', '|', 'BlockQuote', 'InsertTable', 'undo', 'redo']
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        /**
+          * 增加 款式 選項
+         */
+        function addRow() {
+            var table = document.getElementById("prodectStyleTable");
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
+            cell2.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
+        }
+
+        /**
+          * 刪除 款式 選項
+         */
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+    </script>
+}
+
+
