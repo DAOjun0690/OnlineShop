@@ -1,4 +1,6 @@
-﻿namespace OnlineShop.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace OnlineShop.Models;
 
 public class ProductStyle
 {
@@ -16,5 +18,6 @@ public class ProductStyle
     public string Name { get; set; } = string.Empty;
 
     //導覽屬性
+    [ForeignKey("ProductId")]
     public Product Products { get; set; }
 }

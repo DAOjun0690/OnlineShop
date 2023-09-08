@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +70,7 @@ public class ProductManagementController : Controller
             dvm.product = product;
             if (product.Image != null)
             {
-                dvm.imgsrc = ViewImage(product.Image);
+                //dvm.imgsrc = ViewImage(product.Image);
             }
         }
 
@@ -90,9 +91,11 @@ public class ProductManagementController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        ProductIndexViewModel vm = new ProductIndexViewModel();
-        vm.Categories = new SelectList(_context.Set<Category>(), "Id", "Name");
-        return View("CreateEdit", vm);
+        ProductIndexViewModel viewModel = new ProductIndexViewModel();
+        viewModel.Title = "Create";
+        viewModel.Categories = new SelectList(_context.Set<Category>(), "Id", "Name");
+        viewModel.ProductImage = new List<ProductImage>();
+        return View("CreateOrEditProduct", viewModel);
     }
 
     // POST: ProductManagement/Create
@@ -100,23 +103,37 @@ public class ProductManagementController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(ProductIndexViewModel product, IFormFile myimg)
+    public async Task<IActionResult> Save(ProductIndexViewModel dto, IFormFile myimg)
     {
         if (ModelState.IsValid)
         {
-            // 確認是否是現有 db 資料
+            //Initialize the mapper
+            MapperConfiguration config = new MapperConfiguration(cfg =>
+            cfg.CreateMap<ProductIndexViewModel, Product>());
 
-            // auto mapper 
+            //Using automapper
+            Mapper mapper = new Mapper(config);
+            Product model = mapper.Map<Product>(dto);
 
+            // 確認是否有 db 資料
+            if (model.Id == 0) // 如果是新增資料
+            {
+                _context.Add(model);
+                await _context.SaveChangesAsync();
+            }
+            else // 編輯資料
+            {
+                _context.Update(model);
+                await _context.SaveChangesAsync();
+            }
 
-            _context.Add(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["Categories"] = new SelectList(
-                                    _context.Set<Category>(), "Id", "Name", product.CategoryId
-                                 );
-        return View(product);
+        //ViewData["Categories"] = new SelectList(
+        //                            _context.Set<Category>(), "Id", "Name", product.CategoryId
+        //                         );
+        return View(nameof(Edit));
     }
 
     // GET: ProductManagement/Edit/5
@@ -136,7 +153,7 @@ public class ProductManagementController : Controller
         {
             if (product.Image != null)
             {
-                ViewBag.Image = ViewImage(product.Image);
+                //ViewBag.Image = ViewImage(product.Image);
             }
         }
         var productStyles =
@@ -172,7 +189,7 @@ public class ProductManagementController : Controller
                     using (var ms = new MemoryStream())
                     {
                         myimg.CopyTo(ms);
-                        product.Image = ms.ToArray();
+                        //product.Image = ms.ToArray();
                     }
                 }
                 _context.Update(product);

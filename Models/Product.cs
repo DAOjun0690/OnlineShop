@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineShop.Models;
 
@@ -30,10 +31,11 @@ public class Product
     /// 商品庫存
     /// </summary>
     public int Stock { get; set; }
+
     /// <summary>
     /// 商品圖片
     /// </summary>
-    public byte[] Image { get; set; }
+    public IList<ProductImage> Image { get; set; }
 
     /// <summary>
     /// 類別 (Foreign Key)
@@ -43,5 +45,6 @@ public class Product
     public IList<ProductStyle> ProductStyles { get; set; }
 
     //導覽屬性
+    [ForeignKey("CategoryId")]
     public Category Category { get; set; }
 }

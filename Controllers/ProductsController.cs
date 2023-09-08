@@ -35,7 +35,7 @@ public class ProductsController : Controller
             DetailViewModel item = new DetailViewModel
             {
                 product = product,
-                imgsrc = ViewImage(product.Image)
+                //imgsrc = ViewImage(product.Image)
             };
             dvm.Add(item);
         }
@@ -63,7 +63,7 @@ public class ProductsController : Controller
         else
         {
             dvm.product = product;
-            dvm.imgsrc = ViewImage(product.Image);
+            //dvm.imgsrc = ViewImage(product.Image);
         }
 
         return View(dvm);
