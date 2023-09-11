@@ -10,6 +10,8 @@ public class ProductImage
     public int Id { get; set; }
     public int ProductId { get; set; }
     public int Sequence { get; set; }
+    public string SourceName { get; set; }
+    public string Guid { get; set; }
     public string LinkToLargeImage { get; set; }
     public string LinkToMediumImage { get; set; }
     public string LinkToSmallImage { get; set; }

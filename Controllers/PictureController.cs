@@ -1,32 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Core.Types;
 using OnlineShop.Data;
 using OnlineShop.Models;
 
 namespace OnlineShop.Controllers;
 
-public class ImageController : Controller
+public class PictureController : Controller
 {
     private readonly OnlineShopContext _context;
+
     private string ServerDestinationPath { get; set; }
 
-    public ImageController(OnlineShopContext context) { _context = context; }
+    public PictureController(OnlineShopContext context) { _context = context; }
 
     private void InitProperties(int Number)
     {
-        // 如果 number = 0，則放到 Temp 資料夾
-        if (Number == 0)
-        {
-            ServerDestinationPath = Path.Join("\\pics\\", "Temp");
-        }
-        else
-        {
-            // 偏移量 folder，每一百個商品 一個資料夾
-            string leftmost = (Number / 100).ToString();
-            string productId = Number.ToString();
-            ServerDestinationPath = Path.Join("\\pics\\", leftmost, productId);
-        }
+        // 偏移量 folder，每一百個商品 一個資料夾
+        string leftmost = (Number / 100).ToString();
+        string productId = Number.ToString();
+        ServerDestinationPath = Path.Join("\\pics\\", leftmost, productId);
     }
 
     /// <summary>
@@ -38,6 +29,33 @@ public class ImageController : Controller
     [HttpPost]
     public ActionResult UploadFiles(int productId, IFormFile[] files)
     {
+        // 判斷 productId 是否為 0，0的話丟到暫存，其他則丟到對應檔案的資料夾底下
+        if (productId == 0)
+        {
+            if (files != null && files.Any())
+            {
+                foreach (IFormFile file in files)
+                {
+                    // Make sure file is within valid size
+                    if (file.Length > 0 && file.Length < 4000000)  // About 4MB
+                    {
+                        // 寫到 暫存資料夾
+                        //string filePath = Path.Combine(Path.GetTempPath(), ServerTempPath, file.FileName);
+                        //using (FileStream stream = new FileStream(filePath, FileMode.Create)) 
+                        //{
+                        //    file.CopyTo(stream);
+                        //}
+                    }
+                }
+            }
+        }
+        else
+        {
+
+        }
+
+
+
         try
         {
             InitProperties(productId);
@@ -115,5 +133,50 @@ public class ImageController : Controller
             throw ex;
         }
         return Json("");
+    }
+
+    public class ImageUploadResponse
+    {
+        public int Uploaded { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+        public string Msg { get; set; } = string.Empty;
+    }
+    public async Task<IActionResult> UploadContent(int productId, IFormFile upload)
+    {
+        if (upload.Length <= 0) return null!;
+
+        var fileName = Guid.NewGuid() + Path.GetExtension(upload.FileName).ToLower();
+
+        var filePath = Path.Combine(
+               Directory.GetCurrentDirectory(), "wwwroot/image",
+               fileName);
+
+        using (FileStream stream = new FileStream(filePath, FileMode.Create))
+        {
+            //程式寫入的本地資料夾裡面
+            await upload.CopyToAsync(stream);
+        }
+
+        var url = $"{"/image/"}{fileName}";
+
+        var reslult = new ImageUploadResponse
+        {
+            Uploaded = 1,
+            FileName = fileName,
+            Url = url,
+            Msg = "sucess",
+        };
+
+        return Json(new
+        {
+            uploaded = reslult.Uploaded,
+            fileName = reslult.FileName,
+            url = reslult.Url,
+            error = new
+            {
+                message = reslult.Msg
+            }
+        });
     }
 }

@@ -1,10 +1,10 @@
 ﻿@model OnlineShop.Models.ProductIndexViewModel
 
 @{
-    var title = ViewData["Title"] ?? Model.Title;
+    ViewData["Title"] = "";
 }
 
-<h1>@Model.Title</h1>
+<h1>@ViewData["Title"]</h1>
 
 <h4>Product</h4>
 <hr />
@@ -154,9 +154,19 @@
         /**
          * 加入 CKEditor 使用
          */
+        // ClassicEditor
+        //     .create(document.querySelector('#editor'), {
+        //         toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'numberedList', 'bulletedList', '|', 'Alignment', 'Outdent', 'Indent', '|', 'BlockQuote', 'InsertTable', 'undo', 'redo']
+        //     })
+        //     .catch(error => {
+        //         console.error(error);
+        //     });
         ClassicEditor
             .create(document.querySelector('#editor'), {
-                toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'numberedList', 'bulletedList', '|', 'Alignment', 'Outdent', 'Indent', '|', 'BlockQuote', 'InsertTable', 'undo', 'redo']
+                removePlugins: ['ImageResize', 'ImageStyle', 'ImageToolbar'],
+                ckfinder: {
+                    uploadUrl: '/Image/Uploads'
+                }
             })
             .catch(error => {
                 console.error(error);
@@ -220,7 +230,3 @@
 
     </script>
 }
-
-
-
-

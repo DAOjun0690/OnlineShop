@@ -4,15 +4,11 @@ using System.ComponentModel.DataAnnotations;
 namespace OnlineShop.Models;
 
 /// <summary>
-/// 用於 商品 新增的viewmodel
+/// 用於 商品 編輯的 View Model
 /// </summary>
 public class ProductIndexViewModel
 {
     public int ProductId { get; set; }
-    /// <summary>
-    /// Create or Edit
-    /// </summary>
-    public string Title { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "名稱 是必填項目")]
     public string Name { get; set; }
@@ -40,6 +36,8 @@ public class ProductIndexViewModel
     public int Stock { get; set; }
 
     public IList<ProductImage> ProductImage { get; set; }
+
+    public ProductStatus Status { get; set; }
 
     public int CategoryId { get; set; }
 

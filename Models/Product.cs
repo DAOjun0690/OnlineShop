@@ -37,6 +37,13 @@ public class Product
     /// </summary>
     public IList<ProductImage> Image { get; set; }
 
+    ///// <summary>
+    ///// 是否刪除
+    ///// </summary>
+    //public bool IsDelete { get; set; }
+
+    public ProductStatus Status { get; set; }
+
     /// <summary>
     /// 類別 (Foreign Key)
     /// </summary>
@@ -47,4 +54,23 @@ public class Product
     //導覽屬性
     [ForeignKey("CategoryId")]
     public Category Category { get; set; }
+}
+
+/// <summary>
+/// 商品狀態
+/// </summary>
+public enum ProductStatus
+{
+    /// <summary>
+    /// 草稿
+    /// </summary>
+    Draft = 1,
+    /// <summary>
+    /// 絕讚販售中
+    /// </summary>
+    Active = 2,
+    /// <summary>
+    /// 已售完
+    /// </summary>
+    Sold = 3
 }

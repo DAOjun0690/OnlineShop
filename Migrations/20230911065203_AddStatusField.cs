@@ -1,0 +1,71 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace OnlineShop.Migrations
+{
+    public partial class AddStatusField : Migration
+    {
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(
+                name: "Image",
+                table: "Product");
+
+            migrationBuilder.AddColumn<int>(
+                name: "Status",
+                table: "Product",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.CreateTable(
+                name: "ProductImage",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Sequence = table.Column<int>(type: "int", nullable: false),
+                    SourceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Guid = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LinkToLargeImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LinkToMediumImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LinkToSmallImage = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductImage", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductImage_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductImage_ProductId",
+                table: "ProductImage",
+                column: "ProductId");
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "ProductImage");
+
+            migrationBuilder.DropColumn(
+                name: "Status",
+                table: "Product");
+
+            migrationBuilder.AddColumn<byte[]>(
+                name: "Image",
+                table: "Product",
+                type: "varbinary(max)",
+                nullable: false,
+                defaultValue: new byte[0]);
+        }
+    }
+}

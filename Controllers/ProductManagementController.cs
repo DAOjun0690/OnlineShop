@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
 using OnlineShop.Data;
 using OnlineShop.Models;
+using System;
+using static StackExchange.Redis.Role;
 
 namespace OnlineShop.Controllers;
 
@@ -19,7 +23,11 @@ public class ProductManagementController : Controller
     }
 
     // GET: ProductManagement
-    public async Task<IActionResult> Index(string searchString, string currentFilter, int? pageNumber)
+    public async Task<IActionResult> Index(string searchString,
+                                           string currentFilter,
+                                           int? pageNumber,
+                                           ProductStatus status = 0
+                                           )
     {
         // 初始化頁碼
         if (searchString != null)
@@ -33,11 +41,26 @@ public class ProductManagementController : Controller
         // 儲存當前搜尋狀態
         ViewData["CurrentFilter"] = searchString;
 
+        var enumValues = Enum.GetValues(typeof(ProductStatus))
+                             .Cast<ProductStatus>()
+                             .Select(e => new SelectListItem
+                             {
+                                 Value = ((int)e).ToString(),
+                                 Text = e.ToString()
+                             })
+                             .ToList();
+        ViewData["StatusList"] = new SelectList(enumValues, "Value", "Text");
+
         var result = from m in _context.Product select m;
 
         if (!string.IsNullOrWhiteSpace(searchString))
         {
             result = result.Where(s => s.Name.Contains(searchString));
+        }
+        // 判斷 產品狀態
+        if (status != 0)
+        {
+            result = result.Where(p => p.Status == status);
         }
 
         //一頁顯示幾項
@@ -46,35 +69,95 @@ public class ProductManagementController : Controller
             result.Include(p => p.Category).AsNoTracking(), pageNumber ?? 1, pageSize));
     }
 
-    // GET: ProductManagement/Details/5
-    public async Task<IActionResult> Details(int? id)
+
+    /// <summary>
+    /// ProductManagement/Create
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult Create()
+    {
+        Product product;
+        try
+        {
+            product = new Product()
+            {
+                Name = "新項目",
+                Status = ProductStatus.Draft,
+                CategoryId = _context.Category.First().Id
+            };
+            _context.Add(product);
+            _context.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = string.Format("Could not add new item.");
+        }
+        return RedirectToAction("Index");
+    }
+
+    // GET: ProductManagement/Edit/5
+    public async Task<IActionResult> Edit(int? id)
     {
         if (id == null || _context.Product == null)
         {
             return NotFound();
         }
 
-        //建立一個 ViewModel
-        DetailViewModel dvm = new DetailViewModel();
-
-        var product = await _context.Product
-            .Include(p => p.Category)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
+        var product = await _context.Product.FindAsync(id);
         if (product == null)
         {
             return NotFound();
         }
-        else
-        {
-            dvm.product = product;
-            if (product.Image != null)
-            {
-                //dvm.imgsrc = ViewImage(product.Image);
-            }
-        }
 
-        return View(dvm);
+        MapperConfiguration config = new MapperConfiguration(cfg =>
+            cfg.CreateMap<Product, ProductIndexViewModel>());
+
+        //Using automapper
+        Mapper mapper = new Mapper(config);
+        ProductIndexViewModel viewModel = mapper.Map<ProductIndexViewModel>(product);
+        viewModel.ProductId = product.Id;
+        viewModel.Categories = new SelectList(_context.Set<Category>(), "Id", "Name", product.CategoryId);
+        //viewModel.ProductImage = new List<ProductImage>();
+
+        var productStyles =
+            _context.ProductStyle.Where(x => x.ProductId == product.Id).ToList();
+        viewModel.ProductStyles = productStyles;
+
+        return View(viewModel);
+    }
+
+    //---------------------------------------------------------------------------------------------
+    // GET: ProductManagement/Details/5
+    public async Task<IActionResult> Details(int? id)
+    {
+        //if (id == null || _context.Product == null)
+        //{
+        //    return NotFound();
+        //}
+
+        ////建立一個 ViewModel
+        //DetailViewModel dvm = new DetailViewModel();
+
+        //var product = await _context.Product
+        //    .Include(p => p.Category)
+        //    .FirstOrDefaultAsync(m => m.Id == id);
+
+        //if (product == null)
+        //{
+        //    return NotFound();
+        //}
+        //else
+        //{
+        //    dvm.product = product;
+        //    if (product.Image != null)
+        //    {
+        //        //dvm.imgsrc = ViewImage(product.Image);
+        //    }
+        //}
+
+        //return View(dvm);
+        return View();
     }
 
     private string ViewImage(byte[] arrayImage)
@@ -84,19 +167,6 @@ public class ProductManagementController : Controller
         return "data:image/png;base64," + base64String;
     }
 
-    /// <summary>
-    /// ProductManagement/Create
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet]
-    public IActionResult Create()
-    {
-        ProductIndexViewModel viewModel = new ProductIndexViewModel();
-        viewModel.Title = "Create";
-        viewModel.Categories = new SelectList(_context.Set<Category>(), "Id", "Name");
-        viewModel.ProductImage = new List<ProductImage>();
-        return View("CreateOrEditProduct", viewModel);
-    }
 
     // POST: ProductManagement/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -134,36 +204,6 @@ public class ProductManagementController : Controller
         //                            _context.Set<Category>(), "Id", "Name", product.CategoryId
         //                         );
         return View(nameof(Edit));
-    }
-
-    // GET: ProductManagement/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null || _context.Product == null)
-        {
-            return NotFound();
-        }
-
-        var product = await _context.Product.FindAsync(id);
-        if (product == null)
-        {
-            return NotFound();
-        }
-        else
-        {
-            if (product.Image != null)
-            {
-                //ViewBag.Image = ViewImage(product.Image);
-            }
-        }
-        var productStyles =
-            _context.ProductStyle.Where(x => x.ProductId == product.Id).ToList();
-        product.ProductStyles = productStyles;
-
-        //設定seleccted項目
-        ViewData["Categories"] = new SelectList(_context.Set<Category>(), "Id", "Name", product.CategoryId);
-
-        return View(product);
     }
 
     // POST: ProductManagement/Edit/5

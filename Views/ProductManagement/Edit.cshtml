@@ -1,21 +1,22 @@
-﻿@model OnlineShop.Models.Product
+﻿@model OnlineShop.Models.ProductIndexViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "編輯頁面";
 }
 
-<h1>Edit</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>Item</h4>
+<h4>Product</h4>
 <hr />
-<form asp-action="Edit">
+
+<form asp-action="Save">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="row">
-
         <div class="col-8">
             <div class="row">
                 <div class="col-8">
+                    @* 商品名稱 *@
                     <div class="form-group">
                         <label asp-for="Name" class="control-label"></label>
                         <input asp-for="Name" class="form-control" />
@@ -23,14 +24,16 @@
                     </div>
                 </div>
                 <div class="col-4">
+                    @* 類別 *@
                     <div class="form-group">
                         <label class="control-label">Category</label>
-                        <select class="form-control" asp-for="CategoryId" asp-items="ViewBag.Categories"></select>
+                        <select class="form-control" asp-for="CategoryId" asp-items="Model.Categories"></select>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
+                    @* 簡介 *@
                     <div class="form-group">
                         <label asp-for="Description" class="control-label"></label>
                         <textarea asp-for="Description" class="form-control" style="height:150px"></textarea>
@@ -38,30 +41,22 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-4">
             <div class="row">
                 <div class="col">
+                    @* 促銷 *@
                     <div class="form-group">
-                        <label asp-for="Image" class="control-label"></label>
-                        <input type="file" name="myimg" id="myimg" class="form-control-file">
-                        <span asp-validation-for="Image" class="text-danger"></span>
-
+                        <label asp-for="Promotion" class="control-label"></label>
+                        <textarea asp-for="Promotion" class="form-control" style="height:150px"></textarea>
+                        <span asp-validation-for="Promotion" class="text-danger" id="editor01"></span>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <img id="preview" style="max-height:200px;" src="@ViewBag.image" />
-                </div>
-            </div>
         </div>
-
     </div>
 
     <div class="row">
         <div class="col">
+            @* 單價 *@
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />
@@ -69,6 +64,7 @@
             </div>
         </div>
         <div class="col">
+            @* 庫存 *@
             <div class="form-group">
                 <label asp-for="Stock" class="control-label"></label>
                 <input asp-for="Stock" class="form-control" />
@@ -76,33 +72,24 @@
             </div>
         </div>
     </div>
-    @* 款式 *@
     <div class="row">
         <div class="col">
+            @* 款式 *@
             <div class="form-group">
                 <label>款式</label>
                 <table id="prodectStyleTable">
                     <tr>
-                        <th style="display:none;">Id</th>
-                        <th>Name</th>
-                        <th>Delete</th>
+                        <th>款式名稱</th>
+                        <th>功能按鈕</th>
                     </tr>
-                    @for (int i = 0; i < (Model.ProductStyles?.Count ?? 0); i++)
-                    {
-                        <tr>
-                            <td>@Html.HiddenFor(model => model.ProductStyles[i].Id)</td>
-                            <td>@Html.EditorFor(model => model.ProductStyles[i].Name)</td>
-                            <td><button type="button" onclick="deleteRow(this)">刪除</button></td>
-                        </tr>
-                    }
                 </table>
-                <button type="button" onclick="addRow()">Add Row</button>
+                <button type="button" onclick="addRow()">增加款式</button>
             </div>
         </div>
     </div>
-
     <div class="row">
         <div class="col">
+            @* 內容 *@
             <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>
                 <textarea asp-for="Content" class="form-control" id="editor"></textarea>
@@ -111,39 +98,74 @@
         </div>
     </div>
 
+
     <div class="form-group">
         <input type="submit" value="Save" class="btn btn-primary" />
     </div>
 </form>
 
+<div class="row">
+    @* 圖片 *@
+    <div class="col-lg-3 col-md-4 col-sm-6">
+        <div id="picBlock" class="item text-center">
+            @if (Model.ProductImage != null && Model.ProductImage.Any())
+            {
+                foreach (ProductImage image in Model.ProductImage)
+                {
+                    <div class="product-image">
+                        @{
+                            var myUrl = String.Format("{0}", image.LinkToSmallImage);
+                        }
+                        <img src=@myUrl height="142" alt="ring">
+                        <a href=@Url.Action("DeleteImage", "Image", new { ID = Model.ProductId, imageID = image.Id })>
+                            @* <i class="fas fa-times-circle"></i> *@
+                            <div>X</div>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    @using (Html.BeginForm("UploadFiles", "Picture", FormMethod.Post, new { id = "picForm", enctype = "multipart/form-data" }))
+    {
+        <div class="card-footer">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ProductId)
+            <!-- Want one button to both browse file and submit form. Using some javascript and display: none to do it. -->
+            <!-- Note that the onchange event could be blocked. Some browsers do not allow form to be submitted using javascript. -->
+            <!-- Test the upload button on the browsers you expect to be used. Otherwise, you may have to have two buttons. -->
+            <!-- A nice thing about having two buttons is that your 'Save' button could save the info on both the Item tab and Photo tab. -->
+            <input type="file" multiple style="display: none;" id="files" name="files" onchange="imgFormSubmit();" />
+            <input type="button" value="Upload..." class="btn btn-primary" onclick="document.getElementById('files').click();" />
+            @Html.ActionLink("Cancel and return to List", "Index", null, new { }, new { @class = "btn btn-default" })
+        </div>
+    }
+</div>
+
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-asp-controller="ProductManagement" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{
+        // 前端驗證
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
         /**
          * 加入 CKEditor 使用
          */
         ClassicEditor
             .create(document.querySelector('#editor'), {
-                toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'numberedList', 'bulletedList', '|', 'Alignment', 'Outdent', 'Indent', '|', 'BlockQuote', 'InsertTable', 'undo', 'redo']
+                removePlugins: ['ImageResize', 'ImageStyle', 'ImageToolbar'],
+                ckfinder: {
+                    uploadUrl: '/Picture/UploadContent?productId=' + @Model.ProductId
+                }
             })
             .catch(error => {
                 console.error(error);
             });
-
-        $('#myimg').on('change', function (e) {
-            const file = this.files[0];
-            // 使用 createObjectURL 產生圖片url
-            const objectURL = URL.createObjectURL(file);
-
-            $('#preview').attr('src', objectURL);
-        });
 
         /**
           * 增加 款式 選項
@@ -153,10 +175,8 @@
             var row = table.insertRow(-1);
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
-            var cell3 = row.insertCell(2);
-            cell1.innerHTML = '<input type="hidden" name="ProductStyles[' + (table.rows.length - 2) + '].Id" />';
-            cell2.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
-            cell3.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
+            cell1.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
+            cell2.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
         }
 
         /**
@@ -166,5 +186,42 @@
             var row = btn.parentNode.parentNode;
             row.parentNode.removeChild(row);
         }
+
+        function imgFormSubmit() {
+            let form = $('#picForm')[0];
+            let formData = new FormData(form);
+            $.ajax({
+                url: form.action,
+                type: form.method,
+                data: formData,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (data) {
+                    let productImage = document.createElement('div');
+                    productImage.className = 'product-image';
+
+                    var file = formData.get('files');
+                    var blob = new Blob([file], { type: file.type });
+                    var imgUrl = URL.createObjectURL(blob);
+
+                    let img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.height = 142;
+                    img.alt = 'ring';
+                    productImage.appendChild(img);
+
+                    let a = document.createElement('a');
+                    a.href = '@Url.Action("DeleteImage", "Image", new { ID = @Model.ProductId })';
+                    let div = document.createElement('div');
+                    div.innerHTML = 'X';
+                    a.appendChild(div);
+                    productImage.appendChild(a);
+
+                    document.getElementById('picBlock').appendChild(productImage);
+                }
+            });
+        }
+
     </script>
 }
