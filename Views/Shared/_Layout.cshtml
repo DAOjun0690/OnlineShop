@@ -50,7 +50,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="ProductManagement" asp-action="Index">管理商品列表</a>
                         </li>
                         @*  帳號管理 Start *@
-                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator"))
+                        @* @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator")) *@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">帳戶管理</a>

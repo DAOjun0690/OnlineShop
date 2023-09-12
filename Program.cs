@@ -85,7 +85,6 @@ app.UseEndpoints(endpoints =>
 // Update-Database -Context OnlineShopContext
 
 // 初始化資料
-var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<OnlineShopContext>();
-SeedData.SeedDatabase(context);
+SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider);
 
 app.Run();

@@ -39,6 +39,8 @@ public class ProductIndexViewModel
 
     public ProductStatus Status { get; set; }
 
+    public SelectList Statuses { get; set; }
+
     public int CategoryId { get; set; }
 
     public SelectList Categories { get; set; }

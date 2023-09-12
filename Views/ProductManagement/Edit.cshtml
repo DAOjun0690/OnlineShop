@@ -16,6 +16,15 @@
         <div class="col-8">
             <div class="row">
                 <div class="col-8">
+                    @* 商品狀態 *@
+                    <div class="form-group">
+                        <label class="control-label">商品狀態</label>
+                        <select class="form-control" asp-for="Status" asp-items="Model.Statuses"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
                     @* 商品名稱 *@
                     <div class="form-group">
                         <label asp-for="Name" class="control-label"></label>
@@ -98,10 +107,14 @@
         </div>
     </div>
 
-
-    <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
     </div>
+
 </form>
 
 <div class="row">
@@ -113,38 +126,27 @@
                 foreach (ProductImage image in Model.ProductImage)
                 {
                     <div class="product-image">
-                        @{
-                            var myUrl = String.Format("{0}", image.LinkToSmallImage);
-                        }
-                        <img src=@myUrl height="142" alt="ring">
-                        <a href=@Url.Action("DeleteImage", "Image", new { ID = Model.ProductId, imageID = image.Id })>
-                            @* <i class="fas fa-times-circle"></i> *@
-                            <div>X</div>
-                        </a>
+                        <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) height="142" alt="ring">
+                        <i class="fas fa-times-circle" onclick="deletePicture(this, '@image.Guid')"></i>
                     </div>
                 }
             }
         </div>
     </div>
 
-    @using (Html.BeginForm("UploadFiles", "Picture", FormMethod.Post, new { id = "picForm", enctype = "multipart/form-data" }))
+    @using (Html.BeginForm("UploadDetail", "Picture", FormMethod.Post, new { id = "picForm", enctype = "multipart/form-data" }))
     {
         <div class="card-footer">
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.ProductId)
-            <!-- Want one button to both browse file and submit form. Using some javascript and display: none to do it. -->
-            <!-- Note that the onchange event could be blocked. Some browsers do not allow form to be submitted using javascript. -->
-            <!-- Test the upload button on the browsers you expect to be used. Otherwise, you may have to have two buttons. -->
-            <!-- A nice thing about having two buttons is that your 'Save' button could save the info on both the Item tab and Photo tab. -->
-            <input type="file" multiple style="display: none;" id="files" name="files" onchange="imgFormSubmit();" />
+            <input type="file" style="display: none;" id="files" name="files" accept="image/*" onchange="imgFormSubmit();" multiple />
             <input type="button" value="Upload..." class="btn btn-primary" onclick="document.getElementById('files').click();" />
-            @Html.ActionLink("Cancel and return to List", "Index", null, new { }, new { @class = "btn btn-default" })
         </div>
     }
 </div>
 
 <div>
-    <a asp-asp-controller="ProductManagement" asp-action="Index">Back to List</a>
+    <a asp-asp-controller="ProductManagement" asp-action="Index" class="btn btn-default">返回上一頁</a>
 </div>
 
 @section Scripts {
@@ -161,7 +163,7 @@
                 removePlugins: ['ImageResize', 'ImageStyle', 'ImageToolbar'],
                 ckfinder: {
                     uploadUrl: '/Picture/UploadContent?productId=' + @Model.ProductId
-                }
+                                                                                                }
             })
             .catch(error => {
                 console.error(error);
@@ -197,31 +199,54 @@
                 contentType: false,
                 processData: false,
                 data: formData,
-                success: function (data) {
-                    let productImage = document.createElement('div');
-                    productImage.className = 'product-image';
+                success: function (response) {
+                    let responseData = response.data;
+                    let fileLength = formData.getAll('files').length;
 
-                    var file = formData.get('files');
-                    var blob = new Blob([file], { type: file.type });
-                    var imgUrl = URL.createObjectURL(blob);
+                    for (let i = 0; i < fileLength; i++) {
+                        let file = formData.getAll('files')[i];
+                        let fileName = file.name;
+                        let responseGuid;
+                        if (!responseData[fileName]) {
+                            continue;
+                        }
+                        else {
+                            responseGuid = responseData[fileName];
+                        }
 
-                    let img = document.createElement('img');
-                    img.src = imgUrl;
-                    img.height = 142;
-                    img.alt = 'ring';
-                    productImage.appendChild(img);
+                        let productImage = document.createElement('div');
+                        productImage.className = 'product-image';
 
-                    let a = document.createElement('a');
-                    a.href = '@Url.Action("DeleteImage", "Image", new { ID = @Model.ProductId })';
-                    let div = document.createElement('div');
-                    div.innerHTML = 'X';
-                    a.appendChild(div);
-                    productImage.appendChild(a);
+                        let blob = new Blob([file], { type: file.type });
+                        let imgUrl = URL.createObjectURL(blob);
 
-                    document.getElementById('picBlock').appendChild(productImage);
+                        let img = document.createElement('img');
+                        img.src = imgUrl;
+                        img.height = 142;
+                        img.alt = 'ring';
+                        productImage.appendChild(img);
+
+                        let divI = $(`<i class='fas fa-times-circle' onclick='deletePicture(this, "${responseGuid}")'></i>`)
+                        productImage.appendChild(divI[0]);
+
+                        document.getElementById('picBlock').appendChild(productImage);
+
+                    }
                 }
             });
         }
 
+        function deletePicture(e, guid) {
+            $.ajax({
+                url: '@Url.Action("Delete", "Picture")',
+                type: "POST",
+                data: { Guid: guid },
+                success: function (response) {
+                    // 將自身欄位 從畫面上移除
+                    let $fileCol = $(e).parent('div');
+                    $fileCol.remove();
+                }
+            });
+        }
     </script>
 }

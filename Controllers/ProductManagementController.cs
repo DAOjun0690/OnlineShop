@@ -118,13 +118,65 @@ public class ProductManagementController : Controller
         ProductIndexViewModel viewModel = mapper.Map<ProductIndexViewModel>(product);
         viewModel.ProductId = product.Id;
         viewModel.Categories = new SelectList(_context.Set<Category>(), "Id", "Name", product.CategoryId);
-        //viewModel.ProductImage = new List<ProductImage>();
+        // 再從db撈 當前 productId的 detail圖片
+        var imageList =
+            _context.ProductImage.Where(x => x.ProductId == product.Id && x.Type == ProductImageType.Detail);
+        viewModel.ProductImage = imageList.ToList();
+
+        // 案件狀態
+        var enumValues = Enum.GetValues(typeof(ProductStatus))
+                     .Cast<ProductStatus>()
+                     .Select(e => new SelectListItem
+                     {
+                         Value = ((int)e).ToString(),
+                         Text = e.ToString()
+                     })
+                     .ToList();
+        viewModel.Statuses = new SelectList(enumValues, "Value", "Text", product.Status);
 
         var productStyles =
             _context.ProductStyle.Where(x => x.ProductId == product.Id).ToList();
         viewModel.ProductStyles = productStyles;
 
         return View(viewModel);
+    }
+
+    // POST: ProductManagement/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Save(ProductIndexViewModel dto)
+    {
+        if (ModelState.IsValid)
+        {
+            // 確認是否有 db 資料
+            var model = await _context.Product.FindAsync(dto.ProductId);
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            // 指定欄位map
+            model.Name = dto.Name;
+            model.Description = dto.Description;
+            model.Promotion = dto.Promotion;
+            model.Content = dto.Content;
+            model.Price = dto.Price;
+            model.Stock = dto.Stock;
+            model.Status = dto.Status;
+            model.CategoryId = dto.CategoryId;
+
+            // 編輯資料
+            _context.Update(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+        //ViewData["Categories"] = new SelectList(
+        //                            _context.Set<Category>(), "Id", "Name", product.CategoryId
+        //                         );
+        return View(nameof(Edit));
     }
 
     //---------------------------------------------------------------------------------------------
@@ -165,45 +217,6 @@ public class ProductManagementController : Controller
         // 二進位圖檔轉字串
         string base64String = Convert.ToBase64String(arrayImage, 0, arrayImage.Length);
         return "data:image/png;base64," + base64String;
-    }
-
-
-    // POST: ProductManagement/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(ProductIndexViewModel dto, IFormFile myimg)
-    {
-        if (ModelState.IsValid)
-        {
-            //Initialize the mapper
-            MapperConfiguration config = new MapperConfiguration(cfg =>
-            cfg.CreateMap<ProductIndexViewModel, Product>());
-
-            //Using automapper
-            Mapper mapper = new Mapper(config);
-            Product model = mapper.Map<Product>(dto);
-
-            // 確認是否有 db 資料
-            if (model.Id == 0) // 如果是新增資料
-            {
-                _context.Add(model);
-                await _context.SaveChangesAsync();
-            }
-            else // 編輯資料
-            {
-                _context.Update(model);
-                await _context.SaveChangesAsync();
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        //ViewData["Categories"] = new SelectList(
-        //                            _context.Set<Category>(), "Id", "Name", product.CategoryId
-        //                         );
-        return View(nameof(Edit));
     }
 
     // POST: ProductManagement/Edit/5

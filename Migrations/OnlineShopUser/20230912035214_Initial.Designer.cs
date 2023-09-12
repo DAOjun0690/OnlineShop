@@ -12,8 +12,8 @@ using OnlineShop.Data;
 namespace OnlineShop.Migrations.OnlineShopUser
 {
     [DbContext(typeof(OnlineShopUserContext))]
-    [Migration("20230901061122_update_onlineShopUser")]
-    partial class update_onlineShopUser
+    [Migration("20230912035214_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

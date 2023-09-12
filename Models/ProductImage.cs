@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineShop.Models;
 
@@ -8,14 +9,32 @@ namespace OnlineShop.Models;
 public class ProductImage
 {
     public int Id { get; set; }
+
+    public Guid Guid { get; set; }
     public int ProductId { get; set; }
     public int Sequence { get; set; }
-    public string SourceName { get; set; }
-    public string Guid { get; set; }
-    public string LinkToLargeImage { get; set; }
-    public string LinkToMediumImage { get; set; }
-    public string LinkToSmallImage { get; set; }
+    public string FileName { get; set; }
+    public ProductImageType Type { get; set; }
 
     [ForeignKey("ProductId")]
     public Product Product { get; set; }
+}
+
+/// <summary>
+/// 商品狀態
+/// </summary>
+public enum ProductImageType
+{
+    /// <summary>
+    /// 商品主要圖片
+    /// </summary>
+    Main,
+    /// <summary>
+    /// 商品介紹圖片
+    /// </summary>
+    Detail,
+    /// <summary>
+    /// 商品簡介圖片
+    /// </summary>
+    Content
 }
