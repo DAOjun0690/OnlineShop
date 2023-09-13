@@ -11,7 +11,7 @@
 
 <form asp-action="Save">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+    @Html.HiddenFor(m => m.ProductId)
     <div class="row">
         <div class="col-8">
             <div class="row">
@@ -91,6 +91,14 @@
                         <th>款式名稱</th>
                         <th>功能按鈕</th>
                     </tr>
+                    @for (int idx = 0; idx < Model.ProductStyles.Count; idx++)
+                    {
+                        <tr>
+                            @Html.Hidden($"ProductStyles[{idx}].Id", Model.ProductStyles[idx].Id)
+                            <td>@Model.ProductStyles[idx].Name</td>
+                            <td><button type="button" onclick="deleteRow(this)">刪除</button></td>
+                        </tr>
+                    }
                 </table>
                 <button type="button" onclick="addRow()">增加款式</button>
             </div>

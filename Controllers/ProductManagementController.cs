@@ -3,6 +3,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Core.Types;
 using OnlineShop.Data;
@@ -17,12 +18,24 @@ public class ProductManagementController : Controller
 {
     private readonly OnlineShopContext _context;
 
+    /// <summary>
+    /// 建構子
+    /// </summary>
+    /// <param name="context"></param>
     public ProductManagementController(OnlineShopContext context)
     {
         _context = context;
     }
 
-    // GET: ProductManagement
+    /// <summary>
+    /// 取得 管理者 商品列表 資料
+    /// </summary>
+    /// <param name="searchString">商品名稱 like 查詢字串</param>
+    /// <param name="currentFilter">舊有的查詢條件</param>
+    /// <param name="pageNumber">第幾頁</param>
+    /// <param name="status">商品狀態</param>
+    /// <returns></returns>
+    [HttpGet]
     public async Task<IActionResult> Index(string searchString,
                                            string currentFilter,
                                            int? pageNumber,
@@ -41,6 +54,7 @@ public class ProductManagementController : Controller
         // 儲存當前搜尋狀態
         ViewData["CurrentFilter"] = searchString;
 
+        // 商品狀態列表
         var enumValues = Enum.GetValues(typeof(ProductStatus))
                              .Cast<ProductStatus>()
                              .Select(e => new SelectListItem
@@ -51,19 +65,20 @@ public class ProductManagementController : Controller
                              .ToList();
         ViewData["StatusList"] = new SelectList(enumValues, "Value", "Text");
 
+        // 所有商品
         var result = from m in _context.Product select m;
-
+        // 商品名稱 模糊查詢
         if (!string.IsNullOrWhiteSpace(searchString))
         {
             result = result.Where(s => s.Name.Contains(searchString));
         }
-        // 判斷 產品狀態
+        // 篩選 符合的商品狀態
         if (status != 0)
         {
             result = result.Where(p => p.Status == status);
         }
 
-        //一頁顯示幾項
+        // 預設一頁顯示幾項
         int pageSize = 5;
         return View(await PaginatedList<Product>.CreateAsync(
             result.Include(p => p.Category).AsNoTracking(), pageNumber ?? 1, pageSize));
@@ -71,9 +86,10 @@ public class ProductManagementController : Controller
 
 
     /// <summary>
-    /// ProductManagement/Create
+    /// 直接新增一項商品，代入預設值
     /// </summary>
     /// <returns></returns>
+    /// ProductManagement/Create
     [HttpGet]
     public IActionResult Create()
     {
@@ -96,7 +112,13 @@ public class ProductManagementController : Controller
         return RedirectToAction("Index");
     }
 
-    // GET: ProductManagement/Edit/5
+    /// <summary>
+    /// 編輯商品頁面
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// ProductManagement/Edit/5
+    [HttpGet]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null || _context.Product == null)
@@ -118,12 +140,13 @@ public class ProductManagementController : Controller
         ProductIndexViewModel viewModel = mapper.Map<ProductIndexViewModel>(product);
         viewModel.ProductId = product.Id;
         viewModel.Categories = new SelectList(_context.Set<Category>(), "Id", "Name", product.CategoryId);
+
         // 再從db撈 當前 productId的 detail圖片
         var imageList =
             _context.ProductImage.Where(x => x.ProductId == product.Id && x.Type == ProductImageType.Detail);
         viewModel.ProductImage = imageList.ToList();
 
-        // 案件狀態
+        // 商品狀態
         var enumValues = Enum.GetValues(typeof(ProductStatus))
                      .Cast<ProductStatus>()
                      .Select(e => new SelectListItem
@@ -134,6 +157,7 @@ public class ProductManagementController : Controller
                      .ToList();
         viewModel.Statuses = new SelectList(enumValues, "Value", "Text", product.Status);
 
+        // 商品款式
         var productStyles =
             _context.ProductStyle.Where(x => x.ProductId == product.Id).ToList();
         viewModel.ProductStyles = productStyles;
@@ -146,7 +170,7 @@ public class ProductManagementController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(ProductIndexViewModel dto)
+    public async Task<IActionResult> Save(ProductEditDto dto)
     {
         if (ModelState.IsValid)
         {
@@ -167,15 +191,35 @@ public class ProductManagementController : Controller
             model.Status = dto.Status;
             model.CategoryId = dto.CategoryId;
 
-            // 編輯資料
+            // 更新 商品 資料
             _context.Update(model);
-            await _context.SaveChangesAsync();
 
+            // 更新 款式 資料
+            foreach (var item in dto.ProductStyles)
+            {
+                ProductStyle setItem = new ProductStyle
+                {
+                    ProductId = dto.ProductId,
+                    Id = item.Id,
+                    Name = item.Name
+                };
+
+                if (setItem.Id == 0)
+                {
+                    // 如果Id為0，則添加新的Model
+                    _context.Add(setItem);
+                }
+                else
+                {
+                    // 如果Id不為0，則更新現有的Model
+                    _context.Update(setItem);
+                }
+            }
+
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        //ViewData["Categories"] = new SelectList(
-        //                            _context.Set<Category>(), "Id", "Name", product.CategoryId
-        //                         );
+
         return View(nameof(Edit));
     }
 
