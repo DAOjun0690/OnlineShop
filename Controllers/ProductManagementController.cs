@@ -9,6 +9,7 @@ using NuGet.Protocol.Core.Types;
 using OnlineShop.Data;
 using OnlineShop.Models;
 using System;
+using System.Linq;
 using static StackExchange.Redis.Role;
 
 namespace OnlineShop.Controllers;
@@ -165,136 +166,82 @@ public class ProductManagementController : Controller
         return View(viewModel);
     }
 
-    // POST: ProductManagement/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    /// <summary>
+    /// 商品 存檔事件
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    /// POST: ProductManagement/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Save(ProductEditDto dto)
     {
         if (ModelState.IsValid)
         {
-            // 確認是否有 db 資料
-            var model = await _context.Product.FindAsync(dto.ProductId);
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            // 指定欄位map
-            model.Name = dto.Name;
-            model.Description = dto.Description;
-            model.Promotion = dto.Promotion;
-            model.Content = dto.Content;
-            model.Price = dto.Price;
-            model.Stock = dto.Stock;
-            model.Status = dto.Status;
-            model.CategoryId = dto.CategoryId;
-
-            // 更新 商品 資料
-            _context.Update(model);
-
-            // 更新 款式 資料
-            foreach (var item in dto.ProductStyles)
-            {
-                ProductStyle setItem = new ProductStyle
-                {
-                    ProductId = dto.ProductId,
-                    Id = item.Id,
-                    Name = item.Name
-                };
-
-                if (setItem.Id == 0)
-                {
-                    // 如果Id為0，則添加新的Model
-                    _context.Add(setItem);
-                }
-                else
-                {
-                    // 如果Id不為0，則更新現有的Model
-                    _context.Update(setItem);
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        return View(nameof(Edit));
-    }
-
-    //---------------------------------------------------------------------------------------------
-    // GET: ProductManagement/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        //if (id == null || _context.Product == null)
-        //{
-        //    return NotFound();
-        //}
-
-        ////建立一個 ViewModel
-        //DetailViewModel dvm = new DetailViewModel();
-
-        //var product = await _context.Product
-        //    .Include(p => p.Category)
-        //    .FirstOrDefaultAsync(m => m.Id == id);
-
-        //if (product == null)
-        //{
-        //    return NotFound();
-        //}
-        //else
-        //{
-        //    dvm.product = product;
-        //    if (product.Image != null)
-        //    {
-        //        //dvm.imgsrc = ViewImage(product.Image);
-        //    }
-        //}
-
-        //return View(dvm);
-        return View();
-    }
-
-    private string ViewImage(byte[] arrayImage)
-    {
-        // 二進位圖檔轉字串
-        string base64String = Convert.ToBase64String(arrayImage, 0, arrayImage.Length);
-        return "data:image/png;base64," + base64String;
-    }
-
-    // POST: ProductManagement/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Product product, IFormFile myimg)
-    {
-        var prod = new Product();
-
-        if (id != product.Id)
-        {
-            return NotFound();
-        }
-
-        //if (ModelState.IsValid)
-        {
             try
             {
-                if (myimg != null)
+                // 確認是否有 db 資料
+                var model = await _context.Product.FindAsync(dto.ProductId);
+                if (model == null)
                 {
-                    using (var ms = new MemoryStream())
+                    return NotFound();
+                }
+
+                // 指定欄位map
+                model.Name = dto.Name;
+                model.Description = dto.Description;
+                model.Promotion = dto.Promotion;
+                model.Content = dto.Content;
+                model.Price = dto.Price;
+                model.Stock = dto.Stock;
+                model.Status = dto.Status;
+                model.CategoryId = dto.CategoryId;
+                // 更新 商品 資料
+                _context.Update(model);
+
+                // 更新 款式 資料
+
+                // 從資料庫中取得相同pid的資料
+                var productStylesFromDb = await _context.ProductStyle.Where(m => m.ProductId == model.Id).ToListAsync();
+
+                MapperConfiguration productStyleConfig = new MapperConfiguration(cfg =>
+                    cfg.CreateMap<ProductStyleDto, ProductStyle>());
+                Mapper productStyleMapper = new Mapper(productStyleConfig);
+                var productStylesFromFrontEnd = productStyleMapper.Map<List<ProductStyle>>(dto.ProductStyles);
+                productStylesFromFrontEnd.RemoveAll(m => string.IsNullOrWhiteSpace(m.Name));
+
+                var productStylesToDelete = productStylesFromDb.Where(m => !productStylesFromFrontEnd.Any(f => f.Id == m.Id)).ToList();
+                if (productStylesToDelete?.Any() ?? false)
+                {
+                    _context.ProductStyle.RemoveRange(productStylesToDelete);
+                }
+
+                foreach (var item in productStylesFromFrontEnd)
+                {
+                    var existingProductStyle = productStylesFromDb.FirstOrDefault(x => x.Id == item.Id);
+                    if (existingProductStyle == null)
                     {
-                        myimg.CopyTo(ms);
-                        //product.Image = ms.ToArray();
+                        ProductStyle newProductStyle = new ProductStyle
+                        {
+                            ProductId = model.Id,
+                            Name = item.Name
+                        };
+                        _context.ProductStyle.Add(newProductStyle);
+                    }
+                    else
+                    {
+                        existingProductStyle.ProductId = model.Id;
+                        existingProductStyle.Name = item.Name;
+                        _context.ProductStyle.Update(existingProductStyle);
                     }
                 }
-                _context.Update(product);
+
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(product.Id))
+                if (!ProductExists(dto.ProductId))
                 {
                     return NotFound();
                 }
@@ -303,10 +250,11 @@ public class ProductManagementController : Controller
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index));
         }
-        return View(product);
+
+        return View(nameof(Edit));
     }
+
 
     // GET: ProductManagement/Delete/5
     public async Task<IActionResult> Delete(int? id)
@@ -344,6 +292,40 @@ public class ProductManagementController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+
+    //---------------------------------------------------------------------------------------------
+    // GET: ProductManagement/Details/5
+    public async Task<IActionResult> Details(int? id)
+    {
+        //if (id == null || _context.Product == null)
+        //{
+        //    return NotFound();
+        //}
+
+        ////建立一個 ViewModel
+        //DetailViewModel dvm = new DetailViewModel();
+
+        //var product = await _context.Product
+        //    .Include(p => p.Category)
+        //    .FirstOrDefaultAsync(m => m.Id == id);
+
+        //if (product == null)
+        //{
+        //    return NotFound();
+        //}
+        //else
+        //{
+        //    dvm.product = product;
+        //    if (product.Image != null)
+        //    {
+        //        //dvm.imgsrc = ViewImage(product.Image);
+        //    }
+        //}
+
+        //return View(dvm);
+        return View();
+    }
+
 
     private bool ProductExists(int id)
     {
