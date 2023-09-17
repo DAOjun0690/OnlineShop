@@ -27,9 +27,6 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">首頁</a>
-                        </li>
                         @* <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">公告</a>
                         </li>
@@ -45,11 +42,17 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="Index">我的訂單</a>
                             </li>
                         }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="QueryOrder">訂單查詢</a>
+                            </li>
+                        }
                         @*  商品管理 Start *@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="ProductManagement" asp-action="Index">管理商品列表</a>
                         </li>
-                        @* @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator")) *@
+                        @* @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin")) *@
                         {
                         <li class="nav-item dropdown">
                             <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">商品管理</a>
@@ -58,11 +61,19 @@
                                 <a class="dropdown-item" asp-area="" asp-controller="ProductManagement" asp-action="CreateCategory">新增分類</a>
                             </div>
                         </li>
+
+                        @*  訂單管理 Start *@
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="OrderList">訂單列表</a>
+                        </li>
+                        @*  訂單管理 End *@
                         }
                         @* 商品管理 End *@
 
+
+
                         @*  帳號管理 Start *@
-                        @* @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator")) *@
+                        @* @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin")) *@
                         {
                         <li class="nav-item dropdown">
                             <a class="nav-link text-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">帳戶管理</a>

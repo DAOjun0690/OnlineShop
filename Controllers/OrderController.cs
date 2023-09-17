@@ -7,21 +7,23 @@ using OnlineShop.Models;
 
 namespace OnlineShop.Controllers;
 
+/// <summary>
+/// 訂單事件
+/// </summary>
 public class OrderController : Controller
 {
     private readonly OnlineShopContext _context;
     private readonly UserManager<OnlineShopUser> _userManager;
 
-    public OrderController(OnlineShopContext context, UserManager<OnlineShopUser> userManager)
+    public OrderController(OnlineShopContext context,
+                           UserManager<OnlineShopUser> userManager)
     {
         _context = context;
         _userManager = userManager;
     }
 
-    // 查詢分兩種 已登入User 跟 使用訂單編號查詢
-
     /// <summary>
-    /// 我的訂單列表
+    /// 已登入user: 我的訂單列表
     /// </summary>
     /// <returns></returns>
     public async Task<IActionResult> Index()
@@ -57,24 +59,110 @@ public class OrderController : Controller
     /// <returns></returns>
     public async Task<IActionResult> Details(int? Id)
     {
-        if (Id == null)
-        {
-            return NotFound();
-        }
-
+        // 取得訂單物件
         var order = await _context.Order.FirstOrDefaultAsync(m => m.Id == Id);
-        if (order.UserId != _userManager.GetUserId(User))
+
+        // 如果找不到訂單，返回NotFound結果
+        if (order == null)
         {
             return NotFound();
         }
-        else
+
+        // 取得當前使用者物件
+        var user = await _userManager.GetUserAsync(User);
+
+        // 判斷當前使用者是否可以查閱訂單
+        switch (order.UserId)
         {
-            order.OrderItem = await _context.OrderItem.Where(p => p.OrderId == Id).ToListAsync();
-            ViewBag.orderItems = GetOrderItems(order.Id);
+            // 如果訂單沒有使用者Id，表示是未登入者所提繳的訂單
+            case null:
+                // 如果當前使用者也沒有登入，則可以查閱
+                if (user == null)
+                {
+                    break;
+                }
+                // 否則，返回NotFound結果
+                else
+                {
+                    return NotFound();
+                }
+            // 如果訂單有使用者Id，表示是已登入者所提繳的訂單
+            default:
+                // 如果當前使用者也有登入，且Id與訂單相同，或是屬於Admin角色，則可以查閱
+                if (user != null && (order.UserId == user.Id || await _userManager.IsInRoleAsync(user, "Admin")))
+                {
+                    break;
+                }
+                // 否則，返回NotFound結果
+                else
+                {
+                    return NotFound();
+                }
         }
 
-        return View(order);
+        // 取得訂單項目物件
+        order.OrderItem = await _context.OrderItem.Where(p => p.OrderId == Id).ToListAsync();
+
+        // 取得商品詳細資料
+        var orderItems = GetOrderItems(order.Id);
+
+        OrderViewModel viewModel = new OrderViewModel()
+        {
+            Order = order,
+            CartItems = orderItems
+        };
+
+        // 返回View結果
+        return View(viewModel);
     }
+
+    /// <summary>
+    /// 列出所有表單
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IActionResult> OrderList()
+    {
+        List<OrderViewModel> orderVM = new List<OrderViewModel>();
+
+        var userId = _userManager.GetUserId(User);
+        var orders = await _context.Order.
+            OrderByDescending(k => k.OrderDate).ToListAsync();           //用日期排序
+                                                                         //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
+
+        foreach (var item in orders)
+        {
+            item.OrderItem = await _context.OrderItem.
+                Where(p => p.OrderId == item.Id).ToListAsync(); //取得訂單內的商品項目
+
+            var ovm = new OrderViewModel()
+            {
+                Order = item,
+                CartItems = GetOrderItems(item.Id)
+            };
+
+            orderVM.Add(ovm);
+        }
+
+        return View(orderVM);
+    }
+
+    [HttpGet]
+    public IActionResult QueryOrder()
+    {
+        return View();
+    }
+
+    /// <summary>
+    /// 查詢是否有相同編號的訂單
+    /// </summary>
+    /// <param name="Id"></param>
+    /// <returns></returns>
+    [HttpPost]
+    public IActionResult QueryOrder(int? OrderId)
+    {
+        return RedirectToAction("Details", new { Id = OrderId });
+    }
+
 
     /// <summary>
     /// 結帳
@@ -122,7 +210,7 @@ public class OrderController : Controller
 
             return RedirectToAction("ReviewOrder", new { Id = order.Id });
         }
-        return View();
+        return View("Error");
     }
 
     /// <summary>
@@ -138,7 +226,7 @@ public class OrderController : Controller
         }
 
         var order = await _context.Order.FirstOrDefaultAsync(m => m.Id == Id);
-        if (order.UserId != _userManager.GetUserId(User))
+        if (order.UserId != (_userManager.GetUserId(User) ?? ""))
         {
             return NotFound();
         }

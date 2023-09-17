@@ -1,4 +1,6 @@
-﻿@model OnlineShop.Models.Order
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<OnlineShopUser> SignInManager
+@model OnlineShop.Models.Order
 
 @{
     ViewData["Title"] = "Checkout";
@@ -23,17 +25,20 @@
     <input type="hidden" asp-for="Id" />
     <div class="row">
         <div class="col-8">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">付款人資料</h5>
-                    <input type="hidden" asp-for="UserId" />
-                    <div class="form-group">
-                        <label asp-for="UserName" class="control-label">付款人帳號</label>
-                        <input asp-for="UserName" readonly class="form-control" />
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">付款人資料</h5>
+                        <input type="hidden" asp-for="UserId" />
+                        <div class="form-group">
+                            <label asp-for="UserName" class="control-label">付款人帳號</label>
+                            <input asp-for="UserName" readonly class="form-control" />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <p></p>
+                <p></p>
+            }
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">收貨人資料</h5>

@@ -16,12 +16,12 @@ public class Order
     /// <summary>
     /// 付款者ID
     /// </summary>
-    public string UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;
 
     /// <summary>
     /// 付款者帳號
     /// </summary>
-    public string UserName { get; set; }
+    public string UserName { get; set; } = string.Empty;
     public int Total { get; set; }
 
 
