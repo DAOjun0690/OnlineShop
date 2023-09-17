@@ -67,7 +67,7 @@ public class PictureController : Controller
             foreach (IFormFile file in files)
             {
                 // Make sure file is within valid size
-                if (file.Length > 0 && file.Length < 4000000)  // About 4MB
+                if (file.Length > 0 && file.Length < 10000000)  // About 10MB
                 {
                     Guid guid = Guid.NewGuid();
                     var fileName = guid + Path.GetExtension(file.FileName).ToLower();

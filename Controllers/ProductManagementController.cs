@@ -241,7 +241,8 @@ public class ProductManagementController : Controller
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(dto.ProductId))
+                
+                if (!(_context.Product?.Any(e => e.Id == dto.ProductId)).GetValueOrDefault())
                 {
                     return NotFound();
                 }
@@ -293,50 +294,63 @@ public class ProductManagementController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    //---------------------------------------------------------------------------------------------
-    // GET: ProductManagement/Details/5
+    /// <summary>
+    /// 商品 詳細資料
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// ProductManagement/Details/5
+    [HttpGet]
     public async Task<IActionResult> Details(int? id)
     {
-        //if (id == null || _context.Product == null)
-        //{
-        //    return NotFound();
-        //}
+        if (id == null || _context.Product == null)
+        {
+            return NotFound();
+        }
 
-        ////建立一個 ViewModel
-        //DetailViewModel dvm = new DetailViewModel();
+        var product = _context.Product.Include(p => p.Category).FirstOrDefault(p => p.Id == id);
+        if (product == null)
+        {
+            return NotFound();
+        }
 
-        //var product = await _context.Product
-        //    .Include(p => p.Category)
-        //    .FirstOrDefaultAsync(m => m.Id == id);
+        MapperConfiguration config = new MapperConfiguration(cfg =>
+            cfg.CreateMap<Product, ProductDetailViewModel>());
 
-        //if (product == null)
-        //{
-        //    return NotFound();
-        //}
-        //else
-        //{
-        //    dvm.product = product;
-        //    if (product.Image != null)
-        //    {
-        //        //dvm.imgsrc = ViewImage(product.Image);
-        //    }
-        //}
+        //Using automapper
+        Mapper mapper = new Mapper(config);
+        ProductDetailViewModel viewModel = mapper.Map<ProductDetailViewModel>(product);
+        viewModel.ProductId = product.Id;
+        viewModel.CategoryName = product.Category.Name;
 
-        //return View(dvm);
-        return View();
+        // 再從db撈 當前 productId的 detail圖片
+        var imageList =
+            _context.ProductImage.Where(x => x.ProductId == product.Id && x.Type == ProductImageType.Detail);
+        viewModel.ProductImage = imageList.ToList();
+
+        // 商品狀態
+        viewModel.Status = product.Status;
+
+        // 商品款式
+        viewModel.ProductStylesList = new SelectList(
+            _context.ProductStyle.Where(x => x.ProductId == product.Id), "Id", "Name");
+
+        return View(viewModel);
     }
 
-
-    private bool ProductExists(int id)
-    {
-        return (_context.Product?.Any(e => e.Id == id)).GetValueOrDefault();
-    }
-
+    /// <summary>
+    /// 新增類別頁面
+    /// </summary>
+    /// <returns></returns>
     public IActionResult CreateCategory()
     {
         return View();
     }
-
+    /// <summary>
+    /// 新增類別 事件
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> CreateCategory(Category category)
     {

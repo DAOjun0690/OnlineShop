@@ -120,7 +120,7 @@ public class UsersController : Controller
         var result = await _userManager.DeleteAsync(user);
         if (result.Succeeded)
         {
-            return RedirectToAction("ListUsers");
+            return RedirectToAction("UserList");
         }
 
         foreach (var error in result.Errors)
@@ -128,7 +128,7 @@ public class UsersController : Controller
             ModelState.AddModelError("", error.Description);
         }
 
-        return View("ListUsers");
+        return View("UserList");
 
     }
 

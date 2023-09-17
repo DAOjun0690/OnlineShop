@@ -51,7 +51,7 @@ public class Product
 
     public IList<ProductStyle> ProductStyles { get; set; }
 
-    //導覽屬性
+    // 導覽屬性
     [ForeignKey("CategoryId")]
     public Category Category { get; set; }
 }

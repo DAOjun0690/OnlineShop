@@ -1,40 +1,59 @@
-﻿@* @model OnlineShop.Models.DetailViewModel
+﻿@model OnlineShop.Models.ProductDetailViewModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>商品 詳細資料</h1>
 <p></p>
 <div>
     <div class="row">
-        <div class="col-5 mx-auto">
-            <img src="@Html.DisplayFor(model => model.imgsrc)" class="mx-auto" style="max-height:400px;" />
-        </div>
 
         <div class="col-7">
             <div class="row">
                 <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(model => model.product.Name)</p>
-                    <h3>@Html.DisplayFor(model => model.product.Name)</h3>
+                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Name)</p>
+                    <h3>@Html.DisplayFor(m => m.Name)</h3>
+                </div>
+                <div class="col">
+                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Status)</p>
+                    <h3>@Model.Status.ToString()</h3>
+                </div>
+                <div class="col">
+                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.CategoryName)</p>
+                    <h3>@Html.DisplayFor(m => m.CategoryName)</h3>
+                </div>
+            </div>
+            @* 款式 *@
+            <div class="row">
+                <div class="col">
+                    <p class="alert-light m-0">款式</p>
+                    <select asp-items="@Model.ProductStylesList" name="ProductStylesList"></select>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(model => model.product.Description)</p>
-                    <pre>@Html.DisplayFor(model => model.product.Description)</pre>
+                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Description)</p>
+                    <pre>@Html.DisplayFor(m => m.Description)</pre>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col">
-                    <p>@Html.DisplayNameFor(model => model.product.Price):</p>
-                    <h6>@Html.DisplayFor(model => model.product.Price)</h6>
+                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Promotion)</p>
+                    <pre>@Html.DisplayFor(m => m.Promotion)</pre>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <p>@Html.DisplayNameFor(m => m.Price):</p>
+                    <h6>@Html.DisplayFor(m => m.Price)</h6>
                 </div>
                 <div class="col">
-                    <p>@Html.DisplayNameFor(model => model.product.Stock):</p>
-                    <h6>@Html.DisplayFor(model => model.product.Stock)</h6>
+                    <p>@Html.DisplayNameFor(m => m.Stock):</p>
+                    <h6>@Html.DisplayFor(m => m.Stock)</h6>
                 </div>
             </div>
         </div>
@@ -44,14 +63,28 @@
 
     <div class="row">
         <div class="col">
-            <p class="alert-light m-0">@Html.DisplayNameFor(model => model.product.Content)</p>
-            @Html.Raw(Model.product.Content)
+            <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Content)</p>
+            @Html.Raw(Model.Content)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            @if (Model.ProductImage != null && Model.ProductImage.Any())
+            {
+                foreach (ProductImage image in Model.ProductImage)
+                {
+                    <div class="product-image">
+                        <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) height="142" alt="ring">
+                    </div>
+                }
+            }
         </div>
     </div>
 </div>
 
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.product.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.ProductId">Edit</a> |
     <a asp-action="Index">Back to List</a>
-</div> *@
+</div>
