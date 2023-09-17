@@ -15,7 +15,12 @@ public class ProductsController : Controller
         _context = context;
     }
 
-    // GET: Products
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cId"></param>
+    /// <returns></returns>
+    [HttpGet]
     public async Task<IActionResult> Index(int? cId)
     {
         List<DetailViewModel> dvm = new List<DetailViewModel>();
@@ -32,14 +37,19 @@ public class ProductsController : Controller
 
         foreach (var product in products)
         {
+            var image = _context.ProductImage
+                .Where(x => x.ProductId == product.Id && x.Type == ProductImageType.Detail)
+                .FirstOrDefault();
             DetailViewModel item = new DetailViewModel
             {
-                product = product,
-                //imgsrc = ViewImage(product.Image)
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Image = image,
+                Price = product.Price,
+                Stock = product.Stock,
             };
             dvm.Add(item);
         }
-        ViewBag.count = dvm.Count;
 
         return View(dvm);
     }
@@ -47,26 +57,26 @@ public class ProductsController : Controller
     // GET: Products/Details/5
     public async Task<IActionResult> Details(int? id)
     {
-        DetailViewModel dvm = new DetailViewModel();
+        //DetailViewModel dvm = new DetailViewModel();
 
-        if (id == null)
-        {
-            return NotFound();
-        }
+        //if (id == null)
+        //{
+        //    return NotFound();
+        //}
 
-        var product = await _context.Product.Include(p => p.Category)
-                                            .FirstOrDefaultAsync(m => m.Id == id);
-        if (product == null)
-        {
-            return NotFound();
-        }
-        else
-        {
-            dvm.product = product;
-            //dvm.imgsrc = ViewImage(product.Image);
-        }
+        //var product = await _context.Product.Include(p => p.Category)
+        //                                    .FirstOrDefaultAsync(m => m.Id == id);
+        //if (product == null)
+        //{
+        //    return NotFound();
+        //}
+        //else
+        //{
+        //    dvm.product = product;
+        //    //dvm.imgsrc = ViewImage(product.Image);
+        //}
 
-        return View(dvm);
+        return View();
     }
 
 

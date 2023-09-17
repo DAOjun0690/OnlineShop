@@ -15,5 +15,8 @@ namespace OnlineShop.Data
         public DbSet<Category> Category => Set<Category>();
         public DbSet<ProductStyle> ProductStyle => Set<ProductStyle>();
         public DbSet<ProductImage> ProductImage => Set<ProductImage>();
+
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderItem> OrderItem { get; set; }
     }
 }

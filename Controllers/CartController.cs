@@ -40,7 +40,7 @@ public class CartController : Controller
             Product = product,
             Amount = 1,
             SubTotal = product.Price,
-            //imageSrc = ViewImage(product.Image)
+            //imageSrc = ViewImage(product.Image) 或許可以使用picture/Download
         };
 
         // 判斷 Session 內有無購物車

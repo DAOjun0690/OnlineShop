@@ -136,7 +136,7 @@ public class ProductManagementController : Controller
         MapperConfiguration config = new MapperConfiguration(cfg =>
             cfg.CreateMap<Product, ProductIndexViewModel>());
 
-        //Using automapper
+        // Using automapper
         Mapper mapper = new Mapper(config);
         ProductIndexViewModel viewModel = mapper.Map<ProductIndexViewModel>(product);
         viewModel.ProductId = product.Id;
