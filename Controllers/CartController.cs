@@ -39,7 +39,7 @@ public class CartController : Controller
             ProductId = product.Id,
             Product = product,
             Amount = 1,
-            SubTotal = product.Price,
+            //SubTotal = product.Price,
             //imageSrc = ViewImage(product.Image) 或許可以使用picture/Download
         };
 

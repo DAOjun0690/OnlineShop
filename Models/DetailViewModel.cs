@@ -20,7 +20,9 @@ public class DetailViewModel
     /// <summary>
     /// 商品價格
     /// </summary>
-    public int Price { get; set; }
+    public int MinPrice { get; set; }
+
+    public int MaxPrice { get; set; }
 
     /// <summary>
     /// 商品庫存

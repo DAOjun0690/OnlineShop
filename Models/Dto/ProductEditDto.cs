@@ -22,14 +22,6 @@ public class ProductEditDto
     /// 商品描述
     /// </summary>
     public string Content { get; set; }
-    /// <summary>
-    /// 商品價格
-    /// </summary>
-    public int Price { get; set; }
-    /// <summary>
-    /// 商品庫存
-    /// </summary>
-    public int Stock { get; set; }
 
     public ProductStatus Status { get; set; }
 
@@ -48,5 +40,14 @@ public class ProductStyleDto
     /// 款式名稱
     /// </summary>
     public string Name { get; set; }
+
+    /// <summary>
+    /// 商品價格
+    /// </summary>
+    public int Price { get; set; }
+    /// <summary>
+    /// 商品庫存
+    /// </summary>
+    public int Stock { get; set; }
 }
 

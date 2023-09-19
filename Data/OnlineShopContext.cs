@@ -11,12 +11,14 @@ namespace OnlineShop.Data
     {
         public OnlineShopContext (DbContextOptions<OnlineShopContext> options) : base(options) { }
 
-        public DbSet<Product> Product => Set<Product>();
-        public DbSet<Category> Category => Set<Category>();
-        public DbSet<ProductStyle> ProductStyle => Set<ProductStyle>();
-        public DbSet<ProductImage> ProductImage => Set<ProductImage>();
+        public DbSet<Product> Product { get; set; }
+        public DbSet<ProductHistory> ProductHistory { get; set; }
+        public DbSet<Category> Category { get; set; }
+        public DbSet<ProductStyle> ProductStyle { get; set; }
+        public DbSet<ProductImage> ProductImage { get; set; }
 
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderItem> OrderItem { get; set; }
+
     }
 }

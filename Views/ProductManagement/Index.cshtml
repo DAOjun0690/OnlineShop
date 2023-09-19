@@ -59,10 +59,10 @@
                         @Html.DisplayFor(modelItem => item.Category.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Price)
+                        @item.ProductStyles.Min(x => x.Price) ~ @item.ProductStyles.Max(x => x.Price)
                     </td>
                     <td>
-                        @if (item.Stock > 0)
+                        @if (item.ProductStyles.Sum(x => x.Stock) > 0)
                         {
                             @Html.Raw("<span class=" + "\" badge bg-success text-white \"" + ">在庫中</span>")
                         }

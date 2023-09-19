@@ -7,5 +7,6 @@ public class Category
     /// 類別名稱
     /// </summary>
     public string Name { get; set; }
+
     public List<Product> Products { get; set; }
 }

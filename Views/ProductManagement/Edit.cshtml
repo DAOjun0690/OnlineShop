@@ -62,25 +62,6 @@
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col">
-            @* 單價 *@
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="col">
-            @* 庫存 *@
-            <div class="form-group">
-                <label asp-for="Stock" class="control-label"></label>
-                <input asp-for="Stock" class="form-control" />
-                <span asp-validation-for="Stock" class="text-danger"></span>
-            </div>
-        </div>
-    </div>
     <div class="row">
         <div class="col">
             @* 款式 *@
@@ -89,6 +70,8 @@
                 <table id="prodectStyleTable">
                     <tr>
                         <th>款式名稱</th>
+                        <th>價錢</th>
+                        <th>庫存</th>
                         <th>功能按鈕</th>
                     </tr>
                     @for (int idx = 0; idx < Model.ProductStyles.Count; idx++)
@@ -97,6 +80,12 @@
                             @Html.Hidden($"ProductStyles[{idx}].Id", Model.ProductStyles[idx].Id)
                             <td>
                                 <input type="text" name="ProductStyles[@idx].Name" value="@Model.ProductStyles[idx].Name" />
+                            </td>
+                            <td>
+                                <input type="number" name="ProductStyles[@idx].Price" value="@Model.ProductStyles[idx].Price" />
+                            </td>
+                            <td>
+                                <input type="number" name="ProductStyles[@idx].Stock" value="@Model.ProductStyles[idx].Stock" />
                             </td>
                             <td><button type="button" onclick="deleteRow(this)">刪除</button></td>
                         </tr>
@@ -173,7 +162,7 @@
                 removePlugins: ['ImageResize', 'ImageStyle', 'ImageToolbar'],
                 ckfinder: {
                     uploadUrl: '/Picture/UploadContent?productId=' + @Model.ProductId
-                                                                                                }
+                }
             })
             .catch(error => {
                 console.error(error);
@@ -185,10 +174,14 @@
         function addRow() {
             var table = document.getElementById("prodectStyleTable");
             var row = table.insertRow(-1);
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            cell1.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
-            cell2.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            cell0.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
+            cell1.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Price" />';
+            cell2.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Stock" />';
+            cell3.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
         }
 
         /**

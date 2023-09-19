@@ -10,6 +10,7 @@ using OnlineShop.Data;
 using OnlineShop.Models;
 using System;
 using System.Linq;
+using System.Xml.Linq;
 using static StackExchange.Redis.Role;
 
 namespace OnlineShop.Controllers;
@@ -82,7 +83,8 @@ public class ProductManagementController : Controller
         // 預設一頁顯示幾項
         int pageSize = 5;
         return View(await PaginatedList<Product>.CreateAsync(
-            result.Include(p => p.Category).AsNoTracking(), pageNumber ?? 1, pageSize));
+            result.Include(p => p.Category)
+                  .Include(p => p.ProductStyles).AsNoTracking(), pageNumber ?? 1, pageSize));
     }
 
 
@@ -95,13 +97,22 @@ public class ProductManagementController : Controller
     public IActionResult Create()
     {
         Product product;
+        ProductStyle style = new ProductStyle()
+        {
+            Name = "基本款",
+            Price = 0,
+            Stock = 0
+        };
+
         try
         {
+
             product = new Product()
             {
                 Name = "新項目",
                 Status = ProductStatus.Draft,
-                CategoryId = _context.Category.First().Id
+                CategoryId = _context.Category.First().Id,
+                ProductStyles = new List<ProductStyle> { style }
             };
             _context.Add(product);
             _context.SaveChanges();
@@ -192,8 +203,6 @@ public class ProductManagementController : Controller
                 model.Description = dto.Description;
                 model.Promotion = dto.Promotion;
                 model.Content = dto.Content;
-                model.Price = dto.Price;
-                model.Stock = dto.Stock;
                 model.Status = dto.Status;
                 model.CategoryId = dto.CategoryId;
                 // 更新 商品 資料
@@ -224,7 +233,9 @@ public class ProductManagementController : Controller
                         ProductStyle newProductStyle = new ProductStyle
                         {
                             ProductId = model.Id,
-                            Name = item.Name
+                            Name = item.Name,
+                            Price = item.Price,
+                            Stock = item.Stock
                         };
                         _context.ProductStyle.Add(newProductStyle);
                     }
@@ -232,8 +243,20 @@ public class ProductManagementController : Controller
                     {
                         existingProductStyle.ProductId = model.Id;
                         existingProductStyle.Name = item.Name;
+                        existingProductStyle.Price = item.Price;
+                        existingProductStyle.Stock = item.Stock;
                         _context.ProductStyle.Update(existingProductStyle);
                     }
+                }
+                // 商品款式至少要有一項，前端也要有防呆
+                if (_context.ProductStyle.Count() == 0)
+                {
+                    _context.ProductStyle.Add(new ProductStyle()
+                    {
+                        Name = "基本款",
+                        Price = 0,
+                        Stock = 0
+                    });
                 }
 
                 await _context.SaveChangesAsync();
@@ -241,7 +264,7 @@ public class ProductManagementController : Controller
             }
             catch (DbUpdateConcurrencyException)
             {
-                
+
                 if (!(_context.Product?.Any(e => e.Id == dto.ProductId)).GetValueOrDefault())
                 {
                     return NotFound();
@@ -284,9 +307,22 @@ public class ProductManagementController : Controller
         {
             return Problem("Entity set 'OnlineShopContext.Product'  is null.");
         }
-        var product = await _context.Product.FindAsync(id);
+        var product = await _context.Product.Include(p => p.ProductStyles).FirstOrDefaultAsync(p => p.Id == id);
         if (product != null)
         {
+            var history = new ProductHistory()
+            {
+                ProductId = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Promotion = product.Promotion,
+                Content = product.Content,
+                Status = product.Status,
+                DeleteTime = DateTime.UtcNow.AddHours(8)
+            };
+            _context.ProductHistory.Add(history);
+
+            _context.ProductStyle.RemoveRange(product.ProductStyles);
             _context.Product.Remove(product);
         }
 
@@ -308,7 +344,9 @@ public class ProductManagementController : Controller
             return NotFound();
         }
 
-        var product = _context.Product.Include(p => p.Category).FirstOrDefault(p => p.Id == id);
+        var product = _context.Product.Include(p => p.Category)
+                                             .Include(p => p.ProductStyles).AsNoTracking()
+                                             .FirstOrDefault(p => p.Id == id);
         if (product == null)
         {
             return NotFound();
@@ -332,8 +370,7 @@ public class ProductManagementController : Controller
         viewModel.Status = product.Status;
 
         // 商品款式
-        viewModel.ProductStylesList = new SelectList(
-            _context.ProductStyle.Where(x => x.ProductId == product.Id), "Id", "Name");
+        viewModel.ProductStylesList = product.ProductStyles.ToList();
 
         return View(viewModel);
     }

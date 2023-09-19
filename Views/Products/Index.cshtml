@@ -29,15 +29,28 @@
                 }
                 <div class="card-body">
                     <h6 class="card-title">@Html.DisplayFor(modelItem => item.ProductName)</h6>
-                    <h6 class="card-title">NT$@Html.DisplayFor(modelItem => item.Price)</h6>
+                    <div class="card-title">
+                        @if (item.MinPrice == item.MaxPrice)
+                        {
+                            <p>NT$@item.MinPrice</p>
+                        }
+                        else
+                        {
+                            <p>NT$@item.MinPrice ~ NT$@item.MaxPrice</p>
+                        }
+                    </div>
                 </div>
                 <a class="stretched-link" asp-action="Details" asp-route-id="@item.ProductId"></a>
                 <div class="card-footer btn btn-light" style="position: relative;">
                     <div class="text-center">
                         @if (item.Stock > 1)
                         {
-                            <a class="stretched-link text-dark" style="text-decoration: none;" onclick="ShowMessage()"
-                               asp-controller="Cart" asp-action="AddtoCart" asp-route-Id="@item.ProductId">加入購物車</a>
+                            @*<a class="stretched-link text-dark" style="text-decoration: none;" onclick="ShowMessage()"
+                    asp-controller="Cart" asp-action="AddtoCart" asp-route-Id="@item.ProductId">加入購物車</a> *@
+                            @* 目前跳轉至 partial view，之後這邊要變成跳轉至整頁view，點圖片才跳轉到sub view *@
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal-@item.ProductId">
+                                購買
+                            </button>
                         }
                         else
                         {
@@ -47,15 +60,31 @@
                 </div>
             </div>
         </div>
-
+        <div class="modal fade" id="myModal-@item.ProductId" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- 模態視窗的內容將由 Controller 提供 -->
+                </div>
+            </div>
+        </div>
     }
 </div>
 
-<script>
-    function ShowMessage() {
-        toastr["success"]("商品已加入購物車！");
-    }
-</script>
+@section Scripts {
+    <script>
+        function ShowMessage() {
+            toastr["success"]("商品已加入購物車！");
+        }
+
+        $(document).ready(function () {
+            $('[data-toggle="modal"]').click(function () {
+                var id = $(this).data('target').split('-')[1]  // 從 data-target 屬性中獲取 id
+                console.log("id=" + id);
+                $('#myModal-' + id + ' .modal-content').load('/Products/SubDetails/' + id);
+            });
+        });
+    </script>
+}
 
 <style>
     .row {

@@ -26,14 +26,6 @@ public class ProductDetailViewModel
     /// 商品描述
     /// </summary>
     public string Content { get; set; }
-    /// <summary>
-    /// 商品價格
-    /// </summary>
-    public int Price { get; set; }
-    /// <summary>
-    /// 商品庫存
-    /// </summary>
-    public int Stock { get; set; }
 
     public IList<ProductImage> ProductImage { get; set; }
 
@@ -41,5 +33,5 @@ public class ProductDetailViewModel
 
     public string CategoryName { get; set; }
 
-    public SelectList ProductStylesList { get; set; }
+    public IList<ProductStyle> ProductStylesList { get; set; }
 }

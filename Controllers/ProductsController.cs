@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
@@ -32,7 +33,9 @@ public class ProductsController : Controller
         }
         else
         {
-            products = await _context.Product.Include(p => p.Category).ToListAsync();
+            products = await _context.Product
+                                .Include(p => p.Category)
+                                .Include(p => p.ProductStyles).AsNoTracking().ToListAsync();
         }
 
         foreach (var product in products)
@@ -40,18 +43,63 @@ public class ProductsController : Controller
             var image = _context.ProductImage
                 .Where(x => x.ProductId == product.Id && x.Type == ProductImageType.Detail)
                 .FirstOrDefault();
+
             DetailViewModel item = new DetailViewModel
             {
                 ProductId = product.Id,
                 ProductName = product.Name,
                 Image = image,
-                Price = product.Price,
-                Stock = product.Stock,
+                MinPrice = product.ProductStyles.Min(ps => ps.Price),
+                MaxPrice = product.ProductStyles.Max(ps => ps.Price),
+                Stock = product.ProductStyles.Sum(ps => ps.Stock),
             };
             dvm.Add(item);
         }
 
         return View(dvm);
+    }
+
+    /// <summary>
+    /// 簡易 購買頁面
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task<IActionResult> SubDetails(int? id)
+    {
+        if (id == null || _context.Product == null)
+        {
+            return NotFound();
+        }
+
+        var product = _context.Product.Include(p => p.Category)
+                                             .Include(p => p.ProductStyles).AsNoTracking()
+                                             .FirstOrDefault(p => p.Id == id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        MapperConfiguration config = new MapperConfiguration(cfg =>
+            cfg.CreateMap<Product, ProductDetailViewModel>());
+
+        //Using automapper
+        Mapper mapper = new Mapper(config);
+        ProductDetailViewModel viewModel = mapper.Map<ProductDetailViewModel>(product);
+        viewModel.ProductId = product.Id;
+        viewModel.CategoryName = product.Category.Name;
+
+        // 再從db撈 當前 productId的 detail圖片
+        var imageList =
+            _context.ProductImage.Where(x => x.ProductId == product.Id && x.Type == ProductImageType.Detail);
+        viewModel.ProductImage = imageList.ToList();
+
+        // 商品狀態
+        viewModel.Status = product.Status;
+
+        // 商品款式
+        viewModel.ProductStylesList = product.ProductStyles.ToList();
+
+        return PartialView(viewModel);
     }
 
     // GET: Products/Details/5
