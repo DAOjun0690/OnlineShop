@@ -25,8 +25,9 @@
             <table class="table">
                 <thead class="table-borderless">
                     <tr>
-                        <th></th>
+                        @* <th></th> *@
                         <th>商品名稱</th>
+                        <th>款式</th>
                         <th>單價</th>
                         <th>數量</th>
                         <th>小計</th>
@@ -37,12 +38,16 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="text-center"><img src="@Html.DisplayFor(modelItem => item.imageSrc)" height="30" /></td>
+                            @* 顯示縮圖 *@
+                            @* <td class="text-center"><img src="@Html.DisplayFor(modelItem => item.imageSrc)" height="30" /></td> *@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Product.Name)
                             </td>
                             <td>
-                                @* @Html.DisplayFor(modelItem => item.Product.Price) *@
+                                @Html.DisplayFor(modelItem => item.ProductStyle.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProductStyle.Price)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Amount)
@@ -51,7 +56,7 @@
                                 @Html.DisplayFor(modelItem => item.SubTotal)
                             </td>
                             <td>
-                                <a class="btn btn-sm btn-danger" asp-action="RemoveItem" asp-route-Id="@item.Product.Id">Delete</a>
+                                <a class="btn btn-sm btn-danger" asp-action="RemoveItem" asp-route-Id="@item.Product.Id" asp-route-ProductStyleId="@item.ProductStyle.Id">刪除</a>
                             </td>
                         </tr>
                     }

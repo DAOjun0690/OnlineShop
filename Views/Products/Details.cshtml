@@ -1,88 +1,154 @@
-﻿@* @model OnlineShop.Models.DetailViewModel
+﻿@model OnlineShop.Models.ProductDetailViewModel
 
-@{
-    ViewData["Title"] = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
+<h1>商品 詳細資料</h1>
 <p></p>
 
-<div>
+<form id="DetailForm">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="ProductId" />
+
+    @if (Model.ProductImage != null && Model.ProductImage.Any())
+    {
+        foreach (ProductImage image in Model.ProductImage)
+        {
+            <div class="product-image">
+                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) height="142" alt="ring">
+                <i class="fas fa-times-circle" onclick="deletePicture(this, '@image.Guid')"></i>
+            </div>
+        }
+    }
+
     <div class="row">
-        <div class="col-5 mx-auto">
-            <img src="@Html.DisplayFor(model => model.imgsrc)" class="mx-auto" style="max-height:400px;" />
+        <div class="col-8">
+            <div class="row">
+                <div class="col-8">
+                    @* 商品名稱 *@
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" readonly class="form-control" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    @* 類別 *@
+                    <div class="form-group">
+                        <label class="control-label">Category</label>
+                        <input asp-for="CategoryName" readonly class="form-control" />
+                    </div>
+                </div>
+            </div>
+            @* 簡介 *@
+            <div class="row">
+                <div class="col">
+                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Description)</p>
+                    <pre>@Html.DisplayFor(m => m.Description)</pre>
+                </div>
+            </div>
+            @* 促銷 *@
+            <div class="row">
+                <div class="col">
+                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Promotion)</p>
+                    <pre>@Html.DisplayFor(m => m.Promotion)</pre>
+                </div>
+            </div>
+            @* 價錢 *@
+            <div class="row">
+                <div class="col">
+                    <p>價錢:</p>
+                    <h6 id="price"></h6>
+                </div>
+            </div>
+
+            @* 款式 *@
+            <div class="row">
+                <div class="col">
+                    <p class="alert-light m-0">款式</p>
+                    <select id="productStyles">
+                        @foreach (var item in Model.ProductStylesList)
+                        {
+                            <option value="@item.Id" data-price="@item.Price" data-stock="@item.Stock">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
         </div>
-
-        <div class="col-7">
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(model => model.product.Name)</p>
-                    <h3>@Html.DisplayFor(model => model.product.Name)</h3>
-                </div>
+        <div class="row">
+            <div class="col">
+                <p>庫存:</p>
+                <h6 id="stock"></h6>
             </div>
-
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(model => model.product.Description)</p>
-                    <pre>@Html.DisplayFor(model => model.product.Description)</pre>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <p>@Html.DisplayNameFor(model => model.product.Price):</p>
-                    <h6>@Html.DisplayFor(model => model.product.Price)</h6>
-                </div>
-                <div class="col">
-                    <p>@Html.DisplayNameFor(model => model.product.Stock):</p>
-                    <h6>@Html.DisplayFor(model => model.product.Stock)</h6>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label class="control-label">購買數量:</label>
+                    <input type="number" id="Amount" class="form-control" value="0" />
                 </div>
             </div>
         </div>
     </div>
-
-    <p></p>
-
-    <ul id="myTab" class="nav nav-tabs d-flex">
-        <li class="nav-link text-center flex-fill ">
-            <a class="text-dark" href="#Content" data-toggle="tab">詳細內容</a>
-        </li>
-    </ul>
-    <div id="myTabContent" class="tab-content">
-
-        <!--詳細資料-->
-        <div class="tab-pane fade show active" id="Content">
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(model => model.product.Content)</p>
-                    @Html.Raw(Model.product.Content)
-                </div>
-            </div>
+    <div class="row">
+        <div class="col">
+            <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Content)</p>
+            @Html.Raw(Model.Content)
         </div>
     </div>
 
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <input type="submit" value="加入購物車" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
 
-
-
-</div>
-
-<p></p>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-asp-controller="ProductManagement" asp-action="Index" class="btn btn-default">返回上一頁</a>
 </div>
 
-<script>
-    $(document).ready(function () {
-        $("#myTab a").click(function (e) {
-            e.preventDefault();
-            $(this).tab("show");
+@section Scripts {
+    @{
+        // 前端驗證
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function ShowMessage() {
+            toastr["success"]("商品已加入購物車！");
+        }
+
+        $(document).ready(function () {
+            // 綁定 款式異動事件
+            $('#productStyles').change(function () {
+                let price = $('option:selected', this).attr('data-price');
+                $('#price').text(price);
+
+                let stock = $('option:selected', this).attr('data-stock');
+                $('#stock').text(stock);
+            }).change();
+
+            $('#DetailForm').on('submit', function (e) {
+                e.preventDefault();
+
+                let productId = '@Model.ProductId';
+                let productStyleId = $("#productStyles").val();
+                let amount = $("#Amount").val();
+
+                let param = {
+                    ProductId: productId,
+                    ProductStyleId: productStyleId,
+                    Amount: amount
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Cart/AddtoCart',
+                    data: param,
+                    success: function (data) {
+                        // 彈出 加入購物車 訊息
+                        ShowMessage();
+                    }
+                });
+            });
         });
-    });
-
-    $(".nav .nav-link").on("click", function () {
-        $(".nav").find("li.active").removeClass("active");
-        $(this).parent('li').addClass('active');
-    });
-</script>
-
- *@
+    </script>
+}

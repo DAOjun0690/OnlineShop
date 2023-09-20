@@ -1,31 +1,53 @@
 ﻿@model OnlineShop.Models.ProductDetailViewModel
 
-<h1>商品 詳細資料</h1>
-<p></p>
-<div>
-    <div class="row">
+<form id="DetailForm">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="ProductId" />
 
-        <div class="col-7">
+    @if (Model.ProductImage != null && Model.ProductImage.Any())
+    {
+        foreach (ProductImage image in Model.ProductImage)
+        {
+            <div class="product-image">
+                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) height="142" alt="ring">
+                <i class="fas fa-times-circle" onclick="deletePicture(this, '@image.Guid')"></i>
+            </div>
+        }
+    }
+
+    <div class="row">
+        <div class="col-8">
             <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Name)</p>
-                    <h3>@Html.DisplayFor(m => m.Name)</h3>
+                <div class="col-8">
+                    @* 商品名稱 *@
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" readonly class="form-control" />
+                    </div>
                 </div>
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Status)</p>
-                    <h3>@Model.Status.ToString()</h3>
-                </div>
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.CategoryName)</p>
-                    <h3>@Html.DisplayFor(m => m.CategoryName)</h3>
+                <div class="col-4">
+                    @* 類別 *@
+                    <div class="form-group">
+                        <label class="control-label">Category</label>
+                        <input asp-for="CategoryName" readonly class="form-control" />
+                    </div>
                 </div>
             </div>
+            @* 促銷 *@
+            <div class="row">
+                <div class="col">
+                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Promotion)</p>
+                    <pre>@Html.DisplayFor(m => m.Promotion)</pre>
+                </div>
+            </div>
+            @* 價錢 *@
             <div class="row">
                 <div class="col">
                     <p>價錢:</p>
                     <h6 id="price"></h6>
                 </div>
             </div>
+
             @* 款式 *@
             <div class="row">
                 <div class="col">
@@ -38,55 +60,40 @@
                     </select>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <p>庫存:</p>
-                    <h6 id="stock"></h6id>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Description)</p>
-                    <pre>@Html.DisplayFor(m => m.Description)</pre>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Promotion)</p>
-                    <pre>@Html.DisplayFor(m => m.Promotion)</pre>
-                </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p>庫存:</p>
+                <h6 id="stock"></h6>
             </div>
         </div>
-    </div>
-
-    <hr />
-
-    <div class="row">
-        <div class="col">
-            <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Content)</p>
-            @Html.Raw(Model.Content)
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label class="control-label">購買數量:</label>
+                    <input type="number" id="Amount" class="form-control" value="0" />
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col">
-            @if (Model.ProductImage != null && Model.ProductImage.Any())
-            {
-                foreach (ProductImage image in Model.ProductImage)
-                {
-                    <div class="product-image">
-                        <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) height="142" alt="ring">
-                    </div>
-                }
-            }
+            <div class="form-group">
+                <input type="submit" value="加入購物車" class="btn btn-primary" />
+            </div>
         </div>
     </div>
-</div>
+</form>
+
 
 <script>
+    function ShowMessage() {
+        toastr["success"]("商品已加入購物車！");
+    }
+
     $(document).ready(function () {
-        // Trigger the event
+        // 綁定 款式異動事件
         $('#productStyles').change(function () {
             let price = $('option:selected', this).attr('data-price');
             $('#price').text(price);
@@ -94,5 +101,29 @@
             let stock = $('option:selected', this).attr('data-stock');
             $('#stock').text(stock);
         }).change();
+
+        $('#DetailForm').on('submit', function (e) {
+            e.preventDefault();
+
+            let productId = '@Model.ProductId';
+            let productStyleId = $("#productStyles").val();
+            let amount = $("#Amount").val();
+
+            let param = {
+                ProductId: productId,
+                ProductStyleId: productStyleId,
+                Amount: amount
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/Cart/AddtoCart',
+                data: param,
+                success: function (data) {
+                    // 彈出 加入購物車 訊息
+                    ShowMessage();
+                }
+            });
+        });
     });
 </script>

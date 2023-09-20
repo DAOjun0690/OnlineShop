@@ -75,7 +75,7 @@ public class OrderController : Controller
         switch (order.UserId)
         {
             // 如果訂單沒有使用者Id，表示是未登入者所提繳的訂單
-            case null:
+            case "":
                 // 如果當前使用者也沒有登入，則可以查閱
                 if (user == null)
                 {
@@ -254,6 +254,7 @@ public class OrderController : Controller
         {
             CartItem item = new CartItem(orderitem);
             item.Product = _context.Product.Single(x => x.Id == orderitem.ProductId);
+            item.ProductStyle = _context.ProductStyle.Single(x => x.Id == orderitem.ProductStyleId);
             orderItems.Add(item);
         }
 

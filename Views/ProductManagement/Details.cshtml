@@ -45,7 +45,7 @@
             <div class="row">
                 <div class="col">
                     <p>庫存:</p>
-                    <h6 id="stock"></h6id>
+                    <h6 id="stock"></h6>
                 </div>
             </div>
             <div class="row">
@@ -97,7 +97,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Trigger the event
+            // 綁定 款式異動事件
             $('#productStyles').change(function () {
                 let price = $('option:selected', this).attr('data-price');
                 $('#price').text(price);

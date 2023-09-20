@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Core.Types;
 using OnlineShop.Data;
 using OnlineShop.Models;
-using static NuGet.Packaging.PackagingConstants;
 
 namespace OnlineShop.Controllers;
 

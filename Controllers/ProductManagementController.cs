@@ -1,17 +1,10 @@
 ﻿using AutoMapper;
-using Humanizer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Core.Types;
 using OnlineShop.Data;
 using OnlineShop.Models;
-using System;
-using System.Linq;
-using System.Xml.Linq;
-using static StackExchange.Redis.Role;
 
 namespace OnlineShop.Controllers;
 

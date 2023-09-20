@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
 using OnlineShop.Helpers;
 using OnlineShop.Models;
@@ -20,7 +21,8 @@ public class CartController : Controller
 
         if (CartItems != null)
         {
-            ViewBag.Total = CartItems.Sum(m => m.SubTotal); // 計算商品總額
+            // 計算商品總額
+            ViewBag.Total = CartItems.Sum(m => m.SubTotal);
         }
         else
         {
@@ -30,18 +32,30 @@ public class CartController : Controller
         return View(CartItems);
     }
 
-    public IActionResult AddtoCart(int id)
+    /// <summary>
+    /// 加入購物車
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    public IActionResult AddtoCart(ShopCartDto dto)
     {
+        int id = dto.ProductId;
+
         // 取得商品資料
-        var product = _context.Product.Single(x => x.Id.Equals(id));
-        CartItem item = new CartItem()
+        var product = _context.Product
+            .Include(p => p.ProductStyles).AsNoTracking()
+            .Single(x => x.Id.Equals(id));
+        if (product == null)
         {
-            ProductId = product.Id,
-            Product = product,
-            Amount = 1,
-            //SubTotal = product.Price,
-            //imageSrc = ViewImage(product.Image) 或許可以使用picture/Download
-        };
+            return NoContent();
+        }
+        var productStyle =
+            product.ProductStyles.SingleOrDefault(x => x.Id == dto.ProductStyleId);
+        if (productStyle == null)
+        {
+            return NoContent();
+        }
+        CartItem item = CreateCartItem(product, productStyle, dto.Amount);
 
         // 判斷 Session 內有無購物車
         if (SessionHelper.GetObjectFromJson<List<CartItem>>(HttpContext.Session, "cart") == null)
@@ -57,8 +71,8 @@ public class CartController : Controller
         {
             //如果已存在購物車: 檢查有無相同的商品，有的話只調整數量
             List<CartItem> cart = SessionHelper.GetObjectFromJson<List<CartItem>>(HttpContext.Session, "cart");
-
-            int index = cart.FindIndex(m => m.Product.Id.Equals(id)); // FindIndex查詢位置
+            // FindIndex查詢位置
+            int index = cart.FindIndex(m => m.Product.Id.Equals(id) && m.ProductStyleId == dto.ProductStyleId);
 
             if (index != -1)
             {
@@ -75,12 +89,12 @@ public class CartController : Controller
         return NoContent();
     }
 
-    public IActionResult RemoveItem(int id)
+    public IActionResult RemoveItem(int id, int ProductStyleId)
     {
         // 向 Session 取得商品列表
         List<CartItem> cart = SessionHelper.GetObjectFromJson<List<CartItem>>(HttpContext.Session, "cart");
         // 用FindIndex查詢目標在List裡的位置
-        int index = cart.FindIndex(m => m.Product.Id.Equals(id)); 
+        int index = cart.FindIndex(m => m.Product.Id.Equals(id) && m.ProductStyleId == ProductStyleId);
         cart.RemoveAt(index);
 
         if (cart.Count < 1)
@@ -99,5 +113,19 @@ public class CartController : Controller
     {
         string base64String = Convert.ToBase64String(arrayImage, 0, arrayImage.Length);
         return "data:image/png;base64," + base64String;
+    }
+
+    private CartItem CreateCartItem(Product product, ProductStyle productStyle, int amount)
+    {
+        return new CartItem()
+        {
+            Product = product,
+            ProductStyle = productStyle,
+            ProductId = product.Id,
+            ProductStyleId = productStyle.Id,
+            Amount = amount,
+            SubTotal = productStyle.Price * amount,
+            //imageSrc = ViewImage(product.Image) 或許可以使用picture/Download
+        };
     }
 }

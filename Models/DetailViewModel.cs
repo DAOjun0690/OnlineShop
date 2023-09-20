@@ -28,4 +28,6 @@ public class DetailViewModel
     /// 商品庫存
     /// </summary>
     public int Stock { get; set; }
+
+    public ProductStatus Status { get; set; }
 }

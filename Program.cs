@@ -80,11 +80,8 @@ app.UseEndpoints(endpoints =>
 
 // seed data 要加入 category 跟 admin管理者
 // 先架一個基本網站上去 先弄domain chinchin.studio
-// 每個product 裡面要有 款式的分類、img 路徑、訂單
-
-// Update-Database -Context OnlineShopContext
 
 // 初始化資料
-SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider);
+await SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider);
 
 app.Run();
