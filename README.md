@@ -6,7 +6,6 @@ Migration
 UI 兔子化
 
 ### 已知問題
-seed data 新增default user
 
 ### 待確認
 款式與價錢綁再一起 要確認

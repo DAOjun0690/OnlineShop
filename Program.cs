@@ -18,12 +18,12 @@ builder.Services
     .AddDbContext<OnlineShopUserContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")));
 
-// 它會將程式碼從使用記憶體內部快取變更為 Azure 中的 Redis 快取，而且會使用 AZURE_REDIS_CONNECTIONSTRING 先前的 。
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration["AZURE_REDIS_CONNECTIONSTRING"];
-    options.InstanceName = "SampleInstance";
-});
+//// 它會將程式碼從使用記憶體內部快取變更為 Azure 中的 Redis 快取，而且會使用 AZURE_REDIS_CONNECTIONSTRING 先前的 。
+//builder.Services.AddStackExchangeRedisCache(options =>
+//{
+//    options.Configuration = builder.Configuration["AZURE_REDIS_CONNECTIONSTRING"];
+//    options.InstanceName = "SampleInstance";
+//});
 #endif
 
 // 啟用 Session
@@ -77,9 +77,6 @@ app.UseEndpoints(endpoints =>
 
     endpoints.MapRazorPages();
 });
-
-// seed data 要加入 category 跟 admin管理者
-// 先架一個基本網站上去 先弄domain chinchin.studio
 
 // 初始化資料
 await SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider);
