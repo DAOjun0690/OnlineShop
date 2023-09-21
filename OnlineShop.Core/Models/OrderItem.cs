@@ -1,4 +1,6 @@
-﻿namespace OnlineShop.Core.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace OnlineShop.Core.Models;
 
 public class OrderItem
 {
@@ -24,5 +26,7 @@ public class CartItem : OrderItem
 
     public Product Product { get; set; }
     public ProductStyle ProductStyle { get; set; }
+
+    [MaxLength(200)]
     public string imageSrc { get; set; }
 }

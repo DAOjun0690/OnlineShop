@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OnlineShop.Core.Models;
@@ -6,7 +7,7 @@ using OnlineShop.Core.ViewModel;
 
 namespace OnlineShop.Controllers;
 
-//[Authorize(Roles = "Administrator")]
+[Authorize(Roles = "Administrator")]
 public class UsersController : Controller
 {
     private readonly UserManager<OnlineShopUser> _userManager;

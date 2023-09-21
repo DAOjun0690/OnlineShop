@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace OnlineShop.Core.Models;
 
@@ -8,6 +9,7 @@ public class OnlineShopUser : IdentityUser
     /// <summary>
     /// 名稱
     /// </summary>
+    [MaxLength(200)]
     public string Name { get; set; }
     /// <summary>
     /// 生日

@@ -13,6 +13,7 @@ public class ProductImage
     public Guid Guid { get; set; }
     public int ProductId { get; set; }
     public int Sequence { get; set; }
+    [MaxLength(500)]
     public string FileName { get; set; }
     public ProductImageType Type { get; set; }
 

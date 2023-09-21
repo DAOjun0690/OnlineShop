@@ -11,12 +11,13 @@ builder.Services
         options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")))
     .AddDbContext<OnlineShopUserContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")));
+
 #elif RELEASE
 builder.Services
     .AddDbContext<OnlineShopContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")))
+        options.UseSqlite(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")))
     .AddDbContext<OnlineShopUserContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")));
+        options.UseSqlite(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")));
 
 //// 它會將程式碼從使用記憶體內部快取變更為 Azure 中的 Redis 快取，而且會使用 AZURE_REDIS_CONNECTIONSTRING 先前的 。
 //builder.Services.AddStackExchangeRedisCache(options =>
@@ -79,6 +80,6 @@ app.UseEndpoints(endpoints =>
 });
 
 // 初始化資料
-await SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider);
+await SeedData.SeedDatabase(app.Services.CreateAsyncScope().ServiceProvider);
 
 app.Run();

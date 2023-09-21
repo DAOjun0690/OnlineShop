@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineShop.Core.Models;
 
@@ -15,6 +16,7 @@ public class ProductStyle
     /// <summary>
     /// 款式名稱
     /// </summary>
+    [MaxLength(200)]
     public string Name { get; set; } = string.Empty;
 
     /// <summary>

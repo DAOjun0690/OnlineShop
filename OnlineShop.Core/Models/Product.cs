@@ -10,18 +10,22 @@ public class Product
     /// 商品名稱
     /// </summary>
     [Required]
+    [MaxLength(200)]
     public string Name { get; set; }
     /// <summary>
     /// 商品簡介
     /// </summary>
+    [MaxLength(5000)]
     public string Description { get; set; } = string.Empty;
     /// <summary>
     /// 商品促銷
     /// </summary>
+    [MaxLength(5000)]
     public string Promotion { get; set; } = string.Empty;
     /// <summary>
     /// 商品描述
     /// </summary>
+    [MaxLength(5000)]
     public string Content { get; set; } = string.Empty;
     /// <summary>
     /// 商品圖片

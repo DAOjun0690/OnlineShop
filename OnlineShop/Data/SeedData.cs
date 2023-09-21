@@ -12,6 +12,10 @@ public static class SeedData
     public static async Task SeedDatabase(IServiceProvider serviceProvider)
     {
         var context = serviceProvider.GetRequiredService<OnlineShopContext>();
+        var contextUser = serviceProvider.GetRequiredService<OnlineShopUserContext>();
+        await context.Database.MigrateAsync();
+        await contextUser.Database.MigrateAsync();
+
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<OnlineShopUser>>();
         var userStore = serviceProvider.GetRequiredService<IUserStore<OnlineShopUser>>();
@@ -50,7 +54,6 @@ public static class SeedData
             }
         }
 
-        context.Database.Migrate();
         // 檢查 分類 是否有資料
         if (!context.Category.Any())
         {

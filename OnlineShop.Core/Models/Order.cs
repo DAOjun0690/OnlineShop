@@ -16,11 +16,13 @@ public class Order
     /// <summary>
     /// 付款者ID
     /// </summary>
+    [MaxLength(200)]
     public string UserId { get; set; } = string.Empty;
 
     /// <summary>
     /// 付款者帳號
     /// </summary>
+    [MaxLength(200)]
     public string UserName { get; set; } = string.Empty;
     public int Total { get; set; }
 
@@ -29,18 +31,21 @@ public class Order
     /// 收貨者姓名
     /// </summary>
     [Required]
+    [MaxLength(200)]
     public string ReceiverName { get; set; }
 
     /// <summary>
     /// 收貨者地址
     /// </summary>
     [Required]
+    [MaxLength(2000)]
     public string ReceiverAdress { get; set; }
 
     /// <summary>
     /// 收貨者電話
     /// </summary>
     [Required]
+    [MaxLength(200)]
     public string ReceiverPhone { get; set; }
 
     /// <summary>

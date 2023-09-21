@@ -7,10 +7,11 @@ using OnlineShop.Core.Dto;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineShop.Controllers;
 
-//[Authorize(Roles = "Administrator")]
+[Authorize(Roles = "Administrator")]
 public class ProductManagementController : Controller
 {
     private readonly OnlineShopContext _context;
