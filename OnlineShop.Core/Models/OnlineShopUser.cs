@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace OnlineShop.Models;
+namespace OnlineShop.Core.Models;
 
 // Add profile data for application users by adding properties to the OnlineShopUser class
 public class OnlineShopUser : IdentityUser

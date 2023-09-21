@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using OnlineShop.Models;
+using OnlineShop.Core.Models;
 
 namespace OnlineShop.Areas.Identity.Pages.Account
 {
@@ -67,6 +67,7 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
+            [Display(Name = "帳號")]
             public string Email { get; set; }
 
             /// <summary>
@@ -75,6 +76,7 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
+            [Display(Name = "密碼")]
             public string Password { get; set; }
 
             /// <summary>

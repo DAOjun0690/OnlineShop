@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OnlineShop.Models;
+using OnlineShop.Core.Models;
+using OnlineShop.Core.ViewModel;
 
 namespace OnlineShop.Controllers;
 
@@ -17,6 +18,10 @@ public class UsersController : Controller
         _roleManager = roleManager;
     }
 
+    /// <summary>
+    /// 角色列表
+    /// </summary>
+    /// <returns></returns>
     public IActionResult RoleList()
     {
         var roles = _roleManager.Roles;

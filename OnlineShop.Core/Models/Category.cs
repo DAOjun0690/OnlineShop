@@ -1,4 +1,4 @@
-﻿namespace OnlineShop.Models;
+﻿namespace OnlineShop.Core.Models;
 
 public class Category
 {

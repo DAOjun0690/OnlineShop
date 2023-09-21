@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OnlineShop.Models;
+namespace OnlineShop.Core.Models;
 
 public class ProductStyle
 {

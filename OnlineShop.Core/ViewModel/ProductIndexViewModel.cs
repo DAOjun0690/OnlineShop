@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using OnlineShop.Core.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace OnlineShop.Models;
+namespace OnlineShop.Core.ViewModel;
 
 /// <summary>
-/// 用於 商品 詳細資料的 View Model
+/// 用於 商品 編輯的 View Model
 /// </summary>
-public class ProductDetailViewModel
+public class ProductIndexViewModel
 {
     public int ProductId { get; set; }
 
@@ -31,7 +32,11 @@ public class ProductDetailViewModel
 
     public ProductStatus Status { get; set; }
 
-    public string CategoryName { get; set; }
+    public SelectList Statuses { get; set; }
 
-    public IList<ProductStyle> ProductStylesList { get; set; }
+    public int CategoryId { get; set; }
+
+    public SelectList Categories { get; set; }
+
+    public IList<ProductStyle> ProductStyles { get; set; }
 }

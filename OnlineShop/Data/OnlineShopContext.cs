@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using OnlineShop.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineShop.Core.Models;
 
 namespace OnlineShop.Data
 {
     public class OnlineShopContext : DbContext
     {
-        public OnlineShopContext (DbContextOptions<OnlineShopContext> options) : base(options) { }
+        /// <summary>
+        /// 建構子
+        /// </summary>
+        /// <param name="options"></param>
+        public OnlineShopContext(DbContextOptions<OnlineShopContext> options) : base(options) { }
 
         public DbSet<Product> Product { get; set; }
         public DbSet<ProductHistory> ProductHistory { get; set; }

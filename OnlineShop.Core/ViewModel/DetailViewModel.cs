@@ -1,4 +1,6 @@
-﻿namespace OnlineShop.Models;
+﻿using OnlineShop.Core.Models;
+
+namespace OnlineShop.Core.ViewModel;
 
 /// <summary>
 /// 使用者 前台顯示 list view model

@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OnlineShop.Core.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace OnlineShop.Models;
+namespace OnlineShop.Core.Dto;
 
 public class ProductEditDto
 {

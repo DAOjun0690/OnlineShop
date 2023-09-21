@@ -1,4 +1,4 @@
-﻿namespace OnlineShop.Models;
+﻿namespace OnlineShop.Core.Dto;
 
 public class ShopCartDto
 {

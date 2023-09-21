@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using OnlineShop.Data;
-using OnlineShop.Models;
+using OnlineShop.Core.Models;
 
 namespace OnlineShop.Controllers;
 

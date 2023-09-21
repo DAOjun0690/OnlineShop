@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OnlineShop.Models;
+namespace OnlineShop.Core.Models;
 
 /// <summary>
 /// 產品 圖片

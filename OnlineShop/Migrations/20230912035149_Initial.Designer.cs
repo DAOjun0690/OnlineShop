@@ -24,7 +24,7 @@ namespace OnlineShop.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("OnlineShop.Models.Category", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace OnlineShop.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.Product", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,7 +84,7 @@ namespace OnlineShop.Migrations
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.ProductImage", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.ProductImage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -115,7 +115,7 @@ namespace OnlineShop.Migrations
                     b.ToTable("ProductImage");
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.ProductStyle", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.ProductStyle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -137,9 +137,9 @@ namespace OnlineShop.Migrations
                     b.ToTable("ProductStyle");
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.Product", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.Product", b =>
                 {
-                    b.HasOne("OnlineShop.Models.Category", "Category")
+                    b.HasOne("OnlineShop.Core.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -148,9 +148,9 @@ namespace OnlineShop.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.ProductImage", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.ProductImage", b =>
                 {
-                    b.HasOne("OnlineShop.Models.Product", "Product")
+                    b.HasOne("OnlineShop.Core.Models.Product", "Product")
                         .WithMany("Image")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -159,9 +159,9 @@ namespace OnlineShop.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.ProductStyle", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.ProductStyle", b =>
                 {
-                    b.HasOne("OnlineShop.Models.Product", "Products")
+                    b.HasOne("OnlineShop.Core.Models.Product", "Products")
                         .WithMany("ProductStyles")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -170,12 +170,12 @@ namespace OnlineShop.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.Category", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.Product", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.Product", b =>
                 {
                     b.Navigation("Image");
 

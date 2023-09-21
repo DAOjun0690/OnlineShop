@@ -159,7 +159,7 @@ namespace OnlineShop.Migrations.OnlineShopUser
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("OnlineShop.Models.OnlineShopUser", b =>
+            modelBuilder.Entity("OnlineShop.Core.Models.OnlineShopUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -248,7 +248,7 @@ namespace OnlineShop.Migrations.OnlineShopUser
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("OnlineShop.Models.OnlineShopUser", null)
+                    b.HasOne("OnlineShop.Core.Models.OnlineShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -257,7 +257,7 @@ namespace OnlineShop.Migrations.OnlineShopUser
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("OnlineShop.Models.OnlineShopUser", null)
+                    b.HasOne("OnlineShop.Core.Models.OnlineShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -272,7 +272,7 @@ namespace OnlineShop.Migrations.OnlineShopUser
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineShop.Models.OnlineShopUser", null)
+                    b.HasOne("OnlineShop.Core.Models.OnlineShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -281,7 +281,7 @@ namespace OnlineShop.Migrations.OnlineShopUser
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("OnlineShop.Models.OnlineShopUser", null)
+                    b.HasOne("OnlineShop.Core.Models.OnlineShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

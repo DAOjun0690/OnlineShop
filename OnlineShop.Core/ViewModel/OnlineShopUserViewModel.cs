@@ -1,4 +1,6 @@
-﻿namespace OnlineShop.Models;
+﻿using OnlineShop.Core.Models;
+
+namespace OnlineShop.Core.ViewModel;
 
 public class OnlineShopUserViewModel
 {

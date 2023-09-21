@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using OnlineShop.Models;
+using OnlineShop.Core.Models;
 
 namespace OnlineShop.Areas.Identity.Pages.Account
 {

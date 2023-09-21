@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
 using OnlineShop.Helpers;
-using OnlineShop.Models;
+using OnlineShop.Core.Models;
+using OnlineShop.Core.ViewModel;
 
 namespace OnlineShop.Controllers;
 

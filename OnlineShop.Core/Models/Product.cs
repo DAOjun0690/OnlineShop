@@ -1,15 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OnlineShop.Models;
+namespace OnlineShop.Core.Models;
 
-
-/// <summary>
-/// 單純記錄刪除歷史
-/// </summary>
-public class ProductHistory
+public class Product
 {
     public int Id { get; set; }
-    public int ProductId { get; set; }
     /// <summary>
     /// 商品名稱
     /// </summary>
@@ -27,6 +23,10 @@ public class ProductHistory
     /// 商品描述
     /// </summary>
     public string Content { get; set; } = string.Empty;
+    /// <summary>
+    /// 商品圖片
+    /// </summary>
+    public IList<ProductImage> Image { get; set; }
 
     public ProductStatus Status { get; set; }
 
@@ -34,8 +34,31 @@ public class ProductHistory
     /// 類別 (Foreign Key)
     /// </summary>
     public int CategoryId { get; set; }
+    // 導覽屬性
+    [ForeignKey("CategoryId")]
+    public Category Category { get; set; }
+
     /// <summary>
-    /// 刪除日期
+    /// 商品款式 延遲加載
     /// </summary>
-    public DateTimeOffset DeleteTime { get; set; }
+    public virtual ICollection<ProductStyle> ProductStyles { get; set; }
+}
+
+/// <summary>
+/// 商品狀態
+/// </summary>
+public enum ProductStatus
+{
+    /// <summary>
+    /// 草稿
+    /// </summary>
+    Draft = 1,
+    /// <summary>
+    /// 絕讚販售中
+    /// </summary>
+    Active = 2,
+    /// <summary>
+    /// 已售完
+    /// </summary>
+    Sold = 3
 }
