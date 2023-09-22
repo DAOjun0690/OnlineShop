@@ -9,15 +9,21 @@
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <button id="info-tab" class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#info-area"
-                role="tab" aria-controls="info-area" aria-selected="true">基本資訊</button>
+                role="tab" aria-controls="info-area" aria-selected="true">
+            基本資訊
+        </button>
     </li>
     <li class="nav-item">
         <button id="content-tab" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#content-area"
-                role="tab" aria-controls="content-area" aria-selected="false">內容</button>
+                role="tab" aria-controls="content-area" aria-selected="false">
+            詳細內容
+        </button>
     </li>
     <li class="nav-item">
         <button id="image-tab" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#image-area"
-                role="tab" aria-controls="image-area" aria-selected="false">圖片</button>
+                role="tab" aria-controls="image-area" aria-selected="false">
+            圖片
+        </button>
     </li>
 </ul>
 
@@ -70,7 +76,6 @@
                     <div class="form-group">
                         <label asp-for="Promotion" class="control-label">促銷</label>
                         <textarea asp-for="Promotion" class="form-control" style="height:150px"></textarea>
-                        <span asp-validation-for="Promotion" class="text-danger" id="editor01"></span>
                     </div>
                 </div>
             </div>
@@ -112,7 +117,6 @@
         <div id="content-area" class="tab-pane fade" role="tabpanel" aria-labelledby="content-tab">
             @* 內容 *@
             <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
                 <textarea asp-for="Content" class="form-control" id="editor"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
@@ -136,8 +140,7 @@
     </div>
     <hr />
     <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-outline-primary" />
-        <a asp-asp-controller="ProductManagement" asp-action="Index" class="btn btn-outline-secondary">返回上一頁</a>
+        <input id="formSubmitBtn" type="submit" value="存檔" class="btn btn-outline-primary" />
     </div>
 </form>
 
@@ -148,9 +151,11 @@
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.ProductId)
         <input type="file" style="display: none;" id="files" name="files" accept="image/*" onchange="imgFormSubmit();" multiple />
-        <input type="button" value="Upload..." class="btn btn-outline-success" onclick="document.getElementById('files').click();" />
+        <input id="picUploadBtn" type="button" value="上傳圖片" class="btn btn-outline-success d-none" onclick="document.getElementById('files').click();" />
     </div>
 }
+
+<a asp-asp-controller="ProductManagement" asp-action="Index" class="btn btn-outline-secondary">返回上一頁</a>
 
 @section Scripts {
     @{
@@ -166,7 +171,7 @@
                 removePlugins: ['ImageResize', 'ImageStyle', 'ImageToolbar'],
                 ckfinder: {
                     uploadUrl: '/Picture/UploadContent?productId=' + @Model.ProductId
-                }
+                                                                        }
             })
             .catch(error => {
                 console.error(error);
@@ -255,5 +260,26 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                // 圖片頁面，顯示上傳圖片按鈕
+                if (e.currentTarget.id == 'image-tab') {
+                    // 顯示按鈕
+                    $('#picUploadBtn').removeClass('d-none');
+
+                    // 隱藏按鈕
+                    $('#formSubmitBtn').addClass('d-none');
+                }
+                else {
+                    // 隱藏按鈕
+                    $('#picUploadBtn').addClass('d-none');
+
+                    // 顯示按鈕
+                    $('#formSubmitBtn').removeClass('d-none');
+                }
+            });
+        });
+
     </script>
 }

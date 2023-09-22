@@ -77,7 +77,7 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
-            [Display(Name = "Email")]
+            [Display(Name = "Email帳號")]
             public string Email { get; set; }
 
             /// <summary>
@@ -87,7 +87,7 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "密碼")]
             public string Password { get; set; }
 
             /// <summary>
@@ -95,22 +95,22 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
+            [Display(Name = "確認密碼")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
             [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "Full name")]
+            [Display(Name = "姓名")]
             public string Name { get; set; }
 
             [Required]
-            [Display(Name = "Birth Date")]
+            [Display(Name = "生日")]
             [DataType(DataType.Date)]
             public DateTime DOB { get; set; }
 
             [Required]
-            [Display(Name = "Gender")]
+            [Display(Name = "性別")]
             public GenderType Gender { get; set; }
             public DateTime RegistrationDate { get; set; }
         }

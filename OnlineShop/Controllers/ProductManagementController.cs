@@ -285,7 +285,7 @@ public class ProductManagementController : Controller
             return NotFound();
         }
 
-        var product = await _context.Product
+        var product = await _context.Product.Include(p => p.Category).AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
         if (product == null)
         {

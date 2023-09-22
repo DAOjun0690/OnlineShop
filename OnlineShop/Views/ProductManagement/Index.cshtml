@@ -1,7 +1,7 @@
 ﻿@model PaginatedList<OnlineShop.Core.Models.Product>
 
 @{
-    ViewData["Title"] = "Store Administration";
+    ViewData["Title"] = "管理商品列表";
 }
 
 <h1>商品列表</h1>
@@ -74,7 +74,7 @@
                     <td>
                         <a class="btn btn-light btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a class="btn btn-light btn-sm" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a class="btn btn-light btn-sm" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     </td>
                 </tr>
             }

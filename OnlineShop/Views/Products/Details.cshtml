@@ -1,5 +1,10 @@
 ﻿@model ProductDetailViewModel
 
+@{
+    ViewData["Title"] = "商品詳細頁面";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
 <form id="DetailForm">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="ProductId" />

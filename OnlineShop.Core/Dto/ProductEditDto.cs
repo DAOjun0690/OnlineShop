@@ -18,7 +18,7 @@ public class ProductEditDto
     /// <summary>
     /// 商品促銷
     /// </summary>
-    public string Promotion { get; set; }
+    public string Promotion { get; set; } = string.Empty;
     /// <summary>
     /// 商品描述
     /// </summary>

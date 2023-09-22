@@ -127,7 +127,7 @@ public class OrderController : Controller
 
         var userId = _userManager.GetUserId(User);
         var orders = await _context.Order.
-            OrderByDescending(k => k.OrderDate).ToListAsync();           //用日期排序
+            OrderByDescending(k => k.OrderDate).ToListAsync();       //用日期排序
                                                                          //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
 
         foreach (var item in orders)
@@ -147,6 +147,10 @@ public class OrderController : Controller
         return View(orderVM);
     }
 
+    /// <summary>
+    /// 手動輸入訂單編號的查詢訂單頁面
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult QueryOrder()
     {

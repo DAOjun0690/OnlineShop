@@ -28,4 +28,10 @@
     <Folder Include="Database\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Database\sqlite.db">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
