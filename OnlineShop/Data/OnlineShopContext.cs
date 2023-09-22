@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using OnlineShop.Core.Models;
 
 namespace OnlineShop.Data
 {
-    public class OnlineShopContext : DbContext
+    public class OnlineShopContext : IdentityDbContext<OnlineShopUser>
     {
         /// <summary>
         /// 建構子
@@ -20,5 +21,16 @@ namespace OnlineShop.Data
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderItem> OrderItem { get; set; }
 
+        /// <summary>
+        /// Identity DbSet 設定
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            // Customize the ASP.NET Identity model and override the defaults if needed.
+            // For example, you can rename the ASP.NET Identity table names and more.
+            // Add your customizations after calling base.OnModelCreating(builder);
+        }
     }
 }

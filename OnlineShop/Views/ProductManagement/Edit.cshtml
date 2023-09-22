@@ -6,37 +6,51 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<h4>Product</h4>
-<hr />
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <button id="info-tab" class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#info-area"
+                role="tab" aria-controls="info-area" aria-selected="true">基本資訊</button>
+    </li>
+    <li class="nav-item">
+        <button id="content-tab" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#content-area"
+                role="tab" aria-controls="content-area" aria-selected="false">內容</button>
+    </li>
+    <li class="nav-item">
+        <button id="image-tab" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#image-area"
+                role="tab" aria-controls="image-area" aria-selected="false">圖片</button>
+    </li>
+</ul>
 
+@* 基本資訊表單 *@
 <form asp-action="Save">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="ProductId" />
-    <div class="row">
-        <div class="col-8">
+    <div class="tab-content">
+        <!-- 基本資訊區塊 -->
+        <div id="info-area" class="tab-pane fade show active" role="tabpanel" aria-labelledby="info-tab">
             <div class="row">
-                <div class="col-8">
+                <div class="col-6">
                     @* 商品狀態 *@
                     <div class="form-group">
                         <label class="control-label">商品狀態</label>
                         <select class="form-control" asp-for="Status" asp-items="Model.Statuses"></select>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-8">
-                    @* 商品名稱 *@
-                    <div class="form-group">
-                        <label asp-for="Name" class="control-label"></label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-4">
+                <div class="col-6">
                     @* 類別 *@
                     <div class="form-group">
-                        <label class="control-label">Category</label>
+                        <label class="control-label">類別</label>
                         <select class="form-control" asp-for="CategoryId" asp-items="Model.Categories"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    @* 商品名稱 *@
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label">商品名稱</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
                 </div>
             </div>
@@ -44,7 +58,7 @@
                 <div class="col">
                     @* 簡介 *@
                     <div class="form-group">
-                        <label asp-for="Description" class="control-label"></label>
+                        <label asp-for="Description" class="control-label">簡介</label>
                         <textarea asp-for="Description" class="form-control" style="height:150px"></textarea>
                         <span asp-validation-for="Description" class="text-danger" id="editor01"></span>
                     </div>
@@ -54,49 +68,48 @@
                 <div class="col">
                     @* 促銷 *@
                     <div class="form-group">
-                        <label asp-for="Promotion" class="control-label"></label>
+                        <label asp-for="Promotion" class="control-label">促銷</label>
                         <textarea asp-for="Promotion" class="form-control" style="height:150px"></textarea>
                         <span asp-validation-for="Promotion" class="text-danger" id="editor01"></span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            @* 款式 *@
-            <div class="form-group">
-                <label>款式</label>
-                <table id="prodectStyleTable">
-                    <tr>
-                        <th>款式名稱</th>
-                        <th>價錢</th>
-                        <th>庫存</th>
-                        <th>功能按鈕</th>
-                    </tr>
-                    @for (int idx = 0; idx < Model.ProductStyles.Count; idx++)
-                    {
-                        <tr>
-                            @Html.Hidden($"ProductStyles[{idx}].Id", Model.ProductStyles[idx].Id)
-                            <td>
-                                <input type="text" name="ProductStyles[@idx].Name" value="@Model.ProductStyles[idx].Name" />
-                            </td>
-                            <td>
-                                <input type="number" name="ProductStyles[@idx].Price" value="@Model.ProductStyles[idx].Price" />
-                            </td>
-                            <td>
-                                <input type="number" name="ProductStyles[@idx].Stock" value="@Model.ProductStyles[idx].Stock" />
-                            </td>
-                            <td><button type="button" onclick="deleteRow(this)">刪除</button></td>
-                        </tr>
-                    }
-                </table>
-                <button type="button" onclick="addRow()">增加款式</button>
+            <div class="row">
+                <div class="col">
+                    @* 款式 *@
+                    <div class="form-group">
+                        <label>款式</label>
+                        <table id="prodectStyleTable">
+                            <tr>
+                                <th>款式名稱</th>
+                                <th>價錢</th>
+                                <th>庫存</th>
+                                <th>功能按鈕</th>
+                            </tr>
+                            @for (int idx = 0; idx < Model.ProductStyles.Count; idx++)
+                            {
+                                <tr>
+                                    @Html.Hidden($"ProductStyles[{idx}].Id", Model.ProductStyles[idx].Id)
+                                    <td>
+                                        <input type="text" name="ProductStyles[@idx].Name" value="@Model.ProductStyles[idx].Name" />
+                                    </td>
+                                    <td>
+                                        <input type="number" name="ProductStyles[@idx].Price" value="@Model.ProductStyles[idx].Price" />
+                                    </td>
+                                    <td>
+                                        <input type="number" name="ProductStyles[@idx].Stock" value="@Model.ProductStyles[idx].Stock" />
+                                    </td>
+                                    <td><button type="button" onclick="deleteRow(this)">刪除</button></td>
+                                </tr>
+                            }
+                        </table>
+                        <button type="button" onclick="addRow()">增加款式</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
+        <!-- 內容區塊 -->
+        <div id="content-area" class="tab-pane fade" role="tabpanel" aria-labelledby="content-tab">
             @* 內容 *@
             <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>
@@ -104,49 +117,40 @@
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+        <!-- 圖片區塊 -->
+        <div id="image-area" class="tab-pane fade" role="tabpanel" aria-labelledby="image-tab">
+            @* 圖片 *@
+            <div id="picBlock" class="row">
+                @if (Model.ProductImage != null && Model.ProductImage.Any())
+                {
+                    foreach (ProductImage image in Model.ProductImage)
+                    {
+                        <div class="product-image col-lg-3 col-md-6 col-sm-1 text-center">
+                            <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) height="142" alt="ring">
+                            <i class="fas fa-times-circle" onclick="deletePicture(this, '@image.Guid')"></i>
+                        </div>
+                    }
+                }
             </div>
         </div>
     </div>
-
+    <hr />
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-outline-primary" />
+        <a asp-asp-controller="ProductManagement" asp-action="Index" class="btn btn-outline-secondary">返回上一頁</a>
+    </div>
 </form>
 
-<div class="row">
-    @* 圖片 *@
-    <div class="col-lg-3 col-md-4 col-sm-6">
-        <div id="picBlock" class="item text-center">
-            @if (Model.ProductImage != null && Model.ProductImage.Any())
-            {
-                foreach (ProductImage image in Model.ProductImage)
-                {
-                    <div class="product-image">
-                        <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) height="142" alt="ring">
-                        <i class="fas fa-times-circle" onclick="deletePicture(this, '@image.Guid')"></i>
-                    </div>
-                }
-            }
-        </div>
+
+@using (Html.BeginForm("UploadDetail", "Picture", FormMethod.Post, new { id = "picForm", enctype = "multipart/form-data" }))
+{
+    <div class="form-group">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.ProductId)
+        <input type="file" style="display: none;" id="files" name="files" accept="image/*" onchange="imgFormSubmit();" multiple />
+        <input type="button" value="Upload..." class="btn btn-outline-success" onclick="document.getElementById('files').click();" />
     </div>
-
-    @using (Html.BeginForm("UploadDetail", "Picture", FormMethod.Post, new { id = "picForm", enctype = "multipart/form-data" }))
-    {
-        <div class="card-footer">
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.ProductId)
-            <input type="file" style="display: none;" id="files" name="files" accept="image/*" onchange="imgFormSubmit();" multiple />
-            <input type="button" value="Upload..." class="btn btn-primary" onclick="document.getElementById('files').click();" />
-        </div>
-    }
-</div>
-
-<div>
-    <a asp-asp-controller="ProductManagement" asp-action="Index" class="btn btn-default">返回上一頁</a>
-</div>
+}
 
 @section Scripts {
     @{

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineShop.Controllers;
 
-[Authorize(Roles = "Administrator")]
+[Authorize(Roles = "Admin")]
 public class ProductManagementController : Controller
 {
     private readonly OnlineShopContext _context;

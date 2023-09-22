@@ -6,15 +6,12 @@
 }
 
 <div>
-    <p>　</p>
     <ul class="progressbar">
         <li class="active">購物車</li>
         <li>訂單資料</li>
         <li>建立訂單</li>
         <li>付款</li>
     </ul>
-    <p>　</p>
-    <p>　</p>
 </div>
 
 <div class="card shadow rounded">
@@ -39,7 +36,6 @@
                     {
                         <tr>
                             @* 顯示縮圖 *@
-                            @* <td class="text-center"><img src="@Html.DisplayFor(modelItem => item.imageSrc)" height="30" /></td> *@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Product.Name)
                             </td>
@@ -74,72 +70,71 @@
 
     </div>
 </div>
-<p>　</p>
+
 <div class="container">
     <p class="row justify-content-end" style="margin-top:15px;">
-        <a class="btn btn-primary btn-sm text-white" style="padding-left:56px;padding-right:56px;margin-right:56px" asp-controller="Products" asp-action="Index">繼續購物</a>
-        <a class="btn btn-primary btn-sm text-white" style="padding-left:56px;padding-right:56px;" asp-controller="Order" asp-action="Checkout">前往結帳</a>
+        <a class="btn btn-primary btn-sm text-white" asp-controller="Products" asp-action="Index">繼續購物</a>
+        <a class="btn btn-primary btn-sm text-white mt-3" asp-controller="Order" asp-action="Checkout">前往結帳</a>
     </p>
 </div>
 
 
 <style>
-
     .progressbar {
         counter-reset: step;
     }
 
-        .progressbar li {
-            list-style-type: none;
-            width: 25%;
-            float: left;
-            font-size: 12px;
-            position: relative;
-            text-align: center;
-            text-transform: uppercase;
-            color: #7d7d7d;
-        }
+    .progressbar li {
+        list-style-type: none;
+        width: 25%;
+        float: left;
+        font-size: 12px;
+        position: relative;
+        text-align: center;
+        text-transform: uppercase;
+        color: #7d7d7d;
+    }
 
-            .progressbar li:before {
-                width: 30px;
-                height: 30px;
-                content: counter(step);
-                counter-increment: step;
-                line-height: 30px;
-                border: 2px solid #7d7d7d;
-                display: block;
-                text-align: center;
-                margin: 0 auto 10px auto;
-                border-radius: 50%;
-                background-color: white;
-            }
+    .progressbar li:before {
+        width: 30px;
+        height: 30px;
+        content: counter(step);
+        counter-increment: step;
+        line-height: 30px;
+        border: 2px solid #7d7d7d;
+        display: block;
+        text-align: center;
+        margin: 0 auto 10px auto;
+        border-radius: 50%;
+        background-color: white;
+    }
 
-            .progressbar li:after {
-                width: 100%;
-                height: 2px;
-                content: '';
-                position: absolute;
-                background-color: #7d7d7d;
-                top: 15px;
-                left: -50%;
-                z-index: -1;
-            }
+    .progressbar li:after {
+        width: 100%;
+        height: 2px;
+        content: '';
+        position: absolute;
+        background-color: #7d7d7d;
+        top: 15px;
+        left: -50%;
+        z-index: -1;
+    }
 
-            .progressbar li:first-child:after {
-                content: none;
-            }
+    .progressbar li:first-child:after {
+        content: none;
+    }
 
-            .progressbar li.active {
-                color: green;
-            }
+    .progressbar li.active {
+        color: green;
+    }
 
-                .progressbar li.active:before {
-                    border-color: #55b776;
-                }
+    .progressbar li.active:before {
+        border-color: #55b776;
+    }
 
-                .progressbar li.active + li:after {
-                    background-color: #55b776;
-                }
+    .progressbar li.active + li:after {
+        background-color: #55b776;
+    }
 </style>
 
 

@@ -12,9 +12,7 @@ public static class SeedData
     public static async Task SeedDatabase(IServiceProvider serviceProvider)
     {
         var context = serviceProvider.GetRequiredService<OnlineShopContext>();
-        var contextUser = serviceProvider.GetRequiredService<OnlineShopUserContext>();
         await context.Database.MigrateAsync();
-        await contextUser.Database.MigrateAsync();
 
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<OnlineShopUser>>();

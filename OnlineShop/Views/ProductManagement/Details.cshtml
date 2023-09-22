@@ -4,94 +4,69 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>商品 詳細資料</h1>
-<p></p>
-<div>
-    <div class="row">
-
-        <div class="col-7">
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Name)</p>
-                    <h3>@Html.DisplayFor(m => m.Name)</h3>
-                </div>
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Status)</p>
-                    <h3>@Model.Status.ToString()</h3>
-                </div>
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.CategoryName)</p>
-                    <h3>@Html.DisplayFor(m => m.CategoryName)</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <p>價錢:</p>
-                    <h6 id="price"></h6>
-                </div>
-            </div>
-            @* 款式 *@
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">款式</p>
-                    <select id="productStyles">
-                        @foreach (var item in Model.ProductStylesList)
+<div class="row">
+    <div class="col pb-5">
+        <div class="row">
+            <div class="col-lg-7 col-sm-12">
+                <div class="row">
+                    <div class="col-2">
+                        @if (Model.ProductImage != null && Model.ProductImage.Any())
                         {
-                            <option value="@item.Id" data-price="@item.Price" data-stock="@item.Stock">@item.Name</option>
+                            @foreach (ProductImage image in Model.ProductImage)
+                            {
+                                <div class="row img-selector mb-1">
+                                    <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) alt="ring">
+                                </div>
+                            }
                         }
-                    </select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <p>庫存:</p>
-                    <h6 id="stock"></h6>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Description)</p>
-                    <pre>@Html.DisplayFor(m => m.Description)</pre>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Promotion)</p>
-                    <pre>@Html.DisplayFor(m => m.Promotion)</pre>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr />
-
-    <div class="row">
-        <div class="col">
-            <p class="alert-light m-0">@Html.DisplayNameFor(m => m.Content)</p>
-            @Html.Raw(Model.Content)
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            @if (Model.ProductImage != null && Model.ProductImage.Any())
-            {
-                foreach (ProductImage image in Model.ProductImage)
-                {
-                    <div class="product-image">
-                        <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) height="142" alt="ring">
                     </div>
-                }
-            }
+                    <div class="col-10"></div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-sm-12">
+                <h4>@Html.DisplayFor(m => m.Name)</h4>
+                <pre>@Html.DisplayFor(m => m.Description)</pre>
+                <hr />
+                <br />
+                <pre>@Html.DisplayFor(m => m.Promotion)</pre>
+                <h5 id="price" class="text-black fw-bold"></h5>
+                @* 款式 *@
+                <p class="alert-light m-0 mt-2">款式</p>
+                <select id="productStyles" class="form-select">
+                    @foreach (var item in Model.ProductStylesList)
+                    {
+                        <option value="@item.Id" data-price="@item.Price" data-stock="@item.Stock">@item.Name</option>
+                    }
+                </select>
+                <p class="alert-light m-0 mt-2">庫存</p>
+                <h6 id="stock"></h6>
+            </div>
         </div>
     </div>
-</div>
-
-
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ProductId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <br />
+    <div class="container">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a id="content-tab" class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#content-area"
+                   type="button" role="tab" aria-controls="#content-area" aria-selected="true" href="#">@Html.DisplayNameFor(m => m.Content)</a>
+            </li>
+            <li class="nav-item">
+                <a id="delivery-tab" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#delivery-area"
+                   type="button" role="tab" aria-controls="#delivery-area" aria-selected="false" href="#">送貨及付款方式</a>
+            </li>
+            <li class="nav-item">
+                <a id="comment-tab" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#comment-area"
+                   type="button" role="tab" aria-controls="#comment-area" aria-selected="false" href="#">顧客評價</a>
+            </li>
+        </ul>
+        <div class="tab-content pt-3">
+            <div id="content-area" class="tab-pane fade show active" aria-labelledby="content-tab">
+                @Html.Raw(Model.Content)
+            </div>
+            <div id="delivery-area" class="tab-pane fade" aria-labelledby="delivery-tab"></div>
+            <div id="comment-area" class="tab-pane fade" aria-labelledby="comment-tab"></div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

@@ -5,19 +5,22 @@ using OnlineShop.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#if DEBUG 
-builder.Services
-    .AddDbContext<OnlineShopContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")))
-    .AddDbContext<OnlineShopUserContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")));
 
-#elif RELEASE
 builder.Services
     .AddDbContext<OnlineShopContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")))
-    .AddDbContext<OnlineShopUserContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")));
+    {
+#if DEBUG
+        //options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
+        options.UseSqlite(builder.Configuration.GetConnectionString("UseSqlite") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
+#elif RELEASE
+        options.UseSqlite(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
+#endif
+    });
+
+//builder.Services
+//.AddDbContext<OnlineShopContext>(options =>
+//    options.UseSqlite(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")))
+
 
 //// 它會將程式碼從使用記憶體內部快取變更為 Azure 中的 Redis 快取，而且會使用 AZURE_REDIS_CONNECTIONSTRING 先前的 。
 //builder.Services.AddStackExchangeRedisCache(options =>
@@ -25,7 +28,7 @@ builder.Services
 //    options.Configuration = builder.Configuration["AZURE_REDIS_CONNECTIONSTRING"];
 //    options.InstanceName = "SampleInstance";
 //});
-#endif
+
 
 // 啟用 Session
 builder.Services.AddSession();
@@ -44,7 +47,7 @@ builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
     options.Password.RequireDigit = false;
 })
     .AddRoles<IdentityRole>() //角色
-    .AddEntityFrameworkStores<OnlineShopUserContext>();
+    .AddEntityFrameworkStores<OnlineShopContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

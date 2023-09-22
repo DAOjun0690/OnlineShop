@@ -1,56 +1,98 @@
 ﻿@model IEnumerable<DetailViewModel>
 
 @{
-    ViewData["Title"] = "Hi";
+    ViewData["Title"] = "商品頁面";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row">
-    <div class="col-3">
-        <p></p>
-        @await Component.InvokeAsync("CategoriesList")
-    </div>
-    <div class="col-9">
-        <img src="~/image/banner1.jpg" />
-    </div>
-</div>
+<style>
+    .card-img-container {
+        height: 16rem;
+        overflow: hidden;
+        position: relative;
+    }
 
-<div>共 @Model.Count() 筆資料</div>
-<div class="row ml-1">
+    .card-img-btn-area {
+        position: absolute;
+        width: 100%;
+        height: 25%;
+        bottom: 0;
+        z-index: 1;
+        opacity: 0;
+        transform: translate(0px, 25%);
+        -webkit-transform: translate(0px, 25%);
+        -moz-transform: translate(0px, 25%);
+        -o-transform: translate(0px, 25%);
+        -ms-transform: translate(0px, 25%);
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .card-img-container img {
+        object-fit: cover;
+        object-position: center center;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        -webkit-transition: all 2s ease;
+        -moz-transition: all 2s ease;
+        -o-transition: all 2s ease;
+        transition: all 2s ease;
+    }
+
+    .card-img-container:hover .card-img-btn-area {
+        transform: translate(0px, 0);
+        -webkit-transform: translate(0px, 0);
+        -moz-transform: translate(0px, 0);
+        -o-transform: translate(0px, 0);
+        -ms-transform: translate(0px, 0);
+        opacity: 1;
+    }
+
+    .card-img-container:hover img {
+        opacity: 0.1;
+        transform: scale(1.5);
+    }
+</style>
+
+<!-- Carousel -->
+@await Component.InvokeAsync("Carousel")
+
+<!-- 學兔子的空格 -->
+<div class="py-4"></div>
+<div class="py-4"></div>
+<div class="py-4"></div>
+
+<!-- 標題 -->
+<h4 class="text-center fw-bold">@ViewData["Title"]</h4>
+
+<!-- 商品頁面 -->
+<div class="row pt-5">
     @foreach (var item in Model)
     {
-        <div class="col">
-            <div class="card h-100 shadow-sm rounded" style="width: 16rem">
-                @if (item.Image != null)
-                {
-                    <img src=@Url.Action("Download", "Picture",
-                 new { ProductId = item.ProductId, Guid = item.Image.Guid }) class="card-img-top">
-
-                }
-                <div class="card-body">
-                    <h6 class="card-title">@Html.DisplayFor(modelItem => item.ProductName)</h6>
-                    <div class="card-title">
-                        @if (item.MinPrice == item.MaxPrice)
-                        {
-                            <p>NT$@item.MinPrice</p>
-                        }
-                        else
-                        {
-                            <p>NT$@item.MinPrice ~ NT$@item.MaxPrice</p>
-                        }
-                    </div>
-                </div>
-                <a class="stretched-link" asp-action="Details" asp-route-id="@item.ProductId">跳到詳細頁面</a>
-                <div class="card-footer btn btn-light" style="position: relative;">
-                    <div class="text-center">
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card border-0" style="width: 16rem">
+                <div class="card-img-container bg-light">
+                    @if (item.Image != null)
+                    {
+                        <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid })
+                             class="card-img-top" title="@item.ProductName" data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId">
+                    }
+                    else
+                    {
+                        <img src="" alt="..." class="card-img-top" title="@item.ProductName" 
+                             data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId">
+                    }
+                    <div class="card-img-btn-area text-center">
                         @if (item.Stock > 1)
                         {
-                            @* 目前跳轉至 partial view，之後這邊要變成跳轉至整頁view，點圖片才跳轉到sub view *@
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal-@item.ProductId">
-                                購買
-                            </button>
+                            <a class="btn btn-outline-secondary w-75" asp-action="Details" asp-route-id="@item.ProductId">購買</a>
                         }
-                        else if(item.Status == ProductStatus.Sold)
+                        else if (item.Status == ProductStatus.Sold)
                         {
                             <div class="text-muted">已售完</div>
                         }
@@ -60,50 +102,45 @@
                         }
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="modal fade" id="myModal-@item.ProductId" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!-- 模態視窗的內容將由 Controller 提供 -->
+                <div class="card-body">
+                    <h6 class="card-title text-center">@Html.DisplayFor(modelItem => item.ProductName)</h6>
+                    @if (item.MinPrice == item.MaxPrice)
+                    {
+                        <h6 class="card-text text-center fw-bold">
+                            NT$@item.MinPrice
+                        </h6>
+                    }
+                    else
+                    {
+                        <h6 class="card-text text-center fw-bold">
+                            NT$@item.MinPrice ~ NT$@item.MaxPrice
+                        </h6>
+                    }
                 </div>
             </div>
         </div>
     }
 </div>
 
+<!-- 商品小視窗 -->
+<div class="modal fade" id="subDetailsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content container-fluid">
+            <!-- 模態視窗的內容將由 Controller 提供 -->
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        function ShowMessage() {
-            toastr["success"]("商品已加入購物車！");
-        }
-
-        $(document).ready(function () {
-            $('[data-toggle="modal"]').click(function () {
-                var id = $(this).data('target').split('-')[1]  // 從 data-target 屬性中獲取 id
-                console.log("id=" + id);
-                $('#myModal-' + id + ' .modal-content').load('/Products/SubDetails/' + id);
-            });
-        });
+        let subDetailsModal = document.getElementById('subDetailsModal');
+        subDetailsModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            let related = event.relatedTarget;
+            // Extract info from data-bs-* attributes
+            let pId = related.getAttribute('data-bs-pId');
+            // Load Content
+            $("#subDetailsModal .modal-content").load(`/Products/SubDetails/${pId}`);
+        })
     </script>
 }
-
-<style>
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .col {
-        flex-grow: 0;
-        margin: 7px;
-        padding: 5px;
-    }
-
-    .overflow-text {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-        overflow: hidden;
-    }
-</style>
