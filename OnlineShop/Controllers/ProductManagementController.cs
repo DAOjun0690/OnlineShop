@@ -165,6 +165,7 @@ public class ProductManagementController : Controller
                      })
                      .ToList();
         viewModel.Statuses = new SelectList(enumValues, "Value", "Text", product.Status);
+        viewModel.Status = product.Status;
 
         // 商品款式
         var productStyles =

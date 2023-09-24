@@ -19,10 +19,12 @@ public class ProductIndexViewModel
     /// </summary>
     [Required(ErrorMessage = "簡介 是必填項目")]
     public string Description { get; set; }
+
     /// <summary>
     /// 商品促銷
     /// </summary>
-    public string Promotion { get; set; }
+    /// 促銷屬性可以為空字串
+    public string Promotion { get; set; } = string.Empty;
     /// <summary>
     /// 商品描述
     /// </summary>
