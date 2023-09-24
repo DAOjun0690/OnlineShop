@@ -31,6 +31,22 @@
                 <div class="col-lg-5 col-sm-12">
                     <h4>@Html.DisplayFor(m => m.Name)</h4>
                     <pre>@Html.DisplayFor(m => m.Description)</pre>
+                    <p>製造方式: @Model.ManufacturingMethod.GetDescription()</p>
+                    <p>
+                        製作時間:
+                        @if (Model.ManufacturingTime == ManufacturingTime.InStock)
+                        {
+                        <p>
+                                @Model.ManufacturingTime.GetDescription()
+                        </p>
+                        }
+                        else if (Model.ManufacturingTime == ManufacturingTime.Custom)
+                        {
+                        <p>
+                            接單訂製，付款後須等待 @Model.ManufacturingCustomDate 個工作天
+                        </p>
+                        }
+                    </p>
                     <hr />
                     <br />
                     <pre>@Html.DisplayFor(m => m.Promotion)</pre>

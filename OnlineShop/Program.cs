@@ -13,7 +13,7 @@ builder.Services
         //options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
         options.UseSqlite(builder.Configuration.GetConnectionString("UseSqlite") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
 #elif RELEASE
-        options.UseSqlite(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
+        options.UseSqlite(builder.Configuration.GetConnectionString("Azure_UseSqlite") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
 #endif
     });
 
@@ -81,6 +81,16 @@ app.UseEndpoints(endpoints =>
 
     endpoints.MapRazorPages();
 });
+
+
+
+// 確認 上傳檔案資料夾 是否存在，不在的話，將其新增
+string uplaodFolder = app.Configuration["UploadFolder"];
+if (!Directory.Exists(uplaodFolder))
+{
+    //新增資料夾
+    Directory.CreateDirectory(uplaodFolder);
+}
 
 // 初始化資料
 await SeedData.SeedDatabase(app.Services.CreateAsyncScope().ServiceProvider);

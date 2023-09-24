@@ -70,13 +70,5 @@ public static class SeedData
             context.Category.AddRange(categorys);
             context.SaveChanges();
         }
-
-        // 確認 上傳檔案資料夾 是否存在，不在的話，將其新增
-        string uplaodFolder = Path.Join(Directory.GetCurrentDirectory(), "UploadFolder");
-        if (!Directory.Exists(uplaodFolder))
-        {
-            //新增資料夾
-            Directory.CreateDirectory(uplaodFolder);
-        }
     }
 }

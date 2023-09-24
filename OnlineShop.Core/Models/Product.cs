@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineShop.Core.Models;
@@ -35,6 +36,19 @@ public class Product
     public ProductStatus Status { get; set; }
 
     /// <summary>
+    /// 製造方式
+    /// </summary>
+    public ManufacturingMethod ManufacturingMethod { get; set; }
+    /// <summary>
+    /// 製作時間
+    /// </summary>
+    public ManufacturingTime ManufacturingTime { get; set; }
+    /// <summary>
+    /// 製作時間 - 接單訂製 需等待的時間
+    /// </summary>
+    public int ManufacturingCustomDate { get; set; }
+
+    /// <summary>
     /// 類別 (Foreign Key)
     /// </summary>
     public int CategoryId { get; set; }
@@ -53,16 +67,37 @@ public class Product
 /// </summary>
 public enum ProductStatus
 {
-    /// <summary>
-    /// 草稿
-    /// </summary>
+    [Description("草稿")]
     Draft = 1,
-    /// <summary>
-    /// 絕讚販售中
-    /// </summary>
+
+    [Description("販售中")]
     Active = 2,
-    /// <summary>
-    /// 已售完
-    /// </summary>
+
+    [Description("售完")]
     Sold = 3
 }
+
+/// <summary>
+/// 製造方式
+/// </summary>
+public enum ManufacturingMethod
+{
+    [Description("手工製造")]
+    Manual,
+
+    [Description("販售中")]
+    Machine
+}
+
+/// <summary>
+/// 製造方式
+/// </summary>
+public enum ManufacturingTime
+{
+    [Description("現貨")]
+    InStock,
+
+    [Description("接單訂製")]
+    Custom
+}
+

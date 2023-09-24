@@ -8,7 +8,6 @@ using OnlineShop.Core.Dto;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
-using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineShop.Controllers;
 
@@ -16,6 +15,7 @@ namespace OnlineShop.Controllers;
 public class ProductManagementController : Controller
 {
     private readonly OnlineShopContext _context;
+    private readonly List<SelectListItem> _productStatusEnumList;
 
     /// <summary>
     /// 建構子
@@ -24,6 +24,14 @@ public class ProductManagementController : Controller
     public ProductManagementController(OnlineShopContext context)
     {
         _context = context;
+        _productStatusEnumList = Enum.GetValues(typeof(ProductStatus))
+                             .Cast<ProductStatus>()
+                             .Select(e => new SelectListItem
+                             {
+                                 Value = ((int)e).ToString(),
+                                 Text = e.GetDescription()
+                             })
+                             .ToList();
     }
 
     /// <summary>
@@ -38,7 +46,7 @@ public class ProductManagementController : Controller
     public async Task<IActionResult> Index(string searchString,
                                            string currentFilter,
                                            int? pageNumber,
-                                           ProductStatus status = 0
+                                           ProductStatus status
                                            )
     {
         // 初始化頁碼
@@ -54,15 +62,7 @@ public class ProductManagementController : Controller
         ViewData["CurrentFilter"] = searchString;
 
         // 商品狀態列表
-        var enumValues = Enum.GetValues(typeof(ProductStatus))
-                             .Cast<ProductStatus>()
-                             .Select(e => new SelectListItem
-                             {
-                                 Value = ((int)e).ToString(),
-                                 Text = e.ToString()
-                             })
-                             .ToList();
-        ViewData["StatusList"] = new SelectList(enumValues, "Value", "Text");
+        ViewData["StatusList"] = new SelectList(_productStatusEnumList, "Value", "Text", (int)status);
 
         // 所有商品
         var result = from m in _context.Product select m;
@@ -75,6 +75,10 @@ public class ProductManagementController : Controller
         if (status != 0)
         {
             result = result.Where(p => p.Status == status);
+            ViewData["StatusName"] = status.GetDescription();
+        }
+        else {
+            ViewData["StatusName"] = "全部";
         }
 
         // 預設一頁顯示幾項
@@ -156,16 +160,7 @@ public class ProductManagementController : Controller
         viewModel.ProductImage = imageList.ToList();
 
         // 商品狀態
-        var enumValues = Enum.GetValues(typeof(ProductStatus))
-                     .Cast<ProductStatus>()
-                     .Select(e => new SelectListItem
-                     {
-                         Value = ((int)e).ToString(),
-                         Text = e.ToString()
-                     })
-                     .ToList();
-        viewModel.Statuses = new SelectList(enumValues, "Value", "Text", product.Status);
-        viewModel.Status = product.Status;
+        viewModel.Statuses = new SelectList(_productStatusEnumList, "Value", "Text", product.Status);
 
         // 商品款式
         var productStyles =
@@ -203,11 +198,13 @@ public class ProductManagementController : Controller
                 model.Content = dto.Content;
                 model.Status = dto.Status;
                 model.CategoryId = dto.CategoryId;
+                model.ManufacturingMethod = dto.ManufacturingMethod;
+                model.ManufacturingTime = dto.ManufacturingTime;
+                model.ManufacturingCustomDate = dto.ManufacturingCustomDate;
                 // 更新 商品 資料
                 _context.Update(model);
 
                 // 更新 款式 資料
-
                 // 從資料庫中取得相同pid的資料
                 var productStylesFromDb = await _context.ProductStyle.Where(m => m.ProductId == model.Id).ToListAsync();
 
@@ -381,6 +378,7 @@ public class ProductManagementController : Controller
     {
         return View();
     }
+
     /// <summary>
     /// 新增類別 事件
     /// </summary>

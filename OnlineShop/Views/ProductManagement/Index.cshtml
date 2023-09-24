@@ -8,12 +8,17 @@
 
 <div style="margin-bottom:8px;">
     <div class="row">
-        <div class="row col-10 justify-content-end">
-            <form asp-action="Index" class="col-4" method="get">
+        <div class="col-2">
+            <p class="row justify-content-front">
+                當前查詢商品狀態: @ViewBag.StatusName
+            </p>
+        </div>
+        <div class="row col-8 justify-content-end">
+            <form asp-action="Index" class="col-6" method="get">
                 <div class="input-group input-group-sm ">
                     <label class="m-1" for="ItemStatus">商品狀態: </label>
                     <select asp-items="ViewBag.StatusList" name="Status" onchange="this.form.submit();">
-                        <option value="">請選擇</option>
+                        <option value="0">全部</option>
                     </select>
                     <input class="form-control" type="text" placeholder="Name" name="searchString" />
                     <input class="btn btn-sm btn-primary" type="submit" value="Search" />

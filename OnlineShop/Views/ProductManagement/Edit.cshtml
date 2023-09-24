@@ -51,6 +51,33 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-6">
+                    @* 製造方式 *@
+                    <label class="control-label">製造方式</label>
+                    <div class="form-group">                        
+                        <label>
+                            <input type="radio" asp-for="ManufacturingMethod" value="@ManufacturingMethod.Manual" /> 手工製造
+                        </label>
+                        <label>
+                            <input type="radio" asp-for="ManufacturingMethod" value="@ManufacturingMethod.Machine" /> 機器製造
+                        </label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    @* 製作時間 *@
+                    <label class="control-label">製作時間</label>
+                    <div class="form-group">                        
+                        <label>
+                            <input type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.InStock" /> 現貨
+                        </label>
+                        <label>
+                            <input type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.Custom" /> 
+                            接單訂製，付款後須等待 <input type="number" asp-for="ManufacturingCustomDate" /> 工作天。
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col">
                     @* 商品名稱 *@
                     <div class="form-group">
@@ -83,7 +110,6 @@
                 <div class="col">
                     @* 款式 *@
                     <div class="form-group">
-                        <label>款式</label>
                         <table id="prodectStyleTable">
                             <tr>
                                 <th>款式名稱</th>

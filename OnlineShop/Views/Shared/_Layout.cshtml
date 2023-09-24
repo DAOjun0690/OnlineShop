@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using OnlineShop.Core.Models;
 @inject SignInManager<OnlineShopUser> SignInManager
 @inject UserManager<OnlineShopUser> UserManager
 
@@ -21,7 +22,7 @@
         <nav class="navbar navbar-expand-lg border-bottom box-shadow mb-3 bg-white">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Products" asp-action="Index">
-                    <img src="~/image/logo2.svg" class="logo" width="120" height="80" />
+                    <img src="~/image/logo.jpg" class="logo" width="120" height="120" />
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" 
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,30 +33,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">線上商店</a>
                         </li>
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="Index">我的訂單</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="QueryOrder">訂單查詢</a>
-                            </li>
-                        }
-                        
+
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                         {
                             @*  商品管理 Start *@
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ProductManagement" asp-action="Index">管理商品列表</a>
-                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-dark dropdown-toggle" href="#" id="productMenuBtn" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     商品管理
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="productMenuBtn">
+                                    <a class="dropdown-item" asp-area="" asp-controller="ProductManagement" asp-action="Index">管理商品列表</a>
                                     <a class="dropdown-item" asp-area="" asp-controller="ProductManagement" asp-action="CreateCategory">新增分類</a>
                                 </div>
                             </li>
@@ -74,16 +61,41 @@
                             </li>
                             @* 帳號管理 End *@
                         }
+
+                        @*  訂單管理 Start *@
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="OrderList">訂單列表</a>
+                            </li>
+                        }
+                        else if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="Index">我的訂單</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="QueryOrder">訂單查詢</a>
+                            </li>
+                        }
+                        @* 訂單管理 End *@
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ShoppingNotice">購物須知</a>
+                        </li>
                     </ul>
                     <ul class="navbar-nav align-self-end">
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+                                <a id="manage" class="nav-link text-dark icons icon-person" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"><img src="~/image/person.png" border="0" width="25" height="25"></a>
                             </li>
                             <li class="nav-item">
                                 <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/">
-                                    <button id="logout" type="submit" class="btn btn-outline-dark mx-2">Logout</button>
+                                    <button id="logout" type="submit" class="btn btn-outline-dark mx-2">登出</button>
                                 </form>
                             </li>
                         }

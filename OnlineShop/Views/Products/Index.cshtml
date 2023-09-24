@@ -77,15 +77,23 @@
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card border-0" style="width: 16rem">
                 <div class="card-img-container bg-light">
+                    @* modal事件未來製作，目前都先跳轉到大頁面 *@
                     @if (item.Image != null)
                     {
-                        <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid })
-                             class="card-img-top" title="@item.ProductName" data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId">
+                        @* <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid })
+                class="card-img-top" title="@item.ProductName" data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId"> *@
+                        <a href="@Url.Action("Details", new { Id = item.ProductId })">
+                            <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid })
+                                 alt="..." class="card-img-top" title="@item.ProductName" data-bs-pId="@item.ProductId" />
+                        </a>
                     }
                     else
                     {
-                        <img src="" alt="..." class="card-img-top" title="@item.ProductName" 
-                             data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId">
+                        @* <img src="" alt="..." class="card-img-top" title="@item.ProductName"
+                data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId"> *@
+                        <a href="@Url.Action("Details", new { Id = item.ProductId })">
+                            <img src="" alt="..." class="card-img-top" title="@item.ProductName" data-bs-pId="@item.ProductId" />
+                        </a>
                     }
                     <div class="card-img-btn-area text-center">
                         @if (item.Stock > 1)

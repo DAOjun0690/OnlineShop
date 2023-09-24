@@ -26,6 +26,19 @@ public class ProductEditDto
 
     public ProductStatus Status { get; set; }
 
+    /// <summary>
+    /// 製造方式
+    /// </summary>
+    public ManufacturingMethod ManufacturingMethod { get; set; }
+    /// <summary>
+    /// 製作時間
+    /// </summary>
+    public ManufacturingTime ManufacturingTime { get; set; }
+    /// <summary>
+    /// 製作時間 - 接單訂製 需等待的時間
+    /// </summary>
+    public int ManufacturingCustomDate { get; set; }
+
     public int CategoryId { get; set; }
 
     public IList<ProductStyleDto> ProductStyles { get; set; }

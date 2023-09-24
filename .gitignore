@@ -1,4 +1,5 @@
-UploadFolder/
+# 儲存DB 與 image 的資料夾 不須上傳
+OnlineShop/AppData/
 
 *.swp
 *.*~

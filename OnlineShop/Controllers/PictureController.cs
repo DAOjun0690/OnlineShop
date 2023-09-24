@@ -8,6 +8,7 @@ namespace OnlineShop.Controllers;
 public class PictureController : Controller
 {
     private readonly OnlineShopContext _context;
+    private readonly IConfiguration _configuration;
 
     private readonly static Dictionary<string, string> _contentTypes = new Dictionary<string, string>
         {
@@ -19,12 +20,17 @@ public class PictureController : Controller
 
     private string ServerDestinationPath { get; set; }
 
-    public PictureController(OnlineShopContext context) { _context = context; }
+    public PictureController(OnlineShopContext context, IConfiguration configuration)
+    {
+        _context = context;
+        _configuration = configuration;
+    }
 
     private void InitProperties(int Number)
     {
         string productId = Number.ToString();
-        ServerDestinationPath = Path.Join(Directory.GetCurrentDirectory(), "UploadFolder", productId);
+        string uplaodFolder = _configuration["UploadFolder"];
+        ServerDestinationPath = Path.Join(uplaodFolder, productId);
         if (!Directory.Exists(ServerDestinationPath))
         {
             //新增資料夾

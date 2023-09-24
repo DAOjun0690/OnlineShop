@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
 using System.Diagnostics;
 
@@ -20,7 +19,12 @@ namespace OnlineShop.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        /// <summary>
+        /// 購物須知
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult ShoppingNotice()
         {
             return View();
         }
