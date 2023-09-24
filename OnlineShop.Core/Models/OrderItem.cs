@@ -30,3 +30,25 @@ public class CartItem : OrderItem
     [MaxLength(200)]
     public string imageSrc { get; set; }
 }
+
+
+
+/// <summary>
+/// 送貨地點
+/// </summary>
+public class DeliveryAddress
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+/// <summary>
+/// 送貨方式
+/// </summary>
+public class DeliveryMethod
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Price { get; set; }
+    public int AddressId { get; set; } // 這個屬性表示該送貨方式對應的送貨地點
+}

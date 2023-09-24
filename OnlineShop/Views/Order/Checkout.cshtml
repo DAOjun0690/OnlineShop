@@ -1,9 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using OnlineShop.Core.Models;
 @inject SignInManager<OnlineShopUser> SignInManager
-@model OnlineShop.Core.Models.Order
+@model Order
 
 @{
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "結帳";
+
+    var deliveryMethods = ViewData["DeliveryMethods"] as List<DeliveryMethod>;
+    var method = deliveryMethods.FirstOrDefault(m => m.Id == Model.SelectedDeliveryMethod);
+    var DeliveryMethodName = method?.Name;
 }
 
 <div>
@@ -17,14 +22,14 @@
     <p>　</p>
     <p>　</p>
 </div>
-
-<h4>訂單資料</h4>
+<hr />
+<h4>合計: NT$ @Model.Total </h4>
 <hr />
 <form asp-action="CreateOrder">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
             @if (SignInManager.IsSignedIn(User))
             {
                 <div class="card">
@@ -41,64 +46,77 @@
             }
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">收貨人資料</h5>
+                    <h5 class="card-title">收件人資料</h5>
                     <div class="row">
                         <div class="form-group col">
-                            <label asp-for="ReceiverName" class="control-label">收貨人姓名</label>
+                            <label asp-for="ReceiverName" class="control-label">收件人姓名</label>
                             <input asp-for="ReceiverName" class="form-control" />
                             <span asp-validation-for="ReceiverName" class="text-danger"></span>
                         </div>
                         <div class="form-group col">
-                            <label asp-for="ReceiverPhone" class="control-label">收貨人電話</label>
+                            <label asp-for="ReceiverPhone" class="control-label">收件人電話</label>
                             <input asp-for="ReceiverPhone" class="form-control" />
                             <span asp-validation-for="ReceiverPhone" class="text-danger"></span>
                         </div>
                     </div>
+
+                    <div>已選擇的送貨方式: @DeliveryMethodName</div>
+                    @if (Model.SelectedDeliveryAddress == 1 && Model.SelectedDeliveryMethod == 1)
+                    {
+                        <div class="row">
+                            <div class="form-group col">
+                                <label asp-for="ReceiverFirstAddress" class="control-label">郵遞區號</label>
+                                <input asp-for="ReceiverFirstAddress" class="form-control" />
+                                <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col">
+                                <label asp-for="ReceiverSecondAddress" class="control-label">收件人地址</label>
+                                <input asp-for="ReceiverSecondAddress" class="form-control" />
+                                <span asp-validation-for="ReceiverSecondAddress" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.SelectedDeliveryAddress == 1 && (Model.SelectedDeliveryMethod == 2 || Model.SelectedDeliveryMethod == 3))
+                    {
+                        <div class="row">
+                            <div class="form-group col">
+                                <label asp-for="ReceiverFirstAddress" class="control-label">超商門市</label>
+                                <input asp-for="ReceiverFirstAddress" class="form-control" />
+                                <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col">
+                                <label asp-for="ReceiverSecondAddress" class="control-label">店號</label>
+                                <input asp-for="ReceiverSecondAddress" class="form-control" />
+                                <span asp-validation-for="ReceiverSecondAddress" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="form-group col">
+                                <label asp-for="ReceiverFirstAddress" class="control-label">收件人地址</label>
+                                <input asp-for="ReceiverFirstAddress" class="form-control" />
+                                <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col">
+                                <input asp-for="ReceiverSecondAddress" class="form-control" />
+                                <span asp-validation-for="ReceiverSecondAddress" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+
                     <div class="form-group">
-                        <label asp-for="ReceiverAdress" class="control-label">收貨人地址</label>
-                        <input asp-for="ReceiverAdress" class="form-control" />
-                        <span asp-validation-for="ReceiverAdress" class="text-danger"></span>
+                        <label asp-for="Note" class="control-label">備註</label>
+                        <textarea asp-for="Note" class="form-control"></textarea>
                     </div>
                 </div>
             </div>
 
         </div>
-        <div class="col-4">
-            <div class="card" style="background-color: #f8f9fa">
-                <input type="hidden" asp-for="OrderItem" />
-                <div class="card-body">
-                    <h5 class="card-title">訂單內容</h5>
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr>
-                                <th>商品名稱</th>
-                                <th>款式</th>
-                                <th>小計</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in ViewBag.CartItems)
-                            {
-                                <tr>
-                                    <td>@item.Product.Name</td>
-                                    <td>@item.ProductStyle.Name</td>
-                                    <td>@item.SubTotal</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <hr />
-                    <div class="text-right">
-                        <input type="hidden" asp-for="Total" />
-                        <p class="card-text font-weight-bolder" style="padding-right:12px">總計:　$ @Model.Total</p>
-                    </div>
-                    <p></p>
-                    <div class="text-center card-link">
-                        <button type="submit" class="btn btn-success w-75">建立訂單</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    </div>
+    <div class="row">
+        <button type="submit" class="btn btn-success w-75">建立訂單</button>
     </div>
 </form>
 <p></p>

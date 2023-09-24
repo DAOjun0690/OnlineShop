@@ -63,7 +63,7 @@
             <div class="col-7">
                 <p>收貨人姓名：@Html.DisplayFor(model => model.ReceiverName)</p>
                 <p>收貨人電話：@Html.DisplayFor(model => model.ReceiverPhone)</p>
-                <p>收貨人地址：@Html.DisplayFor(model => model.ReceiverAdress)</p>
+                <p>收貨人地址：@Html.DisplayFor(m => m.ReceiverFirstAddress) @Html.DisplayFor(m => m.ReceiverSecondAddress)</p>
             </div>
             <div class="col-5">
                 <p>

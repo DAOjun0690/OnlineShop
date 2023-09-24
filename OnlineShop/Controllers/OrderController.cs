@@ -5,6 +5,7 @@ using OnlineShop.Data;
 using OnlineShop.Helpers;
 using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
+using OnlineShop.Core.Dto;
 
 namespace OnlineShop.Controllers;
 
@@ -128,7 +129,7 @@ public class OrderController : Controller
         var userId = _userManager.GetUserId(User);
         var orders = await _context.Order.
             OrderByDescending(k => k.OrderDate).ToListAsync();       //用日期排序
-                                                                         //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
+                                                                     //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
 
         foreach (var item in orders)
         {
@@ -173,7 +174,7 @@ public class OrderController : Controller
     /// 結帳
     /// </summary>
     /// <returns></returns>
-    public IActionResult Checkout()
+    public IActionResult Checkout(OrderCheckutDto dto)
     {
         //確認 Session 內存在購物車
         if (SessionHelper.GetObjectFromJson<List<OrderItem>>(HttpContext.Session, "cart") == null)
@@ -181,14 +182,34 @@ public class OrderController : Controller
             return RedirectToAction("Index", "Cart");
         }
 
+        var DeliveryAddresses = new List<DeliveryAddress>
+            {
+                new DeliveryAddress { Id = 1, Name = "臺灣" },
+                new DeliveryAddress { Id = 2, Name = "中國" },
+                new DeliveryAddress { Id = 3, Name = "香港" },
+            };
+        var DeliveryMethods = new List<DeliveryMethod>
+            {
+                new DeliveryMethod { Id = 1, Name = "中華郵政 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 2, Name = "7-11 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 3, Name = "全家 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 2 },
+                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 3 },
+            };
+
+        ViewData["DeliveryMethods"] = DeliveryMethods;
+
         //建立新的訂單
         var myOrder = new Order()
         {
             UserId = _userManager.GetUserId(User),
             UserName = _userManager.GetUserName(User),
-            OrderItem = SessionHelper.GetObjectFromJson<List<OrderItem>>(HttpContext.Session, "cart")
+            OrderItem = SessionHelper.GetObjectFromJson<List<OrderItem>>(HttpContext.Session, "cart"),
+            SelectedDeliveryAddress = dto.SelectedDeliveryAddress,
+            SelectedDeliveryMethod = dto.SelectedDeliveryMethod,
         };
-        myOrder.Total = myOrder.OrderItem.Sum(m => m.SubTotal);
+        myOrder.Total = myOrder.OrderItem.Sum(m => m.SubTotal) +
+            DeliveryMethods.First(x => x.Id == dto.SelectedDeliveryMethod).Price;
         ViewBag.CartItems = SessionHelper.GetObjectFromJson<List<CartItem>>(HttpContext.Session, "cart");
 
         return View(myOrder);

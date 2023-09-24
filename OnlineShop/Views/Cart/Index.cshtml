@@ -1,30 +1,29 @@
-﻿@model IEnumerable<OnlineShop.Core.Models.CartItem>
+﻿@model OnlineShop.Core.ViewModel.CartIndexViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "購物車";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div>
-    <ul class="progressbar">
-        <li class="active">購物車</li>
-        <li>訂單資料</li>
-        <li>建立訂單</li>
-        <li>付款</li>
-    </ul>
-</div>
-
-<div class="card shadow rounded">
-    <h5 class="card-header">購物車</h5>
-    <div class="card-body">
-        @if (Model != null)
-        {
+@if (Model.CartItems != null)
+{
+    <div>
+        <ul class="progressbar">
+            <li class="active">購物車</li>
+            <li>訂單資料</li>
+            <li>建立訂單</li>
+            <li>付款</li>
+        </ul>
+    </div>
+    <br />
+    <div class="card shadow rounded">
+        <h5 class="card-header">購物車</h5>
+        <div class="card-body">
             <table class="table">
                 <thead class="table-borderless">
                     <tr>
                         @* <th></th> *@
                         <th>商品名稱</th>
-                        <th>款式</th>
                         <th>單價</th>
                         <th>數量</th>
                         <th>小計</th>
@@ -32,15 +31,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.CartItems)
                     {
                         <tr>
                             @* 顯示縮圖 *@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Product.Name)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ProductStyle.Name)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.ProductStyle.Price)
@@ -58,85 +54,154 @@
                     }
                 </tbody>
             </table>
-        }
-        else
-        {
-            <p class="text-center text-dark">購物車內尚無商品</p>
-        }
-        <hr />
-        <div class="row">
-            <div class="col text-right pr-5"> <h5>總計： $@ViewBag.Total</h5></div>
         </div>
-
     </div>
-</div>
-
-<div class="container">
-    <p class="row justify-content-end" style="margin-top:15px;">
+    <br />
+    <form asp-controller="Order" asp-action="Checkout">
+        <div class="row">
+            <div class="col-sm-7 col-md-8">
+                <section>
+                    <div class="section-header">
+                        <h3>選擇送貨及付款方式</h3>
+                    </div>
+                    <div class="section-body">
+                        <p>送貨地點</p>
+                        <select id="DeliveryAddressDropDown" asp-for="SelectedDeliveryAddress" asp-items="@(new SelectList(Model.DeliveryAddresses, "Id", "Name"))"></select>
+                        <p>送貨方式</p>
+                        <select id="DeliveryMethodDropDown" asp-for="SelectedDeliveryMethod"></select>
+                    </div>
+                </section>
+            </div>
+            <div class="col-sm-5 col-md-4">
+                <div class="card" style="background-color: #f8f9fa">
+                    <div class="card-body">
+                        <h5 class="card-title">訂單資訊</h5>
+                        <div class="text-right">
+                            <p class="card-text font-weight-bolder" style="padding-right:12px">小計:　NT$ @Model.Total</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="card-text font-weight-bolder" style="padding-right:12px">
+                                運費:　NT$<div id="freight"></div>
+                            </p>
+                        </div>
+                        <hr />
+                        <div class="text-right">
+                            <p class="card-text font-weight-bolder" style="padding-right:12px">
+                                合計:　NT$<div id="sumfield"></div>
+                            </p>
+                        </div>
+                        <p></p>
+                        <div class="text-center card-link">
+                            <button type="submit" class="btn btn-success w-75">前往結帳</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+else
+{
+    <div class="container">
+        <p>你的購物車是空的</p>
+        <p>記得加入商品到你的購物車</p>
         <a class="btn btn-primary btn-sm text-white" asp-controller="Products" asp-action="Index">繼續購物</a>
-        <a class="btn btn-primary btn-sm text-white mt-3" asp-controller="Order" asp-action="Checkout">前往結帳</a>
-    </p>
-</div>
+    </div>
+}
 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#DeliveryAddressDropDown').change(function () {
+                var selectedValue = $(this).val();
+
+                // 清空第二個下拉選單的所有選項
+                $('#DeliveryMethodDropDown').empty();
+
+                // 根據第一個下拉選單的選擇動態添加選項到第二個下拉選單
+                var methods = @Html.Raw(Json.Serialize(Model.DeliveryMethods));
+                var methodsForSelectedAddress = methods.filter(function (method) {
+                    return method.addressId == selectedValue;
+                });
+
+                $.each(methodsForSelectedAddress, function (index, method) {
+                    $('#DeliveryMethodDropDown').append('<option value="' + method.id + '" data-price="' + method.price + '">' + method.name + '</option>');
+                });
+
+                $('#DeliveryMethodDropDown').trigger('change');
+            });
+
+            $('#DeliveryMethodDropDown').change(function () {
+                debugger;
+                let subtotal = Number('@Model.Total');
+                var selectedValue = Number($(this).find('option:selected').data('price'));
+                $('#freight').text(selectedValue);
+                $('#sumfield').text(subtotal + selectedValue);
+            });
+
+            $('#DeliveryAddressDropDown').trigger('change');
+            $('#DeliveryMethodDropDown').trigger('change');
+        });
+    </script>
+}
 
 <style>
     .progressbar {
         counter-reset: step;
     }
 
-    .progressbar li {
-        list-style-type: none;
-        width: 25%;
-        float: left;
-        font-size: 12px;
-        position: relative;
-        text-align: center;
-        text-transform: uppercase;
-        color: #7d7d7d;
-    }
+        .progressbar li {
+            list-style-type: none;
+            width: 25%;
+            float: left;
+            font-size: 12px;
+            position: relative;
+            text-align: center;
+            text-transform: uppercase;
+            color: #7d7d7d;
+        }
 
-    .progressbar li:before {
-        width: 30px;
-        height: 30px;
-        content: counter(step);
-        counter-increment: step;
-        line-height: 30px;
-        border: 2px solid #7d7d7d;
-        display: block;
-        text-align: center;
-        margin: 0 auto 10px auto;
-        border-radius: 50%;
-        background-color: white;
-    }
+            .progressbar li:before {
+                width: 30px;
+                height: 30px;
+                content: counter(step);
+                counter-increment: step;
+                line-height: 30px;
+                border: 2px solid #7d7d7d;
+                display: block;
+                text-align: center;
+                margin: 0 auto 10px auto;
+                border-radius: 50%;
+                background-color: white;
+            }
 
-    .progressbar li:after {
-        width: 100%;
-        height: 2px;
-        content: '';
-        position: absolute;
-        background-color: #7d7d7d;
-        top: 15px;
-        left: -50%;
-        z-index: -1;
-    }
+            .progressbar li:after {
+                width: 100%;
+                height: 2px;
+                content: '';
+                position: absolute;
+                background-color: #7d7d7d;
+                top: 15px;
+                left: -50%;
+                z-index: -1;
+            }
 
-    .progressbar li:first-child:after {
-        content: none;
-    }
+            .progressbar li:first-child:after {
+                content: none;
+            }
 
-    .progressbar li.active {
-        color: green;
-    }
+            .progressbar li.active {
+                color: green;
+            }
 
-    .progressbar li.active:before {
-        border-color: #55b776;
-    }
+                .progressbar li.active:before {
+                    border-color: #55b776;
+                }
 
-    .progressbar li.active + li:after {
-        background-color: #55b776;
-    }
+                .progressbar li.active + li:after {
+                    background-color: #55b776;
+                }
 </style>
-
 
 
 

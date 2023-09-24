@@ -4,7 +4,6 @@ namespace OnlineShop.Core.Models;
 
 public class Order
 {
-
     /// <summary>
     /// 訂單建立時間
     /// </summary>
@@ -26,27 +25,42 @@ public class Order
     public string UserName { get; set; } = string.Empty;
     public int Total { get; set; }
 
+    public int SelectedDeliveryAddress { get; set; }
+    public int SelectedDeliveryMethod { get; set; }
 
     /// <summary>
-    /// 收貨者姓名
+    /// 收件人姓名
     /// </summary>
-    [Required]
+    [Required(ErrorMessage = "收件人姓名 是必填項目")]
     [MaxLength(200)]
     public string ReceiverName { get; set; }
 
     /// <summary>
-    /// 收貨者地址
+    /// 收件人地址 1
     /// </summary>
-    [Required]
+    [Required(ErrorMessage = "地址 是必填項目")]
     [MaxLength(2000)]
-    public string ReceiverAdress { get; set; }
+    public string ReceiverFirstAddress { get; set; }
 
     /// <summary>
-    /// 收貨者電話
+    /// 收件人地址 2
     /// </summary>
-    [Required]
+    [Required(ErrorMessage = "地址 是必填項目")]
+    [MaxLength(2000)]
+    public string ReceiverSecondAddress { get; set; }
+
+    /// <summary>
+    /// 收件人電話
+    /// </summary>
+    [Required(ErrorMessage = "收件人電話 是必填項目")]
     [MaxLength(200)]
     public string ReceiverPhone { get; set; }
+
+    /// <summary>
+    /// 備註
+    /// </summary>
+    [MaxLength(200)]
+    public string Note { get; set; }
 
     /// <summary>
     /// 付款狀態

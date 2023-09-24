@@ -4,6 +4,7 @@ using OnlineShop.Core.Dto;
 using OnlineShop.Data;
 using OnlineShop.Helpers;
 using OnlineShop.Core.Models;
+using OnlineShop.Core.ViewModel;
 
 namespace OnlineShop.Controllers;
 
@@ -19,18 +20,28 @@ public class CartController : Controller
     public IActionResult Index()
     {
         List<CartItem> CartItems = SessionHelper.GetObjectFromJson<List<CartItem>>(HttpContext.Session, "cart");
-
-        if (CartItems != null)
+        CartIndexViewModel viewModel = new CartIndexViewModel()
         {
-            // 計算商品總額
-            ViewBag.Total = CartItems.Sum(m => m.SubTotal);
-        }
-        else
-        {
-            ViewBag.Total = 0;
-        }
+            CartItems = CartItems,
+            DeliveryAddresses = new List<DeliveryAddress>
+            {
+                new DeliveryAddress { Id = 1, Name = "臺灣" },
+                new DeliveryAddress { Id = 2, Name = "中國" },
+                new DeliveryAddress { Id = 3, Name = "香港" },
+            },
+            DeliveryMethods = new List<DeliveryMethod>
+            {
+                new DeliveryMethod { Id = 1, Name = "中華郵政 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 2, Name = "7-11 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 3, Name = "全家 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 2 },
+                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 3 },
+            }
+        };
 
-        return View(CartItems);
+
+
+        return View(viewModel);
     }
 
     /// <summary>
