@@ -1,9 +1,33 @@
 ﻿@model ProductDetailViewModel
 
 @{
-    ViewData["Title"] = Model.Name;
+    ViewData["Title"] = "商品詳細頁面";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<style>
+    .img-selector {
+        height: 5rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .selected-img {
+        height: 30rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .img-selector img, .selected-img img {
+        object-fit: cover;
+        object-position: center center;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+</style>
 
 <form id="DetailForm">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -13,70 +37,94 @@
         <div class="col pb-3">
             <div class="row">
                 <div class="col-lg-7 col-sm-12">
-                    <div class="row">
-                        <div class="col-2">
-                            @if (Model.ProductImage != null && Model.ProductImage.Any())
-                            {
+                    @if (Model.ProductImage != null && Model.ProductImage.Any())
+                    {
+                        <div class="row">
+                            <div class="col-2" style="overflow-y: scroll;">
                                 @foreach (ProductImage image in Model.ProductImage)
                                 {
                                     <div class="row img-selector mb-1">
-                                        <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) alt="ring">
+                                        <img onclick="selectImg($(this));" alt="..." class="rounded" data-guid="@image.Guid"
+                                             src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "S" })>
                                     </div>
                                 }
-                            }
+                            </div>
+                            <div class="col-10">
+                                @foreach (ProductImage image in Model.ProductImage)
+                                {
+                                    <div class="row selected-img" style="display: none;">
+                                        <img data-guid="@image.Guid" alt="..."
+                                             src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" })>
+                                    </div>
+                                }
+                            </div>
                         </div>
-                        <div class="col-10"></div>
-                    </div>
+                    }
                 </div>
                 <div class="col-lg-5 col-sm-12">
-                    <h4>@Html.DisplayFor(m => m.Name)</h4>
+                    <h2 class="fw-bold">@Html.DisplayFor(m => m.Name)</h2>
                     <pre>@Html.DisplayFor(m => m.Description)</pre>
-                    <p>製造方式: @Model.ManufacturingMethod.GetDescription()</p>
-                    <p>
-                        製作時間:
-                        @if (Model.ManufacturingTime == ManufacturingTime.InStock)
-                        {
+                    @if (Model.fromWhere == "ProductManagement")
+                    {
+                        <p>製造方式: @Model.ManufacturingMethod.GetDescription()</p>
                         <p>
-                                @Model.ManufacturingTime.GetDescription()
+                            製作時間:
+                            @if (Model.ManufacturingTime == ManufacturingTime.InStock)
+                            {
+                            <p>@Model.ManufacturingTime.GetDescription()</p>
+                            }
+                            else if (Model.ManufacturingTime == ManufacturingTime.Custom)
+                            {
+                            <p>接單訂製，付款後須等待 @Model.ManufacturingCustomDate 個工作天</p>
+                            }
                         </p>
-                        }
-                        else if (Model.ManufacturingTime == ManufacturingTime.Custom)
-                        {
-                        <p>
-                            接單訂製，付款後須等待 @Model.ManufacturingCustomDate 個工作天
-                        </p>
-                        }
-                    </p>
+                    }
                     <hr />
-                    <br />
                     <pre>@Html.DisplayFor(m => m.Promotion)</pre>
                     <h5 id="price" class="text-black fw-bold"></h5>
                     @* 款式 *@
-                    <p class="alert-light m-0 mt-2">款式</p>
-                    <select id="productStyles" class="form-select">
-                        @foreach (var item in Model.ProductStylesList)
-                        {
-                            <option value="@item.Id" data-price="@item.Price" data-stock="@item.Stock">@item.Name</option>
-                        }
-                    </select>
+                    <div id="styleArea">
+                        <p class="alert-light m-0 mt-2">款式</p>
+                        <select id="productStyles" class="form-select">
+                            @foreach (var item in Model.ProductStylesList)
+                            {
+                                <option value="@item.Id" data-price="@item.Price" data-stock="@item.Stock">@item.Name</option>
+                            }
+                        </select>
+                    </div>
                     <div class="form-group mt-2">
                         <label class="control-label alert-light">數量</label>
-                        <input type="number" id="Amount" class="form-control" value="0" />
+                        <input type="number" id="Amount" class="form-control" value="0" min="0" />
                     </div>
-                    <div class="form-group mt-4">
-                        <input type="submit" value="加入購物車" class="btn btn-outline-primary w-100" />
-                    </div>
+                    @if (Model.fromWhere == "Products")
+                    {
+                        <div class="form-group mt-4">
+                            <input type="submit" value="加入購物車" class="btn btn-outline-primary w-100" />
+                        </div>
+                    }
                     <div class="form-group mt-3">
-                        <a asp-controller="ProductManagement" asp-action="Index" class="btn btn-outline-secondary w-100">返回上一頁</a>
+                        <a asp-controller="@Model.fromWhere" asp-action="Index" class="btn btn-outline-secondary w-100">返回上一頁</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <hr />
-    <div class="row">
-        <div class="col">
-            @Html.Raw(Model.Content)
+    <div class="container text-center">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a id="content-tab" class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#content-area"
+                   type="button" role="tab" aria-controls="#content-area" aria-selected="true" href="#">@Html.DisplayNameFor(m => m.Content)</a>
+            </li>
+            <li class="nav-item">
+                <a id="delivery-tab" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#delivery-area"
+                   type="button" role="tab" aria-controls="#delivery-area" aria-selected="false" href="#">送貨及付款方式</a>
+            </li>
+        </ul>
+        <div class="tab-content pt-3">
+            <div id="content-area" class="tab-pane fade show active" aria-labelledby="content-tab">
+                @Html.Raw(Model.Content)
+            </div>
+            <div id="delivery-area" class="tab-pane fade" aria-labelledby="delivery-tab"></div>
         </div>
     </div>
 </form>
@@ -91,11 +139,33 @@
             toastr["success"]("商品已加入購物車！");
         }
 
+        /**
+         * target: $(element)
+         */
+        function selectImg(target) {
+            // 元素為空
+            if (target.length == 0) return;
+
+            // 隱藏大圖 Div
+            $(".selected-img").hide();
+
+            let guid = target?.data("guid");
+            if (guid != null && guid !== "") {
+                // 取得距離欲顯示圖片最近的 Div
+                let selectedDiv = $(`.selected-img img[data-guid="${guid}"]`).closest("div");
+                $(selectedDiv).show();
+            }
+
+            $(".img-selector").removeClass("border border-success");
+            // 距離選取圖片最近的 Div 加上 Border
+            target.closest("div").addClass("border border-success");
+        }
+
         $(document).ready(function () {
             // 綁定 款式異動事件
             $('#productStyles').change(function () {
                 let price = $('option:selected', this).attr('data-price');
-                $('#price').text(price);
+                $('#price').text("NT$" + price);
 
                 let stock = $('option:selected', this).attr('data-stock');
                 $('#stock').text(stock);
@@ -125,6 +195,17 @@
                     }
                 });
             });
+
+            let selector = $(".img-selector img");
+            if (selector.length != 0) {
+                // 預設顯示第一張
+                selectImg($(selector[0]));
+            }
+
+            let styleCnt = '@Model.ProductStylesList.Count';
+            if (styleCnt <= 1) {
+                $("#styleArea").hide();
+            }
         });
     </script>
 }

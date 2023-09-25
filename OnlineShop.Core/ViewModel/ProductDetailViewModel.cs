@@ -47,4 +47,9 @@ public class ProductDetailViewModel
     public string CategoryName { get; set; }
 
     public IList<ProductStyle> ProductStylesList { get; set; }
+
+    /// <summary>
+    /// 從哪個頁面跳轉而來
+    /// </summary>
+    public string fromWhere { get; set; }
 }

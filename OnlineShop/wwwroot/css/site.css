@@ -16,19 +16,3 @@ html {
 body {
   margin-bottom: 60px;
 }
-
-.img-selector {
-    height: 5rem;
-    overflow: hidden;
-    position: relative;
-}
-
-.img-selector img {
-    object-fit: cover;
-    object-position: center center;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
