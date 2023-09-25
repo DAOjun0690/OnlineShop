@@ -26,7 +26,7 @@
             @if (Model.ProductImage != null && Model.ProductImage.Any())
             {
                 var image = Model.ProductImage[0];
-                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid }) alt="ring">
+                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" }) alt="ring">
             }
         </div>
         <div class="col-lg-6 col-sm-12">

@@ -109,7 +109,7 @@ public class ProductsController : Controller
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<IActionResult> Details(int? id)
+    public async Task<IActionResult> Details(int? id, string fromWhere)
     {
         if (id == null || _context.Product == null)
         {
@@ -143,6 +143,9 @@ public class ProductsController : Controller
 
         // 商品款式
         viewModel.ProductStylesList = product.ProductStyles.ToList();
+
+        // 從哪個頁面跳轉而來
+        viewModel.fromWhere = fromWhere;
 
         return View(viewModel);
     }

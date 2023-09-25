@@ -82,23 +82,23 @@
                     {
                         @* <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid })
                 class="card-img-top" title="@item.ProductName" data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId"> *@
-                        <a href="@Url.Action("Details", new { Id = item.ProductId })">
-                            <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid })
-                                 alt="..." class="card-img-top" title="@item.ProductName" data-bs-pId="@item.ProductId" />
+                        <a href="@Url.Action("Details", new { Id = item.ProductId, fromWhere = "Products" })">
+                            <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid, tag = "M" })
+                                 alt="..." class="card-img-top" title="@item.ProductName" />
                         </a>
                     }
                     else
                     {
                         @* <img src="" alt="..." class="card-img-top" title="@item.ProductName"
                 data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId"> *@
-                        <a href="@Url.Action("Details", new { Id = item.ProductId })">
-                            <img src="" alt="..." class="card-img-top" title="@item.ProductName" data-bs-pId="@item.ProductId" />
+                        <a href="@Url.Action("Details", new { Id = item.ProductId, fromWhere = "Products" })">
+                            <img alt="..." class="card-img-top" title="@item.ProductName" />
                         </a>
                     }
                     <div class="card-img-btn-area text-center">
                         @if (item.Stock > 1)
                         {
-                            <a class="btn btn-outline-secondary w-75" asp-action="Details" asp-route-id="@item.ProductId">購買</a>
+                            <a class="btn btn-outline-secondary w-75" href="@Url.Action("Details", new { Id = item.ProductId, fromWhere = "Products" })">購買</a>
                         }
                         else if (item.Status == ProductStatus.Sold)
                         {

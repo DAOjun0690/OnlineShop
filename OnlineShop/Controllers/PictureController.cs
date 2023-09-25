@@ -2,6 +2,9 @@
 using Microsoft.CodeAnalysis;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Drawing;
 
 namespace OnlineShop.Controllers;
 
@@ -73,19 +76,6 @@ public class PictureController : Controller
                 if (file.Length > 0 && file.Length < 15000000)  // About 15MB
                 {
                     Guid guid = Guid.NewGuid();
-                    var fileName = guid + Path.GetExtension(file.FileName).ToLower();
-
-                    var filePath = Path.Combine(ServerDestinationPath, fileName);
-                    if (!Directory.Exists(Path.GetDirectoryName(filePath)))
-                    {
-                        // 新增資料夾
-                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                    }
-                    using (FileStream stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        // 程式寫入的本地資料夾裡面
-                        await file.CopyToAsync(stream);
-                    }
 
                     // 將資料寫到db
                     ProductImage image = new ProductImage
@@ -97,6 +87,21 @@ public class PictureController : Controller
                         Type = ProductImageType.Detail
                     };
                     _context.ProductImage.Add(image);
+
+                    // 寫入本地資料夾裡面
+                    using (var stream = new MemoryStream())
+                    {
+                        await file.CopyToAsync(stream);
+                        string saveName = guid + Path.GetExtension(file.FileName).ToLower();
+                        // Create two new image sizes
+                        string thumbPath = Path.Combine(ServerDestinationPath, "thumb", saveName);
+                        DirectoryExists(thumbPath);
+                        ResizeImage(stream, thumbPath, 120);
+
+                        string mediumPath = Path.Combine(ServerDestinationPath, "medium", saveName);
+                        DirectoryExists(mediumPath);
+                        AdjustImgQualityLevel(stream, mediumPath);
+                    }
 
                     seq += 1;
                     returnData.Add(file.FileName, guid.ToString());
@@ -176,8 +181,9 @@ public class PictureController : Controller
     /// </summary>
     /// <param name="productId"></param>
     /// <param name="guid"></param>
+    /// <param name="tag"></param>
     /// <returns></returns>
-    public async Task<IActionResult> Download(int productId, Guid guid)
+    public async Task<IActionResult> Download(int productId, Guid guid, string tag = "")
     {
         InitProperties(productId);
 
@@ -194,6 +200,12 @@ public class PictureController : Controller
         {
             filePath = Path.Combine(ServerDestinationPath, "Content", image.Guid + Path.GetExtension(image.FileName).ToLower());
         }
+        else if (image.Type == ProductImageType.Detail)
+        {
+            // 目前開兩種檔案大小
+            string sizeDir = tag == "M" ? "medium" : "thumb";
+            filePath = Path.Combine(ServerDestinationPath, sizeDir, image.Guid + Path.GetExtension(image.FileName).ToLower());
+        }
 
         var memoryStream = new MemoryStream();
         using (var stream = new FileStream(filePath, FileMode.Open))
@@ -205,7 +217,7 @@ public class PictureController : Controller
         // 回傳檔案到 Client 需要附上 Content Type，否則瀏覽器會解析失敗。
         return new FileStreamResult(memoryStream,
                                     _contentTypes[Path.GetExtension(filePath).ToLowerInvariant()])
-        { FileDownloadName = image.FileName };
+        { FileDownloadName = Path.GetFileName(filePath) };
     }
 
     /// <summary>
@@ -230,5 +242,94 @@ public class PictureController : Controller
         await _context.SaveChangesAsync();
 
         return Json(true);
+    }
+
+    /// <summary>
+    /// 檢查路徑的資料夾是否存在
+    /// 不在就新建一個
+    /// </summary>
+    /// <param name="filePath"></param>
+    private void DirectoryExists(string filePath)
+    {
+        string dirPath = Path.GetDirectoryName(filePath);
+        if (!Directory.Exists(dirPath))
+        {
+            // 新增資料夾
+            Directory.CreateDirectory(dirPath);
+        }
+    }
+
+    /// <summary>
+    /// Resize an image to a specified width. Aspect ratio is preserved.
+    /// The source image is not altered.
+    /// This will work if hosted on Windows. Not tried on other platforms,
+    /// but unlikely to work as written.
+    /// </summary>
+    /// <param name="imgStream"></param>
+    /// <param name="filePath"></param>
+    /// <param name="imgWidth"></param>
+    private void ResizeImage(MemoryStream imgStream, string filePath, int imgWidth)
+    {
+        using (var image = new Bitmap(imgStream))
+        {
+            // Calculate the new height of the image given its desired width
+            int height = (int)Math.Round(image.Height * (imgWidth / (float)image.Width));
+            var resized = new Bitmap(imgWidth, height);
+            using (var graphics = Graphics.FromImage(resized))
+            {
+                graphics.CompositingQuality = CompositingQuality.HighSpeed;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.DrawImage(image, 0, 0, imgWidth, height);
+                resized.Save(filePath, ImageFormat.Jpeg);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 壓縮圖片品質
+    /// </summary>
+    /// <param name="imgStream"></param>
+    /// <param name="filePath"></param>
+    /// <param name="value"></param>
+    private void AdjustImgQualityLevel(MemoryStream imgStream, string filePath, long quality = 50L)
+    {
+        using (var image = new Bitmap(imgStream))
+        {
+            ImageCodecInfo imgEncoder = GetEncoder(image.RawFormat);
+
+            // Create an Encoder object based on the GUID  
+            // for the Quality parameter category.
+            Encoder encoder = Encoder.Quality;
+
+            // Create an EncoderParameters object.  
+            // An EncoderParameters object has an array of EncoderParameter  
+            // objects. In this case, there is only one  
+            // EncoderParameter object in the array.  
+            EncoderParameters encoderParams = new EncoderParameters(1);
+
+            // Save the bitmap with 50 quality level compression.
+            encoderParams.Param[0] = new EncoderParameter(encoder, quality);
+
+            image.Save(filePath, imgEncoder, encoderParams);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="format"></param>
+    /// <returns></returns>
+    private ImageCodecInfo GetEncoder(ImageFormat format)
+    {
+        ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
+        foreach (ImageCodecInfo codec in codecs)
+        {
+            if (codec.FormatID == format.Guid)
+            {
+                return codec;
+            }
+        }
+        return null;
     }
 }
