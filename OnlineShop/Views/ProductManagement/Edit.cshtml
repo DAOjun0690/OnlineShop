@@ -72,7 +72,7 @@
                         </label>
                         <label>
                             <input type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.Custom" />
-                            接單訂製，付款後須等待 <input type="number" asp-for="ManufacturingCustomDate" /> 工作天。
+                            接單訂製，付款後須等待 <input type="number" asp-for="ManufacturingCustomDate" min="0" /> 工作天。
                         </label>
                     </div>
                 </div>
@@ -156,7 +156,7 @@
                     foreach (ProductImage image in Model.ProductImage)
                     {
                         <div class="product-image col-lg-3 col-md-6 col-sm-1 text-center">
-                            <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" }) alt="ring">
+                            <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" }) height="142" alt="ring">
                             <i class="fas fa-times-circle" onclick="deletePicture(this, '@image.Guid')"></i>
                         </div>
                     }
@@ -214,8 +214,8 @@
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
             cell0.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
-            cell1.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Price" />';
-            cell2.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Stock" />';
+            cell1.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Price" min="1" />';
+            cell2.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Stock" min="1" />';
             cell3.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
         }
 
@@ -305,9 +305,6 @@
                     $('#formSubmitBtn').removeClass('d-none');
                 }
             });
-
-            // 促銷欄位 可以為空
-            // $("#Promotion").rules("remove", "required");
         });
 
     </script>
