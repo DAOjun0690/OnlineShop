@@ -15,7 +15,7 @@
         </ul>
     </div>
     <br />
-    <div class="card shadow rounded">
+    <div class="row card shadow rounded">
         <h5 class="card-header">購物車</h5>
         <div class="card-body">
             <table class="table">
@@ -131,7 +131,6 @@ else
             });
 
             $('#DeliveryMethodDropDown').change(function () {
-                debugger;
                 let subtotal = Number('@Model.Total');
                 var selectedValue = Number($(this).find('option:selected').data('price'));
                 $('#freight').text(selectedValue);
@@ -151,7 +150,7 @@ else
 
         .progressbar li {
             list-style-type: none;
-            width: 25%;
+            width: 33%;
             float: left;
             font-size: 12px;
             position: relative;

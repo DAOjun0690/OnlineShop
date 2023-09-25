@@ -74,7 +74,7 @@ public class OrderController : Controller
     /// </summary>
     /// <param name="Id"></param>
     /// <returns></returns>
-    public async Task<IActionResult> Details(int? Id)
+    public async Task<IActionResult> Details(int? Id, int fromReview)
     {
         // 取得訂單物件
         var order = await _context.Order.FirstOrDefaultAsync(m => m.Id == Id);
@@ -82,39 +82,16 @@ public class OrderController : Controller
         // 如果找不到訂單，返回NotFound結果
         if (order == null)
         {
-            return NotFound();
+            return View(new OrderViewModel());
         }
 
         // 取得當前使用者物件
         var user = await _userManager.GetUserAsync(User);
 
         // 判斷當前使用者是否可以查閱訂單
-        switch (order.UserId)
+        if (!CanUserViewOrder(order, user))
         {
-            // 如果訂單沒有使用者Id，表示是未登入者所提繳的訂單
-            case "":
-                // 如果當前使用者也沒有登入，則可以查閱
-                if (user == null)
-                {
-                    break;
-                }
-                // 否則，返回NotFound結果
-                else
-                {
-                    return NotFound();
-                }
-            // 如果訂單有使用者Id，表示是已登入者所提繳的訂單
-            default:
-                // 如果當前使用者也有登入，且Id與訂單相同，或是屬於Admin角色，則可以查閱
-                if (user != null && (order.UserId == user.Id || await _userManager.IsInRoleAsync(user, "Admin")))
-                {
-                    break;
-                }
-                // 否則，返回NotFound結果
-                else
-                {
-                    return NotFound();
-                }
+            return View(new OrderViewModel());
         }
 
         // 取得訂單項目物件
@@ -130,10 +107,29 @@ public class OrderController : Controller
             CartItems = orderItems,
             DeliveryAddressName = _DeliveryAddresses.First(x => x.Id == order.SelectedDeliveryAddress).Name,
             DeliveryMethodName = _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Name,
+            fromReview = fromReview
         };
 
         // 返回View結果
         return View(viewModel);
+    }
+
+    /// <summary>
+    /// 判斷當前使用者是否可以查閱訂單
+    /// </summary>
+    /// <param name="order"></param>
+    /// <param name="user"></param>
+    /// <returns></returns>
+    private bool CanUserViewOrder(Order order, OnlineShopUser user)
+    {
+        bool isUserAdmin = user != null && _userManager.IsInRoleAsync(user, "Admin").Result;
+
+        if (string.IsNullOrWhiteSpace(order.UserId))
+        {
+            return user == null || isUserAdmin;
+        }
+
+        return isUserAdmin || user != null && order.UserId == user.Id;
     }
 
     /// <summary>
@@ -259,27 +255,28 @@ public class OrderController : Controller
     /// <returns></returns>
     public async Task<IActionResult> ReviewOrder(int? Id)
     {
-        if (Id == null)
-        {
-            return NotFound();
-        }
+        //if (Id == null)
+        //{
+        //    return NotFound();
+        //}
 
-        var order = await _context.Order.FirstOrDefaultAsync(m => m.Id == Id);
-        if (order.UserId != (_userManager.GetUserId(User) ?? ""))
-        {
-            return NotFound();
-        }
-        else
-        {
-            order.OrderItem = await _context.OrderItem.Where(p => p.OrderId == Id).ToListAsync();
-            order.Total = order.OrderItem.Sum(m => m.SubTotal) +
-                _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Price;
-            ViewBag.orderItems = GetOrderItems(order.Id);
-            ViewBag.DeliveryAddressName = _DeliveryAddresses.First(x => x.Id == order.SelectedDeliveryAddress).Name;
-            ViewBag.DeliveryMethodName = _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Name;
-        }
+        //var order = await _context.Order.FirstOrDefaultAsync(m => m.Id == Id);
+        //if (order.UserId != (_userManager.GetUserId(User) ?? ""))
+        //{
+        //    return NotFound();
+        //}
+        //else
+        //{
+        //    order.OrderItem = await _context.OrderItem.Where(p => p.OrderId == Id).ToListAsync();
+        //    order.Total = order.OrderItem.Sum(m => m.SubTotal) +
+        //        _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Price;
+        //    ViewBag.orderItems = GetOrderItems(order.Id);
+        //    ViewBag.DeliveryAddressName = _DeliveryAddresses.First(x => x.Id == order.SelectedDeliveryAddress).Name;
+        //    ViewBag.DeliveryMethodName = _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Name;
+        //}
 
-        return View(order);
+        //return View(order);
+        return RedirectToAction("Details", new { Id = Id, fromReview = 1 });
     }
 
     /// <summary>
