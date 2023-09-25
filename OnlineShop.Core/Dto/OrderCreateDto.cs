@@ -1,17 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OnlineShop.Core.Models;
+namespace OnlineShop.Core.Dto;
 
-public class Order
+public class OrderCreateDto
 {
-    /// <summary>
-    /// 訂單建立時間
-    /// </summary>
-    [DisplayFormat(DataFormatString = "{0:000000}")]
-    public int Id { get; set; }
-
-    public DateTime OrderDate { get; set; }
-
     /// <summary>
     /// 付款者ID
     /// </summary>
@@ -23,9 +15,14 @@ public class Order
     /// </summary>
     [MaxLength(200)]
     public string UserName { get; set; } = string.Empty;
-    public int Total { get; set; }
 
+    /// <summary>
+    /// 送貨地點
+    /// </summary>
     public int SelectedDeliveryAddress { get; set; }
+    /// <summary>
+    /// 送貨方式
+    /// </summary>
     public int SelectedDeliveryMethod { get; set; }
 
     /// <summary>
@@ -61,14 +58,4 @@ public class Order
     /// </summary>
     [MaxLength(200)]
     public string? Note { get; set; }
-
-    /// <summary>
-    /// 付款狀態
-    /// </summary>
-    public bool isPaid { get; set; }
-
-    /// <summary>
-    /// 訂單內容
-    /// </summary>
-    public List<OrderItem> OrderItem { get; set; }
 }

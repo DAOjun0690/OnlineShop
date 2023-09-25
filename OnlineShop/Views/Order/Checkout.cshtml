@@ -17,17 +17,20 @@
         <li class="active">購物車</li>
         <li class="active">訂單資料</li>
         <li>建立訂單</li>
-        <li>付款</li>
     </ul>
     <p>　</p>
     <p>　</p>
 </div>
 <hr />
-<h4>合計: NT$ @Model.Total </h4>
+<h4 style="text-align: center;">合計: NT$ @Model.Total </h4>
 <hr />
+
+<h6>已選擇的送貨方式: @DeliveryMethodName</h6>
 <form asp-action="CreateOrder">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="SelectedDeliveryAddress" />
+    <input type="hidden" asp-for="SelectedDeliveryMethod" />
     <div class="row">
         <div class="col-12">
             @if (SignInManager.IsSignedIn(User))
@@ -60,7 +63,6 @@
                         </div>
                     </div>
 
-                    <div>已選擇的送貨方式: @DeliveryMethodName</div>
                     @if (Model.SelectedDeliveryAddress == 1 && Model.SelectedDeliveryMethod == 1)
                     {
                         <div class="row">

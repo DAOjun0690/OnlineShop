@@ -194,7 +194,7 @@ public class ProductManagementController : Controller
                 // 指定欄位map
                 model.Name = dto.Name;
                 model.Description = dto.Description;
-                model.Promotion = dto.Promotion;
+                model.Promotion = dto.Promotion ?? string.Empty;
                 model.Content = dto.Content;
                 model.Status = dto.Status;
                 model.CategoryId = dto.CategoryId;

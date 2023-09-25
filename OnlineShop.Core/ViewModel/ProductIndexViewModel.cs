@@ -24,7 +24,7 @@ public class ProductIndexViewModel
     /// 商品促銷
     /// </summary>
     /// 促銷屬性可以為空字串
-    public string Promotion { get; set; } = string.Empty;
+    public string? Promotion { get; set; }
     /// <summary>
     /// 商品描述
     /// </summary>

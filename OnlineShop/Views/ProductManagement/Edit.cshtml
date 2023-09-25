@@ -4,7 +4,7 @@
     ViewData["Title"] = "編輯頁面";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>編輯頁面</h1>
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -54,7 +54,7 @@
                 <div class="col-6">
                     @* 製造方式 *@
                     <label class="control-label">製造方式</label>
-                    <div class="form-group">                        
+                    <div class="form-group">
                         <label>
                             <input type="radio" asp-for="ManufacturingMethod" value="@ManufacturingMethod.Manual" /> 手工製造
                         </label>
@@ -66,12 +66,12 @@
                 <div class="col-6">
                     @* 製作時間 *@
                     <label class="control-label">製作時間</label>
-                    <div class="form-group">                        
+                    <div class="form-group">
                         <label>
                             <input type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.InStock" /> 現貨
                         </label>
                         <label>
-                            <input type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.Custom" /> 
+                            <input type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.Custom" />
                             接單訂製，付款後須等待 <input type="number" asp-for="ManufacturingCustomDate" /> 工作天。
                         </label>
                     </div>
@@ -196,8 +196,8 @@
             .create(document.querySelector('#editor'), {
                 removePlugins: ['ImageResize', 'ImageStyle', 'ImageToolbar'],
                 ckfinder: {
-                    uploadUrl: '/Picture/UploadContent?productId=' + @Model.ProductId
-                                                                        }
+                    uploadUrl: '/Picture/UploadContent?productId=' + '@Model.ProductId'
+                }
             })
             .catch(error => {
                 console.error(error);
@@ -305,6 +305,9 @@
                     $('#formSubmitBtn').removeClass('d-none');
                 }
             });
+
+            // 促銷欄位 可以為空
+            // $("#Promotion").rules("remove", "required");
         });
 
     </script>

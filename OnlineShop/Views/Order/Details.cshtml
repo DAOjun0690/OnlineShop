@@ -13,9 +13,14 @@
     <div class="card-body">
 
         <h5>訂單編號：@Html.DisplayFor(m => m.Order.Id)</h5>
+        @if (!string.IsNullOrWhiteSpace(Model.Order.UserName))
+        {
+            <div class="row">
+                訂購帳號: <div class="col"><p class="text-muted">@Html.DisplayFor(m => m.Order.UserName)</p></div>
+            </div>
+        }        
         <div class="row">
-            <div class="col"><p class="text-muted">@Html.DisplayFor(m => m.Order.UserName)</p></div>
-            <div class="col text-right"><p class="text-muted">@Html.DisplayFor(m => m.Order.OrderDate)</p></div>
+            訂購時間: <div class="col"><p class="text-muted">@Html.DisplayFor(m => m.Order.OrderDate)</p></div>
         </div>
 
         <div>
@@ -23,7 +28,6 @@
                 <thead>
                     <tr>
                         <th>商品名稱</th>
-                        <th>款式</th>
                         <th>數量</th>
                         <th>小計</th>
                     </tr>
@@ -32,8 +36,7 @@
                     @foreach (var item in Model.CartItems)
                     {
                         <tr>
-                            <td>@item.Product.Name</td>
-                            <td>@item.ProductStyle.Name</td>
+                            <td>@item.Product.Name (@item.ProductStyle.Name) </td>
                             <td>@item.Amount</td>
                             <td>@item.SubTotal</td>
                         </tr>
@@ -50,8 +53,10 @@
                 <p>收貨人姓名：@Html.DisplayFor(m => m.Order.ReceiverName)</p>
                 <p>收貨人電話：@Html.DisplayFor(m => m.Order.ReceiverPhone)</p>
                 <p>收貨人地址：@Html.DisplayFor(m => m.Order.ReceiverFirstAddress) @Html.DisplayFor(m => m.Order.ReceiverSecondAddress)</p>
+                <p>送貨地點：@Html.DisplayFor(m => m.DeliveryAddressName)</p>
+                <p>送貨方式：@Html.DisplayFor(m => m.DeliveryMethodName)</p>
             </div>
-            <div class="col-5">
+            @* <div class="col-5">
                 <p>
                     訂單狀態：
                     @if (Model.Order.isPaid)
@@ -63,7 +68,7 @@
                         <span>未付款</span>
                     }
                 </p>
-            </div>
+            </div> *@
         </div>
 
     </div>

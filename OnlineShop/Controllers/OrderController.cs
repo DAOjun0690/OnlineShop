@@ -17,6 +17,21 @@ public class OrderController : Controller
     private readonly OnlineShopContext _context;
     private readonly UserManager<OnlineShopUser> _userManager;
 
+    private readonly List<DeliveryAddress> _DeliveryAddresses = new List<DeliveryAddress>
+            {
+                new DeliveryAddress { Id = 1, Name = "臺灣" },
+                new DeliveryAddress { Id = 2, Name = "中國" },
+                new DeliveryAddress { Id = 3, Name = "香港" },
+            };
+    private readonly List<DeliveryMethod> _DeliveryMethods = new List<DeliveryMethod>
+            {
+                new DeliveryMethod { Id = 1, Name = "中華郵政 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 2, Name = "7-11 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 3, Name = "全家 NT$60", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 2 },
+                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 3 },
+            };
+
     public OrderController(OnlineShopContext context,
                            UserManager<OnlineShopUser> userManager)
     {
@@ -104,14 +119,17 @@ public class OrderController : Controller
 
         // 取得訂單項目物件
         order.OrderItem = await _context.OrderItem.Where(p => p.OrderId == Id).ToListAsync();
-
+        order.Total = order.OrderItem.Sum(m => m.SubTotal) +
+            _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Price;
         // 取得商品詳細資料
         var orderItems = GetOrderItems(order.Id);
 
         OrderViewModel viewModel = new OrderViewModel()
         {
             Order = order,
-            CartItems = orderItems
+            CartItems = orderItems,
+            DeliveryAddressName = _DeliveryAddresses.First(x => x.Id == order.SelectedDeliveryAddress).Name,
+            DeliveryMethodName = _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Name,
         };
 
         // 返回View結果
@@ -182,22 +200,7 @@ public class OrderController : Controller
             return RedirectToAction("Index", "Cart");
         }
 
-        var DeliveryAddresses = new List<DeliveryAddress>
-            {
-                new DeliveryAddress { Id = 1, Name = "臺灣" },
-                new DeliveryAddress { Id = 2, Name = "中國" },
-                new DeliveryAddress { Id = 3, Name = "香港" },
-            };
-        var DeliveryMethods = new List<DeliveryMethod>
-            {
-                new DeliveryMethod { Id = 1, Name = "中華郵政 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 2, Name = "7-11 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 3, Name = "全家 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 2 },
-                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 3 },
-            };
-
-        ViewData["DeliveryMethods"] = DeliveryMethods;
+        ViewData["DeliveryMethods"] = _DeliveryMethods;
 
         //建立新的訂單
         var myOrder = new Order()
@@ -209,7 +212,7 @@ public class OrderController : Controller
             SelectedDeliveryMethod = dto.SelectedDeliveryMethod,
         };
         myOrder.Total = myOrder.OrderItem.Sum(m => m.SubTotal) +
-            DeliveryMethods.First(x => x.Id == dto.SelectedDeliveryMethod).Price;
+            _DeliveryMethods.First(x => x.Id == dto.SelectedDeliveryMethod).Price;
         ViewBag.CartItems = SessionHelper.GetObjectFromJson<List<CartItem>>(HttpContext.Session, "cart");
 
         return View(myOrder);
@@ -221,11 +224,21 @@ public class OrderController : Controller
     /// <param name="order"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> CreateOrder(Order order)
+    public async Task<IActionResult> CreateOrder(OrderCreateDto dto)
     {
         //新增訂單到資料庫
         if (ModelState.IsValid)
         {
+            Order order = new Order();
+            order.UserId = dto.UserId;
+            order.UserName = dto.UserName;
+            order.ReceiverName = dto.ReceiverName;
+            order.ReceiverPhone = dto.ReceiverPhone;
+            order.ReceiverFirstAddress = dto.ReceiverFirstAddress;
+            order.ReceiverSecondAddress = dto.ReceiverSecondAddress;
+            order.Note = dto.Note ?? string.Empty;
+            order.SelectedDeliveryAddress = dto.SelectedDeliveryAddress;
+            order.SelectedDeliveryMethod = dto.SelectedDeliveryMethod;
             order.OrderDate = DateTime.Now;
             order.isPaid = false;
             order.OrderItem = SessionHelper.GetObjectFromJson<List<OrderItem>>(HttpContext.Session, "cart");
@@ -259,7 +272,11 @@ public class OrderController : Controller
         else
         {
             order.OrderItem = await _context.OrderItem.Where(p => p.OrderId == Id).ToListAsync();
+            order.Total = order.OrderItem.Sum(m => m.SubTotal) +
+                _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Price;
             ViewBag.orderItems = GetOrderItems(order.Id);
+            ViewBag.DeliveryAddressName = _DeliveryAddresses.First(x => x.Id == order.SelectedDeliveryAddress).Name;
+            ViewBag.DeliveryMethodName = _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Name;
         }
 
         return View(order);

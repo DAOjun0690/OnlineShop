@@ -5,13 +5,12 @@ Add-Migration
 ### 待實現
 UI 兔子化
 解釋跟促銷 套 ckeditor
-促銷 的前端驗證移除
-促銷 詳細葉面 無字串 不顯示
-商品列表 我想多顯示 當前搜尋商品狀態
-分類頁表\ - 為了編輯分類
+分類頁表 layout 為了編輯分類
 viewdata["title"] 改用 onlineShop 
 編輯的詳細頁面 與商品的詳細頁面 可以用同一頁，購買按鈕隱藏這樣
-購買十 數量要再作驗證
+購買時 後端數量要再作驗證
+購買時 前端最小設為0
+RevieceOrder 跟 Order/Detials 共用同一頁
 
 輪播的三張圖片，要可以設定
 azure db備份
