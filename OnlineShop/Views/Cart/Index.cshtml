@@ -35,7 +35,7 @@
                         <tr>
                             @* 顯示縮圖 *@
                             <td>
-                                @Html.DisplayFor(modelItem => item.Product.Name)
+                                @Html.DisplayFor(modelItem => item.Product.Name)<span>(@Html.DisplayFor(modelItem => item.ProductStyle.Name))</span>
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.ProductStyle.Price)
@@ -65,9 +65,9 @@
                     </div>
                     <div class="section-body">
                         <p>送貨地點</p>
-                        <select id="DeliveryAddressDropDown" asp-for="SelectedDeliveryAddress" asp-items="@(new SelectList(Model.DeliveryAddresses, "Id", "Name"))"></select>
+                        <select id="DeliveryAddressDropDown" class="form-select" asp-for="SelectedDeliveryAddress" asp-items="@(new SelectList(Model.DeliveryAddresses, "Id", "Name"))"></select>
                         <p>送貨方式</p>
-                        <select id="DeliveryMethodDropDown" asp-for="SelectedDeliveryMethod"></select>
+                        <select id="DeliveryMethodDropDown" class="form-select" asp-for="SelectedDeliveryMethod"></select>
                     </div>
                 </section>
             </div>
@@ -80,13 +80,13 @@
                         </div>
                         <div class="text-right">
                             <p class="card-text font-weight-bolder" style="padding-right:12px">
-                                運費:　NT$<div id="freight"></div>
+                                運費:　NT$<span id="freight"></span>
                             </p>
                         </div>
                         <hr />
                         <div class="text-right">
                             <p class="card-text font-weight-bolder" style="padding-right:12px">
-                                合計:　NT$<div id="sumfield"></div>
+                                合計:　NT$<span id="sumfield"></span>
                             </p>
                         </div>
                         <p></p>
@@ -124,7 +124,7 @@ else
                 });
 
                 $.each(methodsForSelectedAddress, function (index, method) {
-                    $('#DeliveryMethodDropDown').append('<option value="' + method.id + '" data-price="' + method.price + '">' + method.name + '</option>');
+                    $('#DeliveryMethodDropDown').append('<option value="' + method.id + '" data-price="' + method.price + '">' + method.name + ' NT$' + method.price + '</option>');
                 });
 
                 $('#DeliveryMethodDropDown').trigger('change');

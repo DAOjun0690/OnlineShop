@@ -29,6 +29,12 @@ public class CartItem : OrderItem
 
     [MaxLength(200)]
     public string imageSrc { get; set; }
+
+    public void IncreaseAmount(int amount)
+    {
+        Amount += amount;
+        SubTotal += ProductStyle.Price * amount;
+    }
 }
 
 

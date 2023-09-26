@@ -31,15 +31,13 @@ public class CartController : Controller
             },
             DeliveryMethods = new List<DeliveryMethod>
             {
-                new DeliveryMethod { Id = 1, Name = "中華郵政 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 2, Name = "7-11 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 3, Name = "全家 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 2 },
-                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 3 },
+                new DeliveryMethod { Id = 1, Name = "中華郵政", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 2, Name = "7-11", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 3, Name = "全家", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款)", Price = 0, AddressId = 2 },
+                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款)", Price = 0, AddressId = 3 },
             }
         };
-
-
 
         return View(viewModel);
     }
@@ -51,22 +49,29 @@ public class CartController : Controller
     /// <returns></returns>
     public IActionResult AddtoCart(ShopCartDto dto)
     {
+        if (dto.Amount == 0)
+        {
+            return Json(new { success = false, message = "購買數量不可為零。" });
+        }
+
         int id = dto.ProductId;
 
         // 取得商品資料
         var product = _context.Product
             .Include(p => p.ProductStyles).AsNoTracking()
             .Single(x => x.Id.Equals(id));
-        if (product == null)
-        {
-            return NoContent();
-        }
+        if (product == null) return NoContent();
+
         var productStyle =
             product.ProductStyles.SingleOrDefault(x => x.Id == dto.ProductStyleId);
-        if (productStyle == null)
+        if (productStyle == null) return NoContent();
+
+        // 款式 庫存數量驗證
+        if (dto.Amount > productStyle.Stock)
         {
-            return NoContent();
+            return Json(new { success = false, message = "購買數量超過庫存，請調整購買數量。" });
         }
+
         CartItem item = CreateCartItem(product, productStyle, dto.Amount);
 
         // 判斷 Session 內有無購物車
@@ -88,6 +93,12 @@ public class CartController : Controller
 
             if (index != -1)
             {
+                // 款式 庫存數量驗證
+                if (cart[index].Amount + item.Amount > productStyle.Stock)
+                {
+                    return Json(new { success = false, message = "購買數量超過庫存，請調整購買數量。" });
+                }
+
                 cart[index].Amount += item.Amount;
                 cart[index].SubTotal += item.SubTotal;
             }

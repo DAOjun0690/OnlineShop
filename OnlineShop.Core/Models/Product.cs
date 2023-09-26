@@ -85,7 +85,7 @@ public enum ManufacturingMethod
     [Description("手工製造")]
     Manual,
 
-    [Description("販售中")]
+    [Description("機器製造")]
     Machine
 }
 

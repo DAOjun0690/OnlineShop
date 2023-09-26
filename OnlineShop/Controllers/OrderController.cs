@@ -25,11 +25,11 @@ public class OrderController : Controller
             };
     private readonly List<DeliveryMethod> _DeliveryMethods = new List<DeliveryMethod>
             {
-                new DeliveryMethod { Id = 1, Name = "中華郵政 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 2, Name = "7-11 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 3, Name = "全家 NT$60", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 2 },
-                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款) NT$0", Price = 0, AddressId = 3 },
+                new DeliveryMethod { Id = 1, Name = "中華郵政", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 2, Name = "7-11", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 3, Name = "全家", Price = 60, AddressId = 1 },
+                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款)", Price = 0, AddressId = 2 },
+                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款)", Price = 0, AddressId = 3 },
             };
 
     public OrderController(OnlineShopContext context,
@@ -223,29 +223,73 @@ public class OrderController : Controller
     public async Task<IActionResult> CreateOrder(OrderCreateDto dto)
     {
         //新增訂單到資料庫
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            Order order = new Order();
-            order.UserId = dto.UserId;
-            order.UserName = dto.UserName;
-            order.ReceiverName = dto.ReceiverName;
-            order.ReceiverPhone = dto.ReceiverPhone;
-            order.ReceiverFirstAddress = dto.ReceiverFirstAddress;
-            order.ReceiverSecondAddress = dto.ReceiverSecondAddress;
-            order.Note = dto.Note ?? string.Empty;
-            order.SelectedDeliveryAddress = dto.SelectedDeliveryAddress;
-            order.SelectedDeliveryMethod = dto.SelectedDeliveryMethod;
-            order.OrderDate = DateTime.Now;
-            order.isPaid = false;
-            order.OrderItem = SessionHelper.GetObjectFromJson<List<OrderItem>>(HttpContext.Session, "cart");
-
-            _context.Add(order);
-            await _context.SaveChangesAsync();
-            SessionHelper.Remove(HttpContext.Session, "cart");
-
-            return RedirectToAction("ReviewOrder", new { Id = order.Id });
+            ViewBag.ErrorMsg = "購買數量超過庫存，請重新下訂單。";
+            return View("ErrorOrder");
         }
-        return View("Error");
+
+        Order order = new Order();
+        order.UserId = dto.UserId;
+        order.UserName = dto.UserName;
+        order.ReceiverName = dto.ReceiverName;
+        order.ReceiverPhone = dto.ReceiverPhone;
+        order.ReceiverFirstAddress = dto.ReceiverFirstAddress;
+        order.ReceiverSecondAddress = dto.ReceiverSecondAddress;
+        order.Note = dto.Note ?? string.Empty;
+        order.SelectedDeliveryAddress = dto.SelectedDeliveryAddress;
+        order.SelectedDeliveryMethod = dto.SelectedDeliveryMethod;
+        order.OrderDate = DateTime.Now;
+        order.isPaid = false;
+        order.OrderItem = SessionHelper.GetObjectFromJson<List<OrderItem>>(HttpContext.Session, "cart");
+
+        _context.Add(order);
+
+        // 扣除庫存
+        foreach (var item in order.OrderItem)
+        {
+            var stockSum = _context.ProductStyle
+                .Where(p => p.ProductId == item.ProductId)
+                .Sum(x => x.Stock);
+            var dbStock = _context.ProductStyle.Single(x => x.Id == item.ProductStyleId);
+            if (dbStock.Stock >= item.Amount && stockSum >= 0)
+            {
+                dbStock.Stock -= item.Amount;
+                _context.Update(dbStock);
+            }
+            else
+            {
+                ViewBag.ErrorMsg = "購買數量超過庫存，請重新下訂單。";
+                return View("ErrorOrder");
+            }
+        }
+
+        // 儲存變更
+        _context.SaveChanges();
+
+        // 將庫存 = 0的商品，狀態改為 售完(Status=3)
+        // 重新取得最新的訂單資訊
+        order = _context.Order.Include(o => o.OrderItem).Single(o => o.Id == order.Id);
+        // 篩選 所有 product Id
+        var orderProductIds = order.OrderItem.Select(x => x.ProductId);
+        foreach (var item in orderProductIds)
+        {
+            var stockSum = _context.ProductStyle
+                .Where(p => p.ProductId == item)
+                .Sum(x => x.Stock);
+
+            if (stockSum == 0)
+            {
+                var p = _context.Product.Single(x => x.Id == item);
+                p.Status = ProductStatus.Sold;
+                _context.Update(p);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        SessionHelper.Remove(HttpContext.Session, "cart");
+
+        return RedirectToAction("ReviewOrder", new { Id = order.Id });
     }
 
     /// <summary>
@@ -255,27 +299,6 @@ public class OrderController : Controller
     /// <returns></returns>
     public async Task<IActionResult> ReviewOrder(int? Id)
     {
-        //if (Id == null)
-        //{
-        //    return NotFound();
-        //}
-
-        //var order = await _context.Order.FirstOrDefaultAsync(m => m.Id == Id);
-        //if (order.UserId != (_userManager.GetUserId(User) ?? ""))
-        //{
-        //    return NotFound();
-        //}
-        //else
-        //{
-        //    order.OrderItem = await _context.OrderItem.Where(p => p.OrderId == Id).ToListAsync();
-        //    order.Total = order.OrderItem.Sum(m => m.SubTotal) +
-        //        _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Price;
-        //    ViewBag.orderItems = GetOrderItems(order.Id);
-        //    ViewBag.DeliveryAddressName = _DeliveryAddresses.First(x => x.Id == order.SelectedDeliveryAddress).Name;
-        //    ViewBag.DeliveryMethodName = _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Name;
-        //}
-
-        //return View(order);
         return RedirectToAction("Details", new { Id = Id, fromReview = 1 });
     }
 

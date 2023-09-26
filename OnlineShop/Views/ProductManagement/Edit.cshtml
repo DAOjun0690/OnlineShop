@@ -26,7 +26,7 @@
         </button>
     </li>
 </ul>
-
+<p></p>
 @* 基本資訊表單 *@
 <form asp-action="Save">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -38,42 +38,57 @@
                 <div class="col-6">
                     @* 商品狀態 *@
                     <div class="form-group">
-                        <label class="control-label">商品狀態</label>
-                        <select class="form-control" asp-for="Status" asp-items="Model.Statuses"></select>
+                        <label class="control-label fw-bold">商品狀態</label>
+                        <select class="form-select" asp-for="Status" asp-items="Model.Statuses"></select>
                     </div>
                 </div>
                 <div class="col-6">
                     @* 類別 *@
                     <div class="form-group">
                         <label class="control-label">類別</label>
-                        <select class="form-control" asp-for="CategoryId" asp-items="Model.Categories"></select>
+                        <select class="form-select" asp-for="CategoryId" asp-items="Model.Categories"></select>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-6">
                     @* 製造方式 *@
-                    <label class="control-label">製造方式</label>
+                    <label class="control-label fw-bold">製造方式</label>
                     <div class="form-group">
-                        <label>
-                            <input type="radio" asp-for="ManufacturingMethod" value="@ManufacturingMethod.Manual" /> 手工製造
-                        </label>
-                        <label>
-                            <input type="radio" asp-for="ManufacturingMethod" value="@ManufacturingMethod.Machine" /> 機器製造
-                        </label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="ManufacturingMethod" value="@ManufacturingMethod.Manual" />
+                            <label class="form-check-label">
+                                手工製造
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="ManufacturingMethod" value="@ManufacturingMethod.Machine" />
+                            <label class="form-check-label">
+                                機器製造
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="col-6">
                     @* 製作時間 *@
-                    <label class="control-label">製作時間</label>
+                    <label class="control-label fw-bold">製作時間</label>
                     <div class="form-group">
-                        <label>
-                            <input type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.InStock" /> 現貨
-                        </label>
-                        <label>
-                            <input type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.Custom" />
-                            接單訂製，付款後須等待 <input type="number" asp-for="ManufacturingCustomDate" min="0" /> 工作天。
-                        </label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.InStock" />
+                            <label class="form-check-label">
+                                現貨
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.Custom" />
+                            <label class="form-check-label">
+                                接單訂製，付款後須等待
+                            </label>
+                            <input type="number" class="form-control" asp-for="ManufacturingCustomDate" min="0">
+                            <label class="form-check-label">
+                                工作天。
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,7 +96,7 @@
                 <div class="col">
                     @* 商品名稱 *@
                     <div class="form-group">
-                        <label asp-for="Name" class="control-label">商品名稱</label>
+                        <label asp-for="Name" class="control-label fw-bold">商品名稱</label>
                         <input asp-for="Name" class="form-control" />
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
@@ -91,7 +106,7 @@
                 <div class="col">
                     @* 簡介 *@
                     <div class="form-group">
-                        <label asp-for="Description" class="control-label">簡介</label>
+                        <label asp-for="Description" class="control-label fw-bold">簡介</label>
                         <textarea asp-for="Description" class="form-control" style="height:150px"></textarea>
                         <span asp-validation-for="Description" class="text-danger" id="editor01"></span>
                     </div>
@@ -101,40 +116,43 @@
                 <div class="col">
                     @* 促銷 *@
                     <div class="form-group">
-                        <label asp-for="Promotion" class="control-label">促銷</label>
+                        <label asp-for="Promotion" class="control-label fw-bold">促銷</label>
                         <textarea asp-for="Promotion" class="form-control" style="height:150px"></textarea>
                     </div>
                 </div>
             </div>
+            <br />
             <div class="row">
                 <div class="col">
                     @* 款式 *@
                     <div class="form-group">
-                        <table id="prodectStyleTable">
+                        <table id="prodectStyleTable" class="table table-bordered">
                             <tr>
-                                <th>款式名稱</th>
-                                <th>價錢</th>
-                                <th>庫存</th>
-                                <th>功能按鈕</th>
+                                <th scope="col">款式名稱</th>
+                                <th scope="col">價錢</th>
+                                <th scope="col">庫存</th>
+                                <th></th>
                             </tr>
                             @for (int idx = 0; idx < Model.ProductStyles.Count; idx++)
                             {
                                 <tr>
                                     @Html.Hidden($"ProductStyles[{idx}].Id", Model.ProductStyles[idx].Id)
                                     <td>
-                                        <input type="text" name="ProductStyles[@idx].Name" value="@Model.ProductStyles[idx].Name" />
+                                        <input type="text" name="ProductStyles[@idx].Name" value="@Model.ProductStyles[idx].Name" class="form-control" />
                                     </td>
                                     <td>
-                                        <input type="number" name="ProductStyles[@idx].Price" value="@Model.ProductStyles[idx].Price" />
+                                        <input type="number" name="ProductStyles[@idx].Price" value="@Model.ProductStyles[idx].Price" class="form-control" />
                                     </td>
                                     <td>
-                                        <input type="number" name="ProductStyles[@idx].Stock" value="@Model.ProductStyles[idx].Stock" />
+                                        <input type="number" name="ProductStyles[@idx].Stock" value="@Model.ProductStyles[idx].Stock" class="form-control" />
                                     </td>
-                                    <td><button type="button" onclick="deleteRow(this)">刪除</button></td>
+                                    <td>
+                                        <i class="fas fa-times-circle" onclick="deleteRow(this)"></i>
+                                    </td>
                                 </tr>
                             }
                         </table>
-                        <button type="button" onclick="addRow()">增加款式</button>
+                        <button type="button" class="btn btn-info" onclick="addRow()">增加款式</button>
                     </div>
                 </div>
             </div>
@@ -213,18 +231,24 @@
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
-            cell0.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" />';
-            cell1.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Price" min="1" />';
-            cell2.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Stock" min="1" />';
-            cell3.innerHTML = '<button type="button" onclick="deleteRow(this)">刪除</button>';
+            cell0.innerHTML = '<input type="text" name="ProductStyles[' + (table.rows.length - 2) + '].Name" class="form-control" />';
+            cell1.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Price" min="0" value="0" class="form-control" />';
+            cell2.innerHTML = '<input type="number" name="ProductStyles[' + (table.rows.length - 2) + '].Stock" min="1" value="0" class="form-control" />';
+            cell3.innerHTML = '<i class="fas fa-times-circle" onclick="deleteRow(this)"></i>';
         }
 
         /**
           * 刪除 款式 選項
          */
         function deleteRow(btn) {
-            var row = btn.parentNode.parentNode;
-            row.parentNode.removeChild(row);
+            let count = $('#prodectStyleTable tr').length;
+            if (count <= 2) {
+                alert("款式最少要有一項。");
+            }
+            else {
+                let row = btn.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+            }
         }
 
         function imgFormSubmit() {

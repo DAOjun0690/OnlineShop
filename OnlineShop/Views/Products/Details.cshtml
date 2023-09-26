@@ -18,15 +18,15 @@
         position: relative;
     }
 
-    .img-selector img, .selected-img img {
-        object-fit: cover;
-        object-position: center center;
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
+        .img-selector img, .selected-img img {
+            object-fit: cover;
+            object-position: center center;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
 </style>
 
 <form id="DetailForm">
@@ -64,21 +64,18 @@
                 <div class="col-lg-5 col-sm-12">
                     <h2 class="fw-bold">@Html.DisplayFor(m => m.Name)</h2>
                     <pre>@Html.DisplayFor(m => m.Description)</pre>
-                    @if (Model.fromWhere == "ProductManagement")
-                    {
-                        <p>製造方式: @Model.ManufacturingMethod.GetDescription()</p>
-                        <p>
-                            製作時間:
-                            @if (Model.ManufacturingTime == ManufacturingTime.InStock)
-                            {
-                            <p>@Model.ManufacturingTime.GetDescription()</p>
-                            }
-                            else if (Model.ManufacturingTime == ManufacturingTime.Custom)
-                            {
-                            <p>接單訂製，付款後須等待 @Model.ManufacturingCustomDate 個工作天</p>
-                            }
-                        </p>
-                    }
+                    <p>製造方式: @Model.ManufacturingMethod.GetDescription()</p>
+                    <div>
+                        當前狀態：
+                        @if (Model.ManufacturingTime == ManufacturingTime.InStock)
+                        {
+                            <span>@Model.ManufacturingTime.GetDescription()</span>
+                        }
+                        else if (Model.ManufacturingTime == ManufacturingTime.Custom)
+                        {
+                            <span>接單訂製，付款後須等待 @Model.ManufacturingCustomDate 個工作天</span>
+                        }
+                    </div>
                     <hr />
                     <pre>@Html.DisplayFor(m => m.Promotion)</pre>
                     <h5 id="price" class="text-black fw-bold"></h5>
@@ -96,12 +93,21 @@
                         <label class="control-label alert-light">數量</label>
                         <input type="number" id="Amount" class="form-control" value="0" min="0" />
                     </div>
-                    @if (Model.fromWhere == "Products")
+                    @if (Model.fromWhere == "Products") // 產品來的
                     {
                         <div class="form-group mt-4">
-                            <input type="submit" value="加入購物車" class="btn btn-outline-primary w-100" />
+                            <input id="AddCartBtn" type="submit" value="加入購物車" class="btn btn-outline-primary w-100" />
                         </div>
                     }
+                    else // 詳細頁面預覽
+                    {
+                        <fieldset disabled>
+                            <div class="form-group mt-4">
+                                <input type="submit" value="加入購物車" class="btn btn-outline-primary w-100" readonly />
+                            </div>
+                        </fieldset>
+                    }
+
                     <div class="form-group mt-3">
                         <a asp-controller="@Model.fromWhere" asp-action="Index" class="btn btn-outline-secondary w-100">返回上一頁</a>
                     </div>
@@ -124,7 +130,34 @@
             <div id="content-area" class="tab-pane fade show active" aria-labelledby="content-tab">
                 @Html.Raw(Model.Content)
             </div>
-            <div id="delivery-area" class="tab-pane fade" aria-labelledby="delivery-tab"></div>
+            <div id="delivery-area" class="tab-pane fade" aria-labelledby="delivery-tab">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th scope="col">送貨地點</th>
+                            <th scope="col">送貨方式</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>臺灣</td>
+                            <td>中華郵政</td>
+                        </tr>
+                        <tr>
+                            <td>中國</td>
+                            <td>7-11</td>
+                        </tr>
+                        <tr>
+                            <td>香港</td>
+                            <td>全家</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>順豐(貨到付款)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </form>
@@ -140,6 +173,7 @@
         }
 
         /**
+         * 切換圖片顯示
          * target: $(element)
          */
         function selectImg(target) {
@@ -168,10 +202,34 @@
                 $('#price').text("NT$" + price);
 
                 let stock = $('option:selected', this).attr('data-stock');
-                $('#stock').text(stock);
-                $("#Amount").prop("max", stock);
+                $('#stock').text(stock); // 這欄位怎麼好像不見了
+
+                // 判斷當前款式庫存數量，判斷數量邏輯 addBtn
+                if (stock == "0") {
+                    // 數量inptu 改為以獨
+                    $("#Amount").prop("max", "0");
+                    $("#Amount").val("0");
+                    $("#Amount").attr("readonly", true);
+                    $("#Amount").prop("disabled", true);
+                    // addBtn 改為售完
+                    $("#AddCartBtn").val("售完");
+                    $("#AddCartBtn").attr("readonly", true);
+                    $("#AddCartBtn").prop("disabled", true);
+                    
+                } else {
+                    $("#Amount").prop("max", stock);
+                    $("#Amount").val("0");
+                    $("#Amount").attr("readonly", false);
+                    $("#Amount").prop("disabled", false);
+
+                    $("#AddCartBtn").val("加入購物車");
+                    $("#AddCartBtn").attr("readonly", false);
+                    $("#AddCartBtn").prop("disabled", false);
+                }
+
             }).change();
 
+            // 加入購物車 form submit事件
             $('#DetailForm').on('submit', function (e) {
                 e.preventDefault();
 
@@ -179,29 +237,43 @@
                 let productStyleId = $("#productStyles").val();
                 let amount = $("#Amount").val();
 
-                let param = {
-                    ProductId: productId,
-                    ProductStyleId: productStyleId,
-                    Amount: amount
-                };
+                // 前端數量驗證
+                if (amount <= $("#Amount").prop("max")) {
+                    let param = {
+                        ProductId: productId,
+                        ProductStyleId: productStyleId,
+                        Amount: amount
+                    };
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/Cart/AddtoCart',
-                    data: param,
-                    success: function (data) {
-                        // 彈出 加入購物車 訊息
-                        ShowMessage();
-                    }
-                });
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Cart/AddtoCart',
+                        data: param,
+                        success: function (data) {
+                            debugger;
+                            if (data?.success == false) {
+                                alert(data.message);
+                            }
+                            else {
+                                // 彈出 加入購物車 訊息
+                                ShowMessage();
+                            }
+                        }
+                    });
+                }
+                else {
+                    alert("選取數量超過上限");
+                }
             });
 
+            // 圖片顯示 初始
             let selector = $(".img-selector img");
             if (selector.length != 0) {
                 // 預設顯示第一張
                 selectImg($(selector[0]));
             }
 
+            // 如果款式數量 = 1(只有基本款)，則隱藏款式下拉選單
             let styleCnt = '@Model.ProductStylesList.Count';
             if (styleCnt <= 1) {
                 $("#styleArea").hide();

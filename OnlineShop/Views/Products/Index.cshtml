@@ -96,7 +96,7 @@
                         </a>
                     }
                     <div class="card-img-btn-area text-center">
-                        @if (item.Stock > 1)
+                        @if (item.Stock >= 1)
                         {
                             <a class="btn btn-outline-secondary w-75" href="@Url.Action("Details", new { Id = item.ProductId, fromWhere = "Products" })">購買</a>
                         }
