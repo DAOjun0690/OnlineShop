@@ -32,7 +32,11 @@ public class PictureController : Controller
     private void InitProperties(int Number)
     {
         string productId = Number.ToString();
-        string uplaodFolder = _configuration["UploadFolder"];
+#if DEBUG
+        string  uplaodFolder = _configuration["UploadFolder"];
+#elif RELEASE
+        string  uplaodFolder = "\\mounts\\" + _configuration["UploadFolder"];
+#endif
         ServerDestinationPath = Path.Join(uplaodFolder, productId);
         if (!Directory.Exists(ServerDestinationPath))
         {

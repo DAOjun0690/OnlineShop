@@ -6,6 +6,9 @@ using OnlineShop.Helpers;
 using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
 using OnlineShop.Core.Dto;
+using Microsoft.AspNetCore.Authorization;
+using System.Web;
+//using StackExchange.Redis;
 
 namespace OnlineShop.Controllers;
 
@@ -133,33 +136,72 @@ public class OrderController : Controller
     }
 
     /// <summary>
-    /// 列出所有表單
+    /// 列出所有訂單
     /// </summary>
     /// <returns></returns>
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> OrderList()
     {
         List<OrderViewModel> orderVM = new List<OrderViewModel>();
 
+        var productIds = _context.Product.Select(p => p.Id).ToList();
         var userId = _userManager.GetUserId(User);
-        var orders = await _context.Order.
-            OrderByDescending(k => k.OrderDate).ToListAsync();       //用日期排序
+        var orderList = await _context.Order
+            .OrderByDescending(k => k.OrderDate)
+            .ToListAsync();       //用日期排序
                                                                      //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
 
-        foreach (var item in orders)
+        foreach (var item in orderList)
         {
-            item.OrderItem = await _context.OrderItem.
-                Where(p => p.OrderId == item.Id).ToListAsync(); //取得訂單內的商品項目
+            var orderItemList = await _context.OrderItem.
+                Where(p => p.OrderId == item.Id && productIds.Contains(p.ProductId)).ToListAsync(); //取得訂單內的商品項目
 
-            var ovm = new OrderViewModel()
+            if (orderItemList?.Any() ?? false) 
             {
-                Order = item,
-                CartItems = GetOrderItems(item.Id)
-            };
+                item.OrderItem = orderItemList;
 
-            orderVM.Add(ovm);
+                var ovm = new OrderViewModel()
+                {
+                    Order = item,
+                    CartItems = GetOrderItems(item.Id)
+                };
+
+                orderVM.Add(ovm);
+            }            
         }
 
         return View(orderVM);
+    }
+
+    /// <summary>
+    /// 更改訂單狀態
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> StatusChange(int id, string code)
+    {
+        string encodeCode = HttpUtility.HtmlEncode(code);
+
+        var order = await _context.Order.FindAsync(id);
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        switch (encodeCode) 
+        {
+            case "paid":
+                order.isPaid = !order.isPaid;
+                break;
+            case "ship":
+                order.isShip = !order.isShip;
+                break;
+        }
+
+        _context.Order.Update(order);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(OrderList));
     }
 
     /// <summary>
@@ -239,9 +281,11 @@ public class OrderController : Controller
         order.Note = dto.Note ?? string.Empty;
         order.SelectedDeliveryAddress = dto.SelectedDeliveryAddress;
         order.SelectedDeliveryMethod = dto.SelectedDeliveryMethod;
-        order.OrderDate = DateTime.Now;
+        order.OrderDate = DateTime.UtcNow.AddHours(8);
         order.isPaid = false;
         order.OrderItem = SessionHelper.GetObjectFromJson<List<OrderItem>>(HttpContext.Session, "cart");
+        order.Total = order.OrderItem.Sum(m => m.SubTotal) +
+            _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Price;
 
         _context.Add(order);
 

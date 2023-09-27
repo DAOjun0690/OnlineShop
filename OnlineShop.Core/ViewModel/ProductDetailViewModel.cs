@@ -18,13 +18,16 @@ public class ProductDetailViewModel
     /// </summary>
     [Required(ErrorMessage = "簡介 是必填項目")]
     public string Description { get; set; }
+
     /// <summary>
     /// 商品促銷
     /// </summary>
     public string Promotion { get; set; }
+
     /// <summary>
     /// 商品描述
     /// </summary>
+    [Display(Name = "商品描述")]
     public string Content { get; set; }
 
     public IList<ProductImage> ProductImage { get; set; }

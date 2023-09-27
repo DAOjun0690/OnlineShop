@@ -83,11 +83,11 @@
                         }
                     </td>
                     <td>
-                        <a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
-                        <a class="btn btn-light btn-sm" href="@Url.Action("Details", "Products", new { Id = item.Id, fromWhere = "ProductManagement" })">
+                        <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
+                        <a class="btn btn-sm btn-light" href="@Url.Action("Details", "Products", new { Id = item.Id, fromWhere = "ProductManagement" })">
                             詳細資料
                         </a> |
-                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">刪除</a>
+                        <a class="btn btn-sm btn-danger " asp-action="Delete" asp-route-id="@item.Id">刪除</a>
                     </td>
                 </tr>
             }

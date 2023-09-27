@@ -68,6 +68,11 @@ public class Order
     public bool isPaid { get; set; }
 
     /// <summary>
+    /// 出貨狀態
+    /// </summary>
+    public bool isShip { get; set; }
+
+    /// <summary>
     /// 訂單內容
     /// </summary>
     public List<OrderItem> OrderItem { get; set; }

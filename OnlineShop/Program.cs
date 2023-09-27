@@ -85,7 +85,11 @@ app.UseEndpoints(endpoints =>
 
 
 // 確認 上傳檔案資料夾 是否存在，不在的話，將其新增
+#if DEBUG
 string uplaodFolder = app.Configuration["UploadFolder"];
+#elif RELEASE
+string uplaodFolder = "\\mounts\\" + app.Configuration["UploadFolder"];
+#endif
 if (!Directory.Exists(uplaodFolder))
 {
     //新增資料夾

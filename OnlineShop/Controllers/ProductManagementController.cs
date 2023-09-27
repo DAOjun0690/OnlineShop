@@ -317,7 +317,7 @@ public class ProductManagementController : Controller
             };
             _context.ProductHistory.Add(history);
 
-            _context.ProductStyle.RemoveRange(product.ProductStyles);
+            //_context.ProductStyle.RemoveRange(product.ProductStyles);
             _context.Product.Remove(product);
         }
 

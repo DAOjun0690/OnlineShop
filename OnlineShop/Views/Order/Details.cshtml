@@ -86,19 +86,30 @@ else
                     <p>送貨方式：@Html.DisplayFor(m => m.DeliveryMethodName)</p>
                     <p>備註：@Html.DisplayFor(m => m.Order.Note)</p>
                 </div>
-                @* <div class="col-5">
-            <p>
-            訂單狀態：
-            @if (Model.Order.isPaid)
-            {
-            <span>已付款</span>
-            }
-            else
-            {
-            <span>未付款</span>
-            }
-            </p>
-            </div> *@
+                <div class="col-5">
+                    <p>
+                        訂單狀態：
+                        @if (Model.Order.isPaid)
+                        {
+                            <span>已付款</span>
+                        }
+                        else
+                        {
+                            <span>未付款</span>
+                        }
+                    </p>
+                    <p>
+                        配送狀態：
+                        @if (Model.Order.isShip)
+                        {
+                            <span>已出貨</span>
+                        }
+                        else
+                        {
+                            <span>未出貨</span>
+                        }
+                    </p>
+                </div>
             </div>
 
         </div>

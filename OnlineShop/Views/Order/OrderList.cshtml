@@ -26,7 +26,7 @@
                 <td colspan="2">
                     @foreach (var citem in item.CartItems)
                     {
-                        <p>@Html.DisplayFor(cartItem => citem.Product.Name)</p>
+                        <p>@Html.DisplayFor(cartItem => citem.Product.Name) (@citem.ProductStyle.Name)</p>
                     }
                 </td>
                 <td>
@@ -42,9 +42,35 @@
                         <p>未付款</p>
                     }
                 </td>
-                <td>未出貨</td>
+                <td>
+                    @if (item.Order.isShip)
+                    {
+                        <p>已出貨</p>
+                    }
+                    else
+                    {
+                        <p>未出貨</p>
+                    }
+                </td>
                 <td>
                     <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Order.Id">訂單詳細資訊</a>
+                    @if (!item.Order.isPaid)
+                    {
+                        <a class="btn btn-sm btn-success" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="paid">已收款</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-danger" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="paid">未收款</a>
+                    }
+                    @if (!item.Order.isShip)
+                    {
+                        <a class="btn btn-sm btn-success" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="ship">已出貨</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-danger" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="ship">未出貨</a>
+                    }
+
                 </td>
             </tr>
         </tbody>
