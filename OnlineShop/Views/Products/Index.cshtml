@@ -1,7 +1,6 @@
 ﻿@model IEnumerable<DetailViewModel>
 
 @{
-    ViewData["Title"] = "商品頁面";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -68,15 +67,15 @@
 <div class="py-4"></div>
 
 <!-- 標題 -->
-<h4 class="text-center fw-bold">@ViewData["Title"]</h4>
+<h4 class="text-center fw-bold">所有商品</h4>
 
 <!-- 商品頁面 -->
 <div class="row pt-5">
     @foreach (var item in Model)
     {
-        <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="col-xl-3 col-lg-4 col-md-6 d-flex justify-content-center">
             <div class="card border-0" style="width: 16rem">
-                <div class="card-img-container bg-light">
+                <div class="card-img-container bg-light shadow-sm">
                     @* modal事件未來製作，目前都先跳轉到大頁面 *@
                     @if (item.Image != null)
                     {

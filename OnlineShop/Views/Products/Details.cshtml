@@ -1,121 +1,147 @@
 ﻿@model ProductDetailViewModel
 
 @{
-    ViewData["Title"] = "商品詳細頁面";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    .img-selector {
-        height: 5rem;
+    .carousel-indicators {
+        width: 130px;
+        max-height: 60vh;
+        position: unset;
+        flex-direction: column;
+        overflow: hidden auto;
+        z-index: 1;
+        margin: 0;
+    }
+
+    .carousel-indicators [data-bs-target] {
+        border: 0;
+        width: 80px;
+        height: 80px;
+        text-indent: 0;
         overflow: hidden;
         position: relative;
+        opacity: 1;
     }
 
     .selected-img {
-        height: 30rem;
+        height: 60vh;
         overflow: hidden;
         position: relative;
     }
 
-        .img-selector img, .selected-img img {
-            object-fit: cover;
-            object-position: center center;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+    .carousel-indicators [data-bs-target] img, .selected-img img {
+        object-fit: cover;
+        object-position: center center;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 </style>
 
 <form id="DetailForm">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="ProductId" />
 
-    <div class="row">
-        <div class="col pb-3">
-            <div class="row">
-                <div class="col-lg-7 col-sm-12">
-                    @if (Model.ProductImage != null && Model.ProductImage.Any())
-                    {
-                        <div class="row">
-                            <div class="col-2" style="overflow-y: scroll;">
-                                @foreach (ProductImage image in Model.ProductImage)
-                                {
-                                    <div class="row img-selector mb-1">
-                                        <img onclick="selectImg($(this));" alt="..." class="rounded" data-guid="@image.Guid"
-                                             src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "S" })>
-                                    </div>
-                                }
-                            </div>
-                            <div class="col-10">
-                                @foreach (ProductImage image in Model.ProductImage)
-                                {
-                                    <div class="row selected-img" style="display: none;">
-                                        <img data-guid="@image.Guid" alt="..."
-                                             src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" })>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-                <div class="col-lg-5 col-sm-12">
-                    <h2 class="fw-bold">@Html.DisplayFor(m => m.Name)</h2>
-                    <pre>@Html.DisplayFor(m => m.Description)</pre>
-                    <p>製造方式: @Model.ManufacturingMethod.GetDescription()</p>
-                    <div>
-                        當前狀態：
-                        @if (Model.ManufacturingTime == ManufacturingTime.InStock)
+    <div class="row mb-3">
+        <div class="col-xl-6 col-lg-7 col-md-8 col-sm-12">
+            @if (Model.ProductImage != null && Model.ProductImage.Any())
+            {
+                <div id="product-carousel" class="carousel carousel-dark slide d-flex mb-4" data-bs-touch="false" data-bs-interval="false">
+                    <!-- carousel indicators hidden on xs and sm -->
+                    <div class="carousel-indicators d-none d-md-block">
+                        @for (int i = 0; i < Model.ProductImage.Count; i++)
                         {
-                            <span>@Model.ManufacturingTime.GetDescription()</span>
-                        }
-                        else if (Model.ManufacturingTime == ManufacturingTime.Custom)
-                        {
-                            <span>接單訂製，付款後須等待 @Model.ManufacturingCustomDate 個工作天</span>
+                            var image = Model.ProductImage[i];
+                            <button type="button" class="img-selector" data-bs-target="#product-carousel" data-bs-slide-to="@i">
+                                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "S" })>
+                            </button>
                         }
                     </div>
-                    <hr />
-                    <pre>@Html.DisplayFor(m => m.Promotion)</pre>
-                    <h5 id="price" class="text-black fw-bold"></h5>
-                    @* 款式 *@
-                    <div id="styleArea">
-                        <p class="alert-light m-0 mt-2">款式</p>
-                        <select id="productStyles" class="form-select">
-                            @foreach (var item in Model.ProductStylesList)
-                            {
-                                <option value="@item.Id" data-price="@item.Price" data-stock="@item.Stock">@item.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="control-label alert-light">數量</label>
-                        <input type="number" id="Amount" class="form-control" value="0" min="0" />
-                    </div>
-                    @if (Model.fromWhere == "Products") // 產品來的
-                    {
-                        <div class="form-group mt-4">
-                            <input id="AddCartBtn" type="submit" value="加入購物車" class="btn btn-outline-primary w-100" />
-                        </div>
-                    }
-                    else // 詳細頁面預覽
-                    {
-                        <fieldset disabled>
-                            <div class="form-group mt-4">
-                                <input type="submit" value="加入購物車" class="btn btn-outline-primary w-100" readonly />
+                    <div class="carousel-inner shadow-sm">
+                        @foreach (var image in Model.ProductImage)
+                        {
+                            <div class="carousel-item selected-img">
+                                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" })>
                             </div>
-                        </fieldset>
-                    }
-
-                    <div class="form-group mt-3">
-                        <a asp-controller="@Model.fromWhere" asp-action="Index" class="btn btn-outline-secondary w-100">返回上一頁</a>
+                        }
                     </div>
+                    <!-- carousel control display on xs, sm and md -->
+                    <button type="button" class="carousel-control-prev d-block d-md-none" data-bs-target="#product-carousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button type="button" class="carousel-control-next d-block d-md-none" data-bs-target="#product-carousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
+            }
+        </div>
+        <div class="col-xl-6 col-lg-5 col-md-4 col-sm-12">
+            <!-- 名稱 -->
+            <h2 class="fw-bold">@Html.DisplayFor(m => m.Name)</h2>
+            <!-- 簡介 -->
+            <p class="overflow-auto" style="max-height: 20vh;">
+                @Html.DisplayFor(m => m.Description)
+            </p>
+            <!-- 製造方式 -->
+            <p>製造方式: @Model.ManufacturingMethod.GetDescription()</p>
+            <p>
+                當前狀態：
+                @if (Model.ManufacturingTime == ManufacturingTime.InStock)
+                {
+                    <span>@Model.ManufacturingTime.GetDescription()</span>
+                }
+                else if (Model.ManufacturingTime == ManufacturingTime.Custom)
+                {
+                    <span>接單訂製，付款後須等待 @Model.ManufacturingCustomDate 個工作天</span>
+                }
+            </p>
+            <hr />
+            <!-- 促銷 -->
+            <p>@Html.DisplayFor(m => m.Promotion)</p>
+            <!-- 金額 -->
+            <h5 id="price" class="text-black fw-bold"></h5>
+            <!-- 款式 -->
+            <div id="styleArea">
+                <p class="alert-light m-0 mt-2">款式</p>
+                <select id="productStyles" class="form-select">
+                    @foreach (var item in Model.ProductStylesList)
+                    {
+                        <option value="@item.Id" data-price="@item.Price" data-stock="@item.Stock">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <!-- 數量 -->
+            <div class="form-group mt-2">
+                <label class="control-label alert-light">數量</label>
+                <input type="number" id="Amount" class="form-control" value="0" min="0" />
+            </div>
+            <!-- 回上一頁 -->
+            @if (Model.fromWhere == "Products") // 產品來的
+            {
+                <div class="form-group mt-4">
+                    <input id="AddCartBtn" type="submit" value="加入購物車" class="btn btn-outline-primary w-100" />
+                </div>
+            }
+            else // 詳細頁面預覽
+            {
+                <fieldset disabled>
+                    <div class="form-group mt-4">
+                        <input type="submit" value="加入購物車" class="btn btn-outline-primary w-100" readonly />
+                    </div>
+                </fieldset>
+            }
+            <div class="form-group mt-3">
+                <a asp-controller="@Model.fromWhere" asp-action="Index" class="btn btn-outline-secondary w-100">返回上一頁</a>
             </div>
         </div>
     </div>
-    <div class="container text-center">
+    <div class="row text-center">
         <ul class="nav nav-tabs">
             <li class="nav-item">
                 <a id="content-tab" class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#content-area"
@@ -174,29 +200,6 @@
     <script>
         function ShowMessage() {
             toastr["success"]("商品已加入購物車！");
-        }
-
-        /**
-         * 切換圖片顯示
-         * target: $(element)
-         */
-        function selectImg(target) {
-            // 元素為空
-            if (target.length == 0) return;
-
-            // 隱藏大圖 Div
-            $(".selected-img").hide();
-
-            let guid = target?.data("guid");
-            if (guid != null && guid !== "") {
-                // 取得距離欲顯示圖片最近的 Div
-                let selectedDiv = $(`.selected-img img[data-guid="${guid}"]`).closest("div");
-                $(selectedDiv).show();
-            }
-
-            $(".img-selector").removeClass("border border-success");
-            // 距離選取圖片最近的 Div 加上 Border
-            target.closest("div").addClass("border border-success");
         }
 
         $(document).ready(function () {
@@ -270,18 +273,14 @@
                 }
             });
 
-            // 圖片顯示 初始
-            let selector = $(".img-selector img");
-            if (selector.length != 0) {
-                // 預設顯示第一張
-                selectImg($(selector[0]));
-            }
-
             // 如果款式數量 = 1(只有基本款)，則隱藏款式下拉選單
-            let styleCnt = '@Model.ProductStylesList.Count';
-            if (styleCnt <= 1) {
+            if ('@Model.ProductStylesList.Count' <= 1) {
                 $("#styleArea").hide();
             }
+
+            // 初始化 carousel & indicators
+            $(".carousel-indicators .img-selector")?.first().addClass("active");
+            $(".carousel-item")?.first().addClass("active");
         });
     </script>
 }
