@@ -7,93 +7,92 @@
 
 @if (Model.CartItems != null)
 {
-    <div>
+    <div class="row">
         <ul class="progressbar">
             <li class="active">購物車</li>
             <li>訂單資料</li>
             <li>建立訂單</li>
         </ul>
     </div>
-    <br />
-    <div class="row card shadow rounded">
-        <h5 class="card-header">購物車</h5>
-        <div class="card-body">
-            <table class="table">
-                <thead class="table-borderless">
-                    <tr>
-                        @* <th></th> *@
-                        <th>商品名稱</th>
-                        <th>單價</th>
-                        <th>數量</th>
-                        <th>小計</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.CartItems)
-                    {
-                        <tr>
-                            @* 顯示縮圖 *@
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Product.Name)<span>(@Html.DisplayFor(modelItem => item.ProductStyle.Name))</span>
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ProductStyle.Price)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Amount)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.SubTotal)
-                            </td>
-                            <td>
-                                <a class="btn btn-sm btn-danger" asp-action="RemoveItem" asp-route-Id="@item.Product.Id" asp-route-ProductStyleId="@item.ProductStyle.Id">刪除</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <h5 class="card-header">購物車</h5>
+                <div class="card-body">
+                    <table class="table">
+                        <thead class="table-borderless">
+                            <tr>
+                                @* <th></th> *@
+                                <th>商品名稱</th>
+                                <th>單價</th>
+                                <th>數量</th>
+                                <th>小計</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <tr>
+                                    @* 顯示縮圖 *@
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Product.Name)<span>(@Html.DisplayFor(modelItem => item.ProductStyle.Name))</span>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductStyle.Price)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Amount)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SubTotal)
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-danger" asp-action="RemoveItem" asp-route-Id="@item.Product.Id" asp-route-ProductStyleId="@item.ProductStyle.Id">刪除</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    <br />
-    <form asp-controller="Order" asp-action="Checkout">
-        <div class="row">
-            <div class="col-sm-7 col-md-8">
-                <section>
-                    <div class="section-header">
-                        <h3>選擇送貨及付款方式</h3>
+    <form asp-controller="Order" asp-action="Checkout" class="row gy-4">
+        <div class="col-sm-7 col-md-8">
+            <div class="card">
+                <h5 class="card-header">選擇送貨及付款方式</h5>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="SelectedDeliveryAddress" class="mb-2 text-muted">送貨地點</label>
+                        <select id="DeliveryAddressDropDown" class="form-select" asp-for="SelectedDeliveryAddress"
+                                asp-items="@(new SelectList(Model.DeliveryAddresses, "Id", "Name"))"></select>
                     </div>
-                    <div class="section-body">
-                        <p>送貨地點</p>
-                        <select id="DeliveryAddressDropDown" class="form-select" asp-for="SelectedDeliveryAddress" asp-items="@(new SelectList(Model.DeliveryAddresses, "Id", "Name"))"></select>
-                        <p>送貨方式</p>
+                    <div class="mb-3">
+                        <label asp-for="SelectedDeliveryMethod" class="mb-2 text-muted">送貨方式</label>
                         <select id="DeliveryMethodDropDown" class="form-select" asp-for="SelectedDeliveryMethod"></select>
                     </div>
-                </section>
+                </div>
             </div>
-            <div class="col-sm-5 col-md-4">
-                <div class="card" style="background-color: #f8f9fa">
-                    <div class="card-body">
-                        <h5 class="card-title">訂單資訊</h5>
-                        <div class="text-right">
-                            <p class="card-text font-weight-bolder" style="padding-right:12px">小計:　NT$ @Model.Total</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="card-text font-weight-bolder" style="padding-right:12px">
-                                運費:　NT$<span id="freight"></span>
-                            </p>
-                        </div>
-                        <hr />
-                        <div class="text-right">
-                            <p class="card-text font-weight-bolder" style="padding-right:12px">
-                                合計:　NT$<span id="sumfield"></span>
-                            </p>
-                        </div>
-                        <p></p>
-                        <div class="text-center card-link">
-                            <button type="submit" class="btn btn-success w-75">前往結帳</button>
-                        </div>
-                    </div>
+        </div>
+        <div class="col-sm-5 col-md-4">
+            <div class="card">
+                <h5 class="card-header">訂單資訊</h5>
+                <div class="card-body">
+                    <p class="card-text fw-bold">
+                        <span>小計: </span>
+                        <span class="float-end">NT$ @Model.Total</span>
+                    </p>
+                    <p class="card-text fw-bold">
+                        <span>運費: </span>
+                        <span class="float-end">NT$ <span id="freight"></span></span>
+                    </p>
+                    <hr />
+                    <p class="card-text fw-bold">
+                        <span>合計: </span>
+                        <span class="float-end">NT$ <span id="sumfield"></span></span>
+                    </p>
+                    <button type="submit" class="btn btn-success text-center w-100">前往結帳</button>
                 </div>
             </div>
         </div>
