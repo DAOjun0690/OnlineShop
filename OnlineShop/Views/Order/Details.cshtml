@@ -1,9 +1,5 @@
 ﻿@model OnlineShop.Core.ViewModel.OrderViewModel
 
-@{
-    ViewData["Title"] = "訂單詳細資訊";
-}
-
 @if (Model.Order == null)
 {
     <h4>查無訂單。</h4>
@@ -13,21 +9,17 @@ else
 {
     @if (Model.fromReview == 0)
     {
-        <div>　</div>
         <h3>訂單詳細資訊</h3>
         <hr />
     }
     else if (Model.fromReview == 1)
     {
-        <div>
-            <p>　</p>
+        <div class="row">
             <ul class="progressbar">
                 <li class="active">購物車</li>
                 <li class="active">訂單資料</li>
                 <li class="active">建立訂單</li>
             </ul>
-            <p>　</p>
-            <p>　</p>
         </div>
 
         <div class="text-center">
@@ -37,22 +29,23 @@ else
         </div>
     }
 
-    <p></p>
-    <div class="card shadow-sm rounded">
+    <div class="card shadow-sm rounded mb-3">
         <div class="card-body">
-
-            <h5>訂單編號：@Html.DisplayFor(m => m.Order.Id)</h5>
-            @if (!string.IsNullOrWhiteSpace(Model.Order.UserName))
-            {
-                <div class="row">
-                    訂購帳號: <div class="col"><p class="text-muted">@Html.DisplayFor(m => m.Order.UserName)</p></div>
-                </div>
-            }
             <div class="row">
-                訂單日期: <div class="col"><p class="text-muted">@Html.DisplayFor(m => m.Order.OrderDate)</p></div>
+                <h5>訂單編號：@Html.DisplayFor(m => m.Order.Id)</h5>
+                @if (!string.IsNullOrWhiteSpace(Model.Order.UserName))
+                {
+                    <p>
+                        <span>訂購帳號: </span>
+                        <span class="text-muted">@Html.DisplayFor(m => m.Order.UserName)</span>
+                    </p>
+                }
+                <p>
+                    <span>訂單日期: </span>
+                    <span class="text-muted">@Html.DisplayFor(m => m.Order.OrderDate)</span>
+                </p>
             </div>
-
-            <div>
+            <div class="row">
                 <table class="table">
                     <thead>
                         <tr>
@@ -72,8 +65,8 @@ else
                         }
                     </tbody>
                 </table>
-                <div class="text-right pr-5">
-                    <p style="padding-right:12px">總計： $@Html.DisplayFor(m => m.Order.Total)</p>
+                <div class="pe-5">
+                    <p class="text-end">總計： $@Html.DisplayFor(m => m.Order.Total)</p>
                 </div>
             </div>
             <hr />
@@ -111,10 +104,8 @@ else
                     </p>
                 </div>
             </div>
-
         </div>
     </div>
-    <p></p>
     <div>
         <a class="btn btn-sm btn-outline-secondary" asp-controller="Products" asp-action="Index">返回線上商城</a>
     </div>
@@ -125,55 +116,55 @@ else
         counter-reset: step;
     }
 
-        .progressbar li {
-            list-style-type: none;
-            width: 33%;
-            float: left;
-            font-size: 12px;
-            position: relative;
-            text-align: center;
-            text-transform: uppercase;
-            color: #7d7d7d;
-        }
+    .progressbar li {
+        list-style-type: none;
+        width: 33%;
+        float: left;
+        font-size: 12px;
+        position: relative;
+        text-align: center;
+        text-transform: uppercase;
+        color: #7d7d7d;
+    }
 
-            .progressbar li:before {
-                width: 30px;
-                height: 30px;
-                content: counter(step);
-                counter-increment: step;
-                line-height: 30px;
-                border: 2px solid #7d7d7d;
-                display: block;
-                text-align: center;
-                margin: 0 auto 10px auto;
-                border-radius: 50%;
-                background-color: white;
-            }
+    .progressbar li:before {
+        width: 30px;
+        height: 30px;
+        content: counter(step);
+        counter-increment: step;
+        line-height: 30px;
+        border: 2px solid #7d7d7d;
+        display: block;
+        text-align: center;
+        margin: 0 auto 10px auto;
+        border-radius: 50%;
+        background-color: white;
+    }
 
-            .progressbar li:after {
-                width: 100%;
-                height: 2px;
-                content: '';
-                position: absolute;
-                background-color: #7d7d7d;
-                top: 15px;
-                left: -50%;
-                z-index: -1;
-            }
+    .progressbar li:after {
+        width: 100%;
+        height: 2px;
+        content: '';
+        position: absolute;
+        background-color: #7d7d7d;
+        top: 15px;
+        left: -50%;
+        z-index: -1;
+    }
 
-            .progressbar li:first-child:after {
-                content: none;
-            }
+    .progressbar li:first-child:after {
+        content: none;
+    }
 
-            .progressbar li.active {
-                color: green;
-            }
+    .progressbar li.active {
+        color: green;
+    }
 
-                .progressbar li.active:before {
-                    border-color: #55b776;
-                }
+    .progressbar li.active:before {
+        border-color: #55b776;
+    }
 
-                .progressbar li.active + li:after {
-                    background-color: #55b776;
-                }
+    .progressbar li.active + li:after {
+        background-color: #55b776;
+    }
 </style>
