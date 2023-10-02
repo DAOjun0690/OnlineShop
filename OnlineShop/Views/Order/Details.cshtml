@@ -1,5 +1,9 @@
 ﻿@model OnlineShop.Core.ViewModel.OrderViewModel
 
+@{
+    ViewData["Title"] = "訂單詳細資訊";
+}
+
 @if (Model.Order == null)
 {
     <h4>查無訂單。</h4>

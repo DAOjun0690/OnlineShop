@@ -1,6 +1,7 @@
 ﻿@model ProductDetailViewModel
 
 @{
+    ViewData["Title"] = "商品詳細頁面";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -85,11 +86,11 @@
             <!-- 名稱 -->
             <h2 class="fw-bold">@Html.DisplayFor(m => m.Name)</h2>
             <!-- 簡介 -->
-            <p class="overflow-auto" style="max-height: 20vh;">
-                @Html.DisplayFor(m => m.Description)
-            </p>
+            <div class="overflow-auto" style="max-height: 20vh;">
+                <pre>@Html.DisplayFor(m => m.Description)</pre>
+            </div>
             <!-- 製造方式 -->
-            <p>製造方式: @Model.ManufacturingMethod.GetDescription()</p>
+            <pre>製造方式: @Model.ManufacturingMethod.GetDescription()</pre>
             <p>
                 當前狀態：
                 @if (Model.ManufacturingTime == ManufacturingTime.InStock)
@@ -103,7 +104,9 @@
             </p>
             <hr />
             <!-- 促銷 -->
-            <p>@Html.DisplayFor(m => m.Promotion)</p>
+            <div class="overflow-auto" style="max-height: 20vh;">
+                <pre>@Html.DisplayFor(m => m.Promotion)</pre>
+            </div>
             <!-- 金額 -->
             <h5 id="price" class="text-black fw-bold"></h5>
             <!-- 款式 -->
@@ -141,7 +144,7 @@
             </div>
         </div>
     </div>
-    <div class="row text-center">
+    <div class="container text-center">
         <ul class="nav nav-tabs">
             <li class="nav-item">
                 <a id="content-tab" class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#content-area"
