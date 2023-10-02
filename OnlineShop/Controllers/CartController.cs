@@ -67,7 +67,7 @@ public class CartController : Controller
         if (productStyle == null) return NoContent();
 
         // 款式 庫存數量驗證
-        if (dto.Amount > productStyle.Stock)
+        if (dto.Amount >= productStyle.Stock)
         {
             return Json(new { success = false, message = "購買數量超過庫存，請調整購買數量。" });
         }
