@@ -149,14 +149,14 @@ public class OrderController : Controller
         var orderList = await _context.Order
             .OrderByDescending(k => k.OrderDate)
             .ToListAsync();       //用日期排序
-                                                                     //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
+                                  //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
 
         foreach (var item in orderList)
         {
             var orderItemList = await _context.OrderItem.
                 Where(p => p.OrderId == item.Id && productIds.Contains(p.ProductId)).ToListAsync(); //取得訂單內的商品項目
 
-            if (orderItemList?.Any() ?? false) 
+            if (orderItemList?.Any() ?? false)
             {
                 item.OrderItem = orderItemList;
 
@@ -167,11 +167,67 @@ public class OrderController : Controller
                 };
 
                 orderVM.Add(ovm);
-            }            
+            }
         }
 
         return View(orderVM);
     }
+    //public async Task<IActionResult> OrderList(string searchString,
+    //                                       string currentFilter,
+    //                                       int? pageNumber)
+    //{
+    //    // 初始化頁碼
+    //    if (searchString != null)
+    //    {
+    //        pageNumber = 1;
+    //    }
+    //    else
+    //    {
+    //        searchString = currentFilter;
+    //    }
+    //    // 儲存當前搜尋狀態
+    //    ViewData["CurrentFilter"] = searchString;
+
+    //    List<OrderViewModel> orderVM = new List<OrderViewModel>();
+
+    //    var productIds = _context.Product.Select(p => p.Id).ToList();
+    //    var userId = _userManager.GetUserId(User);
+    //    var orderList = await _context.Order
+    //        .OrderByDescending(k => k.OrderDate)
+    //        .ToListAsync();       //用日期排序
+    //                              //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
+
+    //    foreach (var item in orderList)
+    //    {
+    //        var orderItemList = await _context.OrderItem.
+    //            Where(p => p.OrderId == item.Id && productIds.Contains(p.ProductId)).ToListAsync(); //取得訂單內的商品項目
+
+    //        if (orderItemList?.Any() ?? false)
+    //        {
+    //            item.OrderItem = orderItemList;
+
+    //            var ovm = new OrderViewModel()
+    //            {
+    //                Order = item,
+    //                CartItems = GetOrderItems(item.Id)
+    //            };
+
+    //            orderVM.Add(ovm);
+    //        }
+    //    }
+
+    //    // 商品名稱 模糊查詢
+    //    if (!string.IsNullOrWhiteSpace(searchString))
+    //    {
+    //        orderVM = orderVM.Where(s => s.Order.UserName.Contains(searchString)).ToList();
+    //    }
+
+    //    // 預設一頁顯示幾項
+    //    int pageSize = 5;
+
+    //    return View(await PaginatedList<OrderViewModel>.CreateAsync(
+    //        orderVM.AsQueryable(), pageNumber ?? 1, pageSize));
+    //}
 
     /// <summary>
     /// 更改訂單狀態
@@ -188,7 +244,7 @@ public class OrderController : Controller
             return NotFound();
         }
 
-        switch (encodeCode) 
+        switch (encodeCode)
         {
             case "paid":
                 order.isPaid = !order.isPaid;

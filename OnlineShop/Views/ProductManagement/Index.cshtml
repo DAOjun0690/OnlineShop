@@ -2,6 +2,17 @@
 
 @{
     ViewData["Title"] = "管理商品列表";
+
+    string GetStatusClass(ProductStatus status)
+    {
+        return status switch
+        {
+            ProductStatus.Draft => "text-muted",
+            ProductStatus.Active => "text-success",
+            ProductStatus.Sold => "text-warning",
+            _ => ""
+        };
+    }
 }
 
 <h1>商品列表</h1>
@@ -64,13 +75,20 @@
                         @Html.DisplayFor(m => item.Name)
                     </td>
                     <td>
-                        @item.Status.GetDescription()
+                        <span class="@GetStatusClass(item.Status)">@item.Status.GetDescription()</span>
                     </td>
                     <td>
                         @Html.DisplayFor(m => item.Category.Name)
                     </td>
                     <td>
-                        @item.ProductStyles.Min(x => x.Price) ~ @item.ProductStyles.Max(x => x.Price)
+                        @if (item.ProductStyles.Min(x => x.Price) == item.ProductStyles.Max(x => x.Price))
+                        {
+                            <span>@item.ProductStyles.Min(x => x.Price)</span>
+                        }
+                        else
+                        {
+                            <span>@item.ProductStyles.Min(x => x.Price) ~ @item.ProductStyles.Max(x => x.Price)</span>
+                        }
                     </td>
                     <td>
                         @if (item.ProductStyles.Sum(x => x.Stock) > 0)
@@ -101,10 +119,28 @@
 }
 
 <div class="d-flex justify-content-center">
-    <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)"
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
        class="btn btn-default @prevDisabled">上一頁</a>
-    <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)"
+    @for (int i = 1; i < Model.TotalPages + 1; i++)
+    {
+        if (Model.PageIndex == i)
+        {
+            <b>@i.ToString()</b>
+        }
+        else
+        {
+            <a asp-action="Index"
+               asp-route-pageNumber="@i.ToString()"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-default">
+                @i.ToString()
+            </a>
+        }
+    }
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
        class="btn btn-default @nextDisabled">下一頁</a>
 </div>
