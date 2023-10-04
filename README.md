@@ -1,48 +1,38 @@
 Online Shop 
 
-�إ߸�Ƨ� AppData/Database
-local�ݫإߪ��ɮ� AppData/Database/sqlite.db
+建立資料夾 AppData/Database
+local端建立空檔案 AppData/Database/sqlite.db
 
 Add-Migration
 
 ---
 
-### �ݹ�{
-UI �ߤl��
-������P�P �M ckeditor
-�������� layout ���F�s�����
-viewdata["title"] ��� onlineShop 
+### 待實現
+UI 兔子化
+解釋跟促銷 套 ckeditor
+分類頁表 layout 為了編輯分類
+viewdata["title"] 改用 onlineShop 
+商品增加 建立日期 欄位
 
-�������T�i�Ϥ��A�n�i�H�]�w
-azure db�ƥ�
-azure log
-D:\home\site\wwwroot\AppData
-\\mounts\\AppData
+### 已知問題
+1. rwd首頁隱藏之按鈕
+時間顯示
 
+### 待確認
 
-### �w�����D
-1. rwd�������ä����s
-�ɶ����
+----20231003 討論事項--------
+商品刪除後，訂單還要怎麼算 => 1. 訂單抓商品history
+款式他不會動，所以先不考慮款式刪除，訂單顯示的情形
+訂單=> 刪除，怕有人誤下單
+結帳時，如果庫存已經滿了，購物車要跳提示(哪個款式)，返回首頁按鈕變成 返回購物車
+!!買商品的人，一定要登入!!
+原圖上船後 先儲存，但不會使用到
+個人帳號管理 把二因子跟下載個人資料移除，加入 結帳時會使用到的欄位，但先不代入
+售完後，庫存又增加了，將狀態改為販售中
+網路很慢=>中華電信DNS改google
 
-### �ݽT�{
-
-----20231003 �Q�רƶ�--------
-�ӫ~�R����A�q���٭n���� => 1. �q���ӫ~history
-�ڦ��L���|�ʡA�ҥH�����Ҽ{�ڦ��R���A�q����ܪ�����
-���b�ɡA�p�G�w�s�w�g���F�A�ʪ����n������
-�q��=> �R���A�Ȧ��H�~�U��
-���� �s�ӫ~�˱�
-�����ܺC=>���عq�HDNS��google
-!!�R�ӫ~���H�A�@�w�n�n�J!!
-
-��ϤW��� ���x�s�A�����|�ϥΨ�
-�ӤH�b���޲z ��G�]�l��U���ӤH��Ʋ����A�[�J ���b�ɷ|�ϥΨ쪺���A�������N�J
-
-�⧹��A�w�s�S�W�[�F�A�N���A�אּ�c�⤤
-�������Ϥ� �L�|�A����
-
-���O�C��
-�妸�R��(�᭱�b��)
-�C�� ���e5��
-�q�� �j�M �ʦs ���@ ����A��
-�q�浲�b�A�P�ɭq�� ���D(�̨ӭӤH�m)
+類別列表
+批次刪除(後面在做)
+列表 當前5筆
+訂單 搜尋 封存 維護 之後再來
+訂單結帳，同時訂購 問題(十來個人搶)

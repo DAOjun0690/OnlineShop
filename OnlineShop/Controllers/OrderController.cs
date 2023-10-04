@@ -8,6 +8,7 @@ using OnlineShop.Core.ViewModel;
 using OnlineShop.Core.Dto;
 using Microsoft.AspNetCore.Authorization;
 using System.Web;
+using AutoMapper;
 //using StackExchange.Redis;
 
 namespace OnlineShop.Controllers;
@@ -142,33 +143,19 @@ public class OrderController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> OrderList()
     {
-        List<OrderViewModel> orderVM = new List<OrderViewModel>();
-
-        var productIds = _context.Product.Select(p => p.Id).ToList();
         var userId = _userManager.GetUserId(User);
         var orderList = await _context.Order
             .OrderByDescending(k => k.OrderDate)
-            .ToListAsync();       //用日期排序
-                                  //Where(m => m.UserId == userId).ToListAsync();   //取得屬於當前登入者的訂單
+            .ToListAsync();
 
-        foreach (var item in orderList)
-        {
-            var orderItemList = await _context.OrderItem.
-                Where(p => p.OrderId == item.Id && productIds.Contains(p.ProductId)).ToListAsync(); //取得訂單內的商品項目
-
-            if (orderItemList?.Any() ?? false)
+        List<OrderViewModel> orderVM = orderList
+            .Select(order => new OrderViewModel
             {
-                item.OrderItem = orderItemList;
-
-                var ovm = new OrderViewModel()
-                {
-                    Order = item,
-                    CartItems = GetOrderItems(item.Id)
-                };
-
-                orderVM.Add(ovm);
-            }
-        }
+                Order = order,
+                CartItems = GetOrderItems(order.Id)
+            })
+            .Where(ovm => ovm.CartItems.Any())
+            .ToList();
 
         return View(orderVM);
     }
@@ -409,17 +396,21 @@ public class OrderController : Controller
     /// <returns></returns>
     private List<CartItem> GetOrderItems(int orderId)
     {
+        MapperConfiguration config = new MapperConfiguration(cfg =>
+                cfg.CreateMap<ProductHistory, Product>());
 
-        var OrderItems = _context.OrderItem.Where(p => p.OrderId == orderId).ToList();
+        //Using automapper
+        Mapper mapper = new Mapper(config);
 
-        List<CartItem> orderItems = new List<CartItem>();
-        foreach (var orderitem in OrderItems)
-        {
-            CartItem item = new CartItem(orderitem);
-            item.Product = _context.Product.Single(x => x.Id == orderitem.ProductId);
-            item.ProductStyle = _context.ProductStyle.Single(x => x.Id == orderitem.ProductStyleId);
-            orderItems.Add(item);
-        }
+        var orderItems = _context.OrderItem
+            .Where(p => p.OrderId == orderId)
+            .Select(orderItem => new CartItem(orderItem)
+            {
+                Product = _context.Product.SingleOrDefault(x => x.Id == orderItem.ProductId)
+                      ?? mapper.Map<Product>(_context.ProductHistory.Single(x => x.Id == orderItem.ProductId)),
+                ProductStyle = _context.ProductStyle.Single(x => x.Id == orderItem.ProductStyleId)
+            })
+            .ToList();
 
         return orderItems;
     }

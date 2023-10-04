@@ -26,7 +26,7 @@
                 <td colspan="2">
                     @foreach (var citem in item.CartItems)
                     {
-                        <p>@Html.DisplayFor(cartItem => citem.Product.Name) (@citem.ProductStyle.Name)</p>
+                        <p>@Html.DisplayFor(cartItem => citem.Product.Name) (@citem.ItemName)</p>
                     }
                 </td>
                 <td>

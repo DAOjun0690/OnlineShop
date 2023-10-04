@@ -38,6 +38,8 @@ public class ProductsController : Controller
                                 .Include(p => p.ProductStyles).AsNoTracking()
                                 .Where(p => p.Status != ProductStatus.Draft).ToListAsync();
         }
+        // 目前先用 id 進行倒敘，之後要加上時間欄位
+        products = products.OrderByDescending(k => k.Id).ToList();
 
         foreach (var product in products)
         {

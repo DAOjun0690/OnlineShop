@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -49,23 +49,14 @@ public class ProductManagementController : Controller
                                            ProductStatus status
                                            )
     {
-        // 初始化頁碼
-        if (searchString != null)
-        {
-            pageNumber = 1;
-        }
-        else
-        {
-            searchString = currentFilter;
-        }
         // 儲存當前搜尋狀態
-        ViewData["CurrentFilter"] = searchString;
-
+        ViewData["CurrentFilter"] = searchString ?? currentFilter;
         // 商品狀態列表
         ViewData["StatusList"] = new SelectList(_productStatusEnumList, "Value", "Text", (int)status);
+        ViewData["StatusName"] = status != 0 ? status.GetDescription() : "全部";
 
-        // 所有商品
-        var result = from m in _context.Product select m;
+        var result = _context.Product.AsQueryable();
+
         // 商品名稱 模糊查詢
         if (!string.IsNullOrWhiteSpace(searchString))
         {
@@ -75,17 +66,16 @@ public class ProductManagementController : Controller
         if (status != 0)
         {
             result = result.Where(p => p.Status == status);
-            ViewData["StatusName"] = status.GetDescription();
         }
-        else {
-            ViewData["StatusName"] = "全部";
-        }
+        // 目前先對id進行排序，之後可能會使用 商品建立時間
+        var orderedResult = result.OrderByDescending(m => m.Id);
 
-        // 預設一頁顯示幾項
+        // 列表一頁顯示筆數
         int pageSize = 5;
         return View(await PaginatedList<Product>.CreateAsync(
-            result.Include(p => p.Category)
-                  .Include(p => p.ProductStyles).AsNoTracking(), pageNumber ?? 1, pageSize));
+            orderedResult.Include(p => p.Category)
+                         .Include(p => p.ProductStyles)
+                         .AsNoTracking(), pageNumber ?? 1, pageSize));
     }
 
 
@@ -97,30 +87,31 @@ public class ProductManagementController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        Product product;
-        ProductStyle style = new ProductStyle()
-        {
-            Name = "基本款",
-            Price = 0,
-            Stock = 0
-        };
-
         try
         {
+            ProductStyle style = new ProductStyle()
+            {
+                Name = "基本款",
+                Price = 0,
+                Stock = 0
+            };
 
-            product = new Product()
+            Product product = new Product()
             {
                 Name = "新項目",
                 Status = ProductStatus.Draft,
                 CategoryId = _context.Category.First().Id,
                 ProductStyles = new List<ProductStyle> { style }
             };
+
             _context.Add(product);
             _context.SaveChanges();
         }
         catch (Exception ex)
         {
             TempData["message"] = string.Format("Could not add new item.");
+            // 考慮將異常記錄到日誌以便進一步調查問題
+            // _logger.LogError(ex, "Failed to create product");
         }
         return RedirectToAction("Index");
     }
@@ -302,7 +293,7 @@ public class ProductManagementController : Controller
         {
             return Problem("Entity set 'OnlineShopContext.Product'  is null.");
         }
-        var product = await _context.Product.Include(p => p.ProductStyles).FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
         if (product != null)
         {
             var history = new ProductHistory()
@@ -313,11 +304,14 @@ public class ProductManagementController : Controller
                 Promotion = product.Promotion,
                 Content = product.Content,
                 Status = product.Status,
+                ManufacturingMethod = product.ManufacturingMethod,
+                ManufacturingTime = product.ManufacturingTime,
+                ManufacturingCustomDate = product.ManufacturingCustomDate,
+                CategoryId = product.CategoryId,
                 DeleteTime = DateTime.UtcNow.AddHours(8)
             };
             _context.ProductHistory.Add(history);
 
-            //_context.ProductStyle.RemoveRange(product.ProductStyles);
             _context.Product.Remove(product);
         }
 

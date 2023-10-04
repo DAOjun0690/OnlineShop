@@ -8,6 +8,11 @@ public class OrderItem
     public int OrderId { get; set; }
     public int ProductId { get; set; }
     public int ProductStyleId { get; set; }
+    /// <summary>
+    /// 款式名稱
+    /// </summary>
+    [MaxLength(200)]
+    public string ItemName { get; set; }
     public int Amount { get; set; }
     public int SubTotal { get; set; }
 }
@@ -20,10 +25,11 @@ public class CartItem : OrderItem
         this.OrderId = order.OrderId;
         this.ProductId = order.ProductId;
         this.ProductStyleId = order.ProductStyleId;
+        this.ItemName = order.ItemName;
         this.Amount = order.Amount;
         this.SubTotal = order.SubTotal;
     }
-
+    // 導航屬性
     public Product Product { get; set; }
     public ProductStyle ProductStyle { get; set; }
 

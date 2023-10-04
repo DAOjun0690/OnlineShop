@@ -36,7 +36,7 @@
                                 <tr>
                                     @* 顯示縮圖 *@
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Product.Name)<span>(@Html.DisplayFor(modelItem => item.ProductStyle.Name))</span>
+                                        @Html.DisplayFor(m => item.Product.Name)<span>(@Html.DisplayFor(m => item.ItemName))</span>
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.ProductStyle.Price)

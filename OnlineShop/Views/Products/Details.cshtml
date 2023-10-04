@@ -245,10 +245,11 @@
 
                 let productId = '@Model.ProductId';
                 let productStyleId = $("#productStyles").val();
-                let amount = $("#Amount").val();
+                let amount = Number($("#Amount").val());
+                let styleMax = Number($("#Amount").prop("max"));
 
                 // 前端數量驗證
-                if (amount <= $("#Amount").prop("max")) {
+                if (amount <= styleMax) {
                     let param = {
                         ProductId: productId,
                         ProductStyleId: productStyleId,

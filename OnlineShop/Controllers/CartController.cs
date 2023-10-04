@@ -61,10 +61,10 @@ public class CartController : Controller
             .Include(p => p.ProductStyles).AsNoTracking()
             .Single(x => x.Id.Equals(id));
         if (product == null) return NoContent();
-        //if (product.Status != ProductStatus.Active) 
-        //{
-        //    return Json(new { success = false, message = "當前商品不開放購買，請在挑選其他項商品。" });
-        //}
+        if (product.Status != ProductStatus.Active)
+        {
+            return Json(new { success = false, message = "當前商品不開放購買，請在挑選其他項商品。" });
+        }
 
         var productStyle =
             product.ProductStyles.SingleOrDefault(x => x.Id == dto.ProductStyleId);
@@ -150,6 +150,7 @@ public class CartController : Controller
             ProductStyle = productStyle,
             ProductId = product.Id,
             ProductStyleId = productStyle.Id,
+            ItemName = productStyle.Name,
             Amount = amount,
             SubTotal = productStyle.Price * amount,
             //imageSrc = ViewImage(product.Image) 或許可以使用picture/Download

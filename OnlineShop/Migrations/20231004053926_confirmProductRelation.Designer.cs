@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineShop.Data;
 
@@ -10,9 +11,10 @@ using OnlineShop.Data;
 namespace OnlineShop.Migrations
 {
     [DbContext(typeof(OnlineShopContext))]
-    partial class OnlineShopContextModelSnapshot : ModelSnapshot
+    [Migration("20231004053926_confirmProductRelation")]
+    partial class confirmProductRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.21");
@@ -315,9 +317,8 @@ namespace OnlineShop.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ItemName")
+                    b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("OrderId")
@@ -337,6 +338,8 @@ namespace OnlineShop.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItem");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("OrderItem");
                 });
 
             modelBuilder.Entity("OnlineShop.Core.Models.Product", b =>
@@ -409,15 +412,6 @@ namespace OnlineShop.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ManufacturingCustomDate")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ManufacturingMethod")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ManufacturingTime")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -435,6 +429,8 @@ namespace OnlineShop.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductHistory");
                 });
@@ -494,6 +490,22 @@ namespace OnlineShop.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductStyle");
+                });
+
+            modelBuilder.Entity("OnlineShop.Core.Models.CartItem", b =>
+                {
+                    b.HasBaseType("OnlineShop.Core.Models.OrderItem");
+
+                    b.Property<string>("imageSrc")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductStyleId");
+
+                    b.HasDiscriminator().HasValue("CartItem");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -567,6 +579,17 @@ namespace OnlineShop.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("OnlineShop.Core.Models.ProductHistory", b =>
+                {
+                    b.HasOne("OnlineShop.Core.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("OnlineShop.Core.Models.ProductImage", b =>
                 {
                     b.HasOne("OnlineShop.Core.Models.Product", "Product")
@@ -587,6 +610,25 @@ namespace OnlineShop.Migrations
                         .IsRequired();
 
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("OnlineShop.Core.Models.CartItem", b =>
+                {
+                    b.HasOne("OnlineShop.Core.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OnlineShop.Core.Models.ProductStyle", "ProductStyle")
+                        .WithMany()
+                        .HasForeignKey("ProductStyleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductStyle");
                 });
 
             modelBuilder.Entity("OnlineShop.Core.Models.Category", b =>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineShop.Data;
 
@@ -10,9 +11,10 @@ using OnlineShop.Data;
 namespace OnlineShop.Migrations
 {
     [DbContext(typeof(OnlineShopContext))]
-    partial class OnlineShopContextModelSnapshot : ModelSnapshot
+    [Migration("20231004075715_revertProdcutHistory")]
+    partial class revertProdcutHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.21");
@@ -315,11 +317,6 @@ namespace OnlineShop.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ItemName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("OrderId")
                         .HasColumnType("INTEGER");
 
@@ -408,15 +405,6 @@ namespace OnlineShop.Migrations
                         .IsRequired()
                         .HasMaxLength(5000)
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("ManufacturingCustomDate")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ManufacturingMethod")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ManufacturingTime")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
