@@ -33,11 +33,11 @@ public class PictureController : Controller
     {
         string productId = Number.ToString();
 #if DEBUG
-        string  uplaodFolder = _configuration["UploadFolder"];
+        string uploadFolder = _configuration["UploadFolder"];
 #elif RELEASE
-        string  uplaodFolder = "\\mounts\\" + _configuration["UploadFolder"];
+        string  uploadFolder = "\\mounts\\" + _configuration["UploadFolder"];
 #endif
-        ServerDestinationPath = Path.Join(uplaodFolder, productId);
+        ServerDestinationPath = Path.Join(uploadFolder, productId);
         if (!Directory.Exists(ServerDestinationPath))
         {
             //新增資料夾

@@ -22,7 +22,7 @@ builder.Services
 //    options.UseSqlite(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found.")))
 
 
-//// ¥¦·|±Nµ{¦¡½X±q¨Ï¥Î°O¾ĞÅé¤º³¡§Ö¨úÅÜ§ó¬° Azure ¤¤ªº Redis §Ö¨ú¡A¦Ó¥B·|¨Ï¥Î AZURE_REDIS_CONNECTIONSTRING ¥ı«eªº ¡C
+//// å®ƒæœƒå°‡ç¨‹å¼ç¢¼å¾ä½¿ç”¨è¨˜æ†¶é«”å…§éƒ¨å¿«å–è®Šæ›´ç‚º Azure ä¸­çš„ Redis å¿«å–ï¼Œè€Œä¸”æœƒä½¿ç”¨ AZURE_REDIS_CONNECTIONSTRING å…ˆå‰çš„ ã€‚
 //builder.Services.AddStackExchangeRedisCache(options =>
 //{
 //    options.Configuration = builder.Configuration["AZURE_REDIS_CONNECTIONSTRING"];
@@ -30,23 +30,23 @@ builder.Services
 //});
 
 
-// ±Ò¥Î Session
+// å•Ÿç”¨ Session
 builder.Services.AddSession();
 
 builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
 {
-    // ±K½Xªø«×
+    // å¯†ç¢¼é•·åº¦
     options.Password.RequiredLength = 4;
-    // ¥]§t¤p¼g­^¤å
+    // åŒ…å«å°å¯«è‹±æ–‡
     options.Password.RequireLowercase = false;
-    // ¥]§t¤j¼g­^¤å
+    // åŒ…å«å¤§å¯«è‹±æ–‡
     options.Password.RequireUppercase = false;
-    // ¥]§t²Å¸¹
+    // åŒ…å«ç¬¦è™Ÿ
     options.Password.RequireNonAlphanumeric = false;
-    // ¥]§t¼Æ¦r
+    // åŒ…å«æ•¸å­—
     options.Password.RequireDigit = false;
 })
-    .AddRoles<IdentityRole>() //¨¤¦â
+    .AddRoles<IdentityRole>() //è§’è‰²
     .AddEntityFrameworkStores<OnlineShopContext>();
 
 // Add services to the container.
@@ -84,19 +84,19 @@ app.UseEndpoints(endpoints =>
 
 
 
-// ½T»{ ¤W¶ÇÀÉ®×¸ê®Æ§¨ ¬O§_¦s¦b¡A¤£¦bªº¸Ü¡A±N¨ä·s¼W
+// ç¢ºèª ä¸Šå‚³æª”æ¡ˆè³‡æ–™å¤¾ æ˜¯å¦å­˜åœ¨ï¼Œä¸åœ¨çš„è©±ï¼Œå°‡å…¶æ–°å¢
 #if DEBUG
-string uplaodFolder = app.Configuration["UploadFolder"];
+string uploadFolder = app.Configuration["UploadFolder"];
 #elif RELEASE
-string uplaodFolder = "\\mounts\\" + app.Configuration["UploadFolder"];
+string uploadFolder = "\\mounts\\" + app.Configuration["UploadFolder"];
 #endif
-if (!Directory.Exists(uplaodFolder))
+if (!Directory.Exists(uploadFolder))
 {
-    //·s¼W¸ê®Æ§¨
-    Directory.CreateDirectory(uplaodFolder);
+    //æ–°å¢è³‡æ–™å¤¾
+    Directory.CreateDirectory(uploadFolder);
 }
 
-// ªì©l¤Æ¸ê®Æ
+// åˆå§‹åŒ–è³‡æ–™
 await SeedData.SeedDatabase(app.Services.CreateAsyncScope().ServiceProvider);
 
 app.Run();
