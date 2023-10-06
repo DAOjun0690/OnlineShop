@@ -1,35 +1,18 @@
-﻿<style>
-    .carousel-img-container {
-        height: 18rem;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .carousel-img-container img {
-        object-fit: cover;
-        object-position: center center;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-</style>
-
-<div id="carousel-section" class="carousel slide shadow-sm" data-bs-ride="carousel">
+﻿<div id="carousel-section" class="carousel slide shadow-sm" data-bs-ride="carousel">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#carousel-section" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carousel-section" data-bs-slide-to="1" aria-label="Slide 2"></button>
         <button type="button" data-bs-target="#carousel-section" data-bs-slide-to="2" aria-label="Slide 3"></button>
     </div>
-    <div class="carousel-inner">
-        <div class="carousel-item carousel-img-container active">
-            <img src="~/image/banner1.jpg" class="d-block w-100" alt="...">
+    <div class="carousel-inner" style="max-height: 20rem;">
+        <div class="carousel-item active">
+            <img src="~/image/banner1.jpg" class="img-fluid" alt="...">
         </div>
-        <div class="carousel-item carousel-img-container">
-            <img src="~/image/banner2.jpg" class="d-block w-100" alt="...">
+        <div class="carousel-item">
+            <img src="~/image/banner2.jpg" class="img-fluid" alt="...">
         </div>
-        <div class="carousel-item carousel-img-container">
-            <img src="~/image/banner3.jpg" class="d-block w-100" alt="...">
+        <div class="carousel-item">
+            <img src="~/image/banner3.jpg" class="img-fluid" alt="...">
         </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carousel-section" data-bs-slide="prev">
