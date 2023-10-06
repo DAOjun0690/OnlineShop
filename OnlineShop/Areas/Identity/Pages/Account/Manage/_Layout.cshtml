@@ -10,17 +10,13 @@
 }
 
 <h1>管理你的帳號</h1>
-
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
-            <partial name="_ManageNav" />
-        </div>
-        <div class="col-md-9">
-            @RenderBody()
-        </div>
+<hr />
+<div class="row">
+    <div class="col-md-3 border-end">
+        <partial name="_ManageNav" />
+    </div>
+    <div class="col-md-9 mt-5 mt-md-0">
+        @RenderBody()
     </div>
 </div>
 
