@@ -4,7 +4,7 @@
 
 namespace OnlineShop.Migrations
 {
-    public partial class OrderItemAddItemNameAndHistoryAddManufacturingCol : Migration
+    public partial class FK : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -33,6 +33,7 @@ namespace OnlineShop.Migrations
                 name: "ItemName",
                 table: "OrderItem",
                 type: "TEXT",
+                maxLength: 200,
                 nullable: false,
                 defaultValue: "");
         }

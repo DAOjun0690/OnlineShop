@@ -11,8 +11,8 @@ using OnlineShop.Data;
 namespace OnlineShop.Migrations
 {
     [DbContext(typeof(OnlineShopContext))]
-    [Migration("20231004071246_updateProductHistoryToInheritProduct")]
-    partial class updateProductHistoryToInheritProduct
+    [Migration("20231006145611_FK")]
+    partial class FK
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -317,6 +317,11 @@ namespace OnlineShop.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("INTEGER");
 
@@ -355,10 +360,6 @@ namespace OnlineShop.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("ManufacturingCustomDate")
                         .HasColumnType("INTEGER");
 
@@ -386,8 +387,58 @@ namespace OnlineShop.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Product");
+                });
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Product");
+            modelBuilder.Entity("OnlineShop.Core.Models.ProductHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("DeleteTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ManufacturingCustomDate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ManufacturingMethod")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ManufacturingTime")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Promotion")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductHistory");
                 });
 
             modelBuilder.Entity("OnlineShop.Core.Models.ProductImage", b =>
@@ -445,19 +496,6 @@ namespace OnlineShop.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductStyle");
-                });
-
-            modelBuilder.Entity("OnlineShop.Core.Models.ProductHistory", b =>
-                {
-                    b.HasBaseType("OnlineShop.Core.Models.Product");
-
-                    b.Property<DateTimeOffset>("DeleteTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("HistoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasDiscriminator().HasValue("ProductHistory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
