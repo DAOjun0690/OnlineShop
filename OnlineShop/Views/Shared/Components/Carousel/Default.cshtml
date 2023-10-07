@@ -4,15 +4,24 @@
         <button type="button" data-bs-target="#carousel-section" data-bs-slide-to="1" aria-label="Slide 2"></button>
         <button type="button" data-bs-target="#carousel-section" data-bs-slide-to="2" aria-label="Slide 3"></button>
     </div>
-    <div class="carousel-inner" style="max-height: 20rem;">
+    <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="~/image/banner1.jpg" class="img-fluid" alt="...">
+            <picture>
+                <source type="image/svg+xml" media="(min-width:720px)" srcset="~/image/resized_1.jpg">
+                <img src="~/image/full_image_1.jpg" class="img-fluid" alt="...">
+            </picture>
         </div>
         <div class="carousel-item">
-            <img src="~/image/banner2.jpg" class="img-fluid" alt="...">
+            <picture>
+                <source type="image/svg+xml" media="(min-width:720px)" srcset="~/image/resized_2.jpg">
+                <img src="~/image/full_image_2.jpg" class="img-fluid" alt="...">
+            </picture>
         </div>
         <div class="carousel-item">
-            <img src="~/image/banner3.jpg" class="img-fluid" alt="...">
+            <picture>
+                <source type="image/svg+xml" media="(min-width:720px)" srcset="~/image/resized_3.jpg">
+                <img src="~/image/full_image_3.jpg" class="img-fluid" alt="...">
+            </picture>
         </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carousel-section" data-bs-slide="prev">
