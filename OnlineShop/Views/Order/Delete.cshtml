@@ -1,0 +1,91 @@
+﻿@model OrderViewModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h3>確定要將下列訂單進行刪除?</h3>
+<div class="card shadow-sm rounded mb-3">
+    <div class="card-body">
+        <div class="row">
+            <h5>訂單編號：@Html.DisplayFor(m => m.Order.Id)</h5>
+            @if (!string.IsNullOrWhiteSpace(Model.Order.UserName))
+            {
+                <p>
+                    <span>訂購帳號: </span>
+                    <span class="text-muted">@Html.DisplayFor(m => m.Order.UserName)</span>
+                </p>
+            }
+            <p>
+                <span>訂單日期: </span>
+                <span class="text-muted">@Html.DisplayFor(m => m.Order.OrderDate)</span>
+            </p>
+        </div>
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>名稱</th>
+                        <th>數量</th>
+                        <th>小計</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <tr>
+                            <td>@item.Product.Name (@item.ItemName) </td>
+                            <td>@item.Amount</td>
+                            <td>@item.SubTotal</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="pe-5">
+                <p class="text-end">總計： $@Html.DisplayFor(m => m.Order.Total)</p>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-7">
+                <p>收貨人姓名：@Html.DisplayFor(m => m.Order.ReceiverName)</p>
+                <p>收貨人電話：@Html.DisplayFor(m => m.Order.ReceiverPhone)</p>
+                <p>收貨人地址：@Html.DisplayFor(m => m.Order.ReceiverFirstAddress) @Html.DisplayFor(m => m.Order.ReceiverSecondAddress)</p>
+                <p>送貨地點：@Html.DisplayFor(m => m.DeliveryAddressName)</p>
+                <p>送貨方式：@Html.DisplayFor(m => m.DeliveryMethodName)</p>
+                <p>備註：@Html.DisplayFor(m => m.Order.Note)</p>
+            </div>
+            <div class="col-5">
+                <p>
+                    訂單狀態：
+                    @if (Model.Order.isPaid)
+                    {
+                        <span>已付款</span>
+                    }
+                    else
+                    {
+                        <span>未付款</span>
+                    }
+                </p>
+                <p>
+                    配送狀態：
+                    @if (Model.Order.isShip)
+                    {
+                        <span>已出貨</span>
+                    }
+                    else
+                    {
+                        <span>未出貨</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Order.Id" />
+        <input type="submit" value="確認刪除" class="btn btn-danger" />
+    </form>
+</div>
+<div>
+    <a class="btn btn-sm btn-outline-secondary" asp-action="OrderList">返回訂單列表</a>
+</div>

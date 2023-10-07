@@ -9,13 +9,14 @@ using OnlineShop.Core.Dto;
 using Microsoft.AspNetCore.Authorization;
 using System.Web;
 using AutoMapper;
-//using StackExchange.Redis;
+using System.Text;
 
 namespace OnlineShop.Controllers;
 
 /// <summary>
-/// 訂單事件
+/// 訂單事件 只有登入者可以進行操作
 /// </summary>
+[Authorize]
 public class OrderController : Controller
 {
     private readonly OnlineShopContext _context;
@@ -128,11 +129,6 @@ public class OrderController : Controller
     {
         bool isUserAdmin = user != null && _userManager.IsInRoleAsync(user, "Admin").Result;
 
-        if (string.IsNullOrWhiteSpace(order.UserId))
-        {
-            return user == null || isUserAdmin;
-        }
-
         return isUserAdmin || user != null && order.UserId == user.Id;
     }
 
@@ -216,6 +212,7 @@ public class OrderController : Controller
     //        orderVM.AsQueryable(), pageNumber ?? 1, pageSize));
     //}
 
+
     /// <summary>
     /// 更改訂單狀態
     /// </summary>
@@ -248,26 +245,70 @@ public class OrderController : Controller
     }
 
     /// <summary>
-    /// 手動輸入訂單編號的查詢訂單頁面
+    /// 確認是否刪除訂單
     /// </summary>
+    /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet]
-    public IActionResult QueryOrder()
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Delete(int? id)
     {
-        return View();
+        // 取得訂單物件
+        var order = await _context.Order.FirstOrDefaultAsync(m => m.Id == id);
+
+        // 如果找不到訂單，返回NotFound結果
+        if (order == null)
+        {
+            return View(new OrderViewModel());
+        }
+
+        // 取得當前使用者物件
+        var user = await _userManager.GetUserAsync(User);
+
+        // 判斷當前使用者是否可以查閱訂單
+        if (!CanUserViewOrder(order, user))
+        {
+            return View(new OrderViewModel());
+        }
+
+        // 取得訂單項目物件
+        order.OrderItem = await _context.OrderItem.Where(p => p.OrderId == id).ToListAsync();
+        order.Total = order.OrderItem.Sum(m => m.SubTotal) +
+            _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Price;
+        // 取得商品詳細資料
+        var orderItems = GetOrderItems(order.Id);
+
+        OrderViewModel viewModel = new OrderViewModel()
+        {
+            Order = order,
+            CartItems = orderItems,
+            DeliveryAddressName = _DeliveryAddresses.First(x => x.Id == order.SelectedDeliveryAddress).Name,
+            DeliveryMethodName = _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Name
+        };
+
+        // 返回View結果
+        return View(viewModel);
     }
 
-    /// <summary>
-    /// 查詢是否有相同編號的訂單
-    /// </summary>
-    /// <param name="Id"></param>
-    /// <returns></returns>
-    [HttpPost]
-    public IActionResult QueryOrder(int? OrderId)
+    // POST: ProductManagement/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        return RedirectToAction("Details", new { Id = OrderId });
-    }
+        // 取得訂單物件
+        var order = await _context.Order.FirstOrDefaultAsync(m => m.Id == id);
 
+        // 如果找不到訂單，返回NotFound結果
+        if (order == null)
+        {
+            return View(new OrderViewModel());
+        }
+
+        _context.Order.Remove(order);
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(OrderList));
+    }
 
     /// <summary>
     /// 結帳
@@ -330,50 +371,73 @@ public class OrderController : Controller
         order.Total = order.OrderItem.Sum(m => m.SubTotal) +
             _DeliveryMethods.First(x => x.Id == order.SelectedDeliveryMethod).Price;
 
-        _context.Add(order);
-
-        // 扣除庫存
-        foreach (var item in order.OrderItem)
+        using (var transaction = _context.Database.BeginTransaction())
         {
-            var stockSum = _context.ProductStyle
-                .Where(p => p.ProductId == item.ProductId)
-                .Sum(x => x.Stock);
-            var dbStock = _context.ProductStyle.Single(x => x.Id == item.ProductStyleId);
-            if (dbStock.Stock >= item.Amount && stockSum >= 0)
+            try
             {
-                dbStock.Stock -= item.Amount;
-                _context.Update(dbStock);
+                _context.Add(order);
+
+                StringBuilder errorMsg = new StringBuilder();
+                // 扣除庫存
+                foreach (var item in order.OrderItem)
+                {
+                    var dbStock = _context.ProductStyle.Single(x => x.Id == item.ProductStyleId);
+                    // 判斷 db 商品款式的庫存，是否大於 購買的數量
+                    if (dbStock.Stock >= item.Amount) // 改為所以數量都檢查?!
+                    {
+                        dbStock.Stock -= item.Amount;
+                        _context.Update(dbStock);
+                    }
+                    else
+                    {
+                        var dbProduct = _context.Product.Single(x => x.Id == item.ProductId);
+                        errorMsg.AppendLine($"{dbProduct.Name} 款式: {dbStock.Name}");
+                        errorMsg.AppendLine("<br/>");
+                    }
+                }
+                // 如果有購買數量超過庫存，則跳轉至錯誤頁面
+                if (errorMsg.Length > 0)
+                {
+                    transaction.Rollback();
+                    errorMsg.AppendLine("購買數量超過庫存，請重新下訂單。");
+                    ViewBag.ErrorMsg = errorMsg.ToString();
+                    return View("ErrorOrder");
+                }
+
+                // 儲存變更
+                _context.SaveChanges();
+
+                // 將庫存 = 0的商品，狀態改為 售完(Status=3)
+                // 重新取得最新的訂單資訊
+                order = _context.Order.Include(o => o.OrderItem).Single(o => o.Id == order.Id);
+                // 篩選 所有 product Id
+                var orderProductIds = order.OrderItem.Select(x => x.ProductId);
+                foreach (var item in orderProductIds)
+                {
+                    var stockSum = _context.ProductStyle
+                        .Where(p => p.ProductId == item)
+                        .Sum(x => x.Stock);
+
+                    if (stockSum == 0)
+                    {
+                        var p = _context.Product.Single(x => x.Id == item);
+                        p.Status = ProductStatus.Sold;
+                        _context.Update(p);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                transaction.Commit();
             }
-            else
+            catch (Exception ex)
             {
-                ViewBag.ErrorMsg = "購買數量超過庫存，請重新下訂單。";
+                transaction.Rollback();
+                ViewBag.ErrorMsg = "發生錯誤，請重新下訂單。";
                 return View("ErrorOrder");
             }
         }
 
-        // 儲存變更
-        _context.SaveChanges();
-
-        // 將庫存 = 0的商品，狀態改為 售完(Status=3)
-        // 重新取得最新的訂單資訊
-        order = _context.Order.Include(o => o.OrderItem).Single(o => o.Id == order.Id);
-        // 篩選 所有 product Id
-        var orderProductIds = order.OrderItem.Select(x => x.ProductId);
-        foreach (var item in orderProductIds)
-        {
-            var stockSum = _context.ProductStyle
-                .Where(p => p.ProductId == item)
-                .Sum(x => x.Stock);
-
-            if (stockSum == 0)
-            {
-                var p = _context.Product.Single(x => x.Id == item);
-                p.Status = ProductStatus.Sold;
-                _context.Update(p);
-            }
-        }
-
-        await _context.SaveChangesAsync();
         SessionHelper.Remove(HttpContext.Session, "cart");
 
         return RedirectToAction("ReviewOrder", new { Id = order.Id });

@@ -1,10 +1,9 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "訂單錯誤頁面";
 }
+<div><span>@Html.Raw(ViewBag.ErrorMsg)</span></div>
 
-<span>@ViewBag.ErrorMsg</span>
-<a class="btn btn-primary btn-sm text-white" asp-controller="Products" asp-action="Index">返回首頁</a>
+<a class="btn btn-primary btn-sm text-white" asp-controller="Cart" asp-action="Index">返回購物車</a>
 
 @section Scripts {
 

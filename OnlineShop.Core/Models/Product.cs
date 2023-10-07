@@ -67,12 +67,21 @@ public class Product
 /// </summary>
 public enum ProductStatus
 {
+    /// <summary>
+    /// 草稿
+    /// </summary>
     [Description("草稿")]
     Draft = 1,
 
+    /// <summary>
+    /// 販售中
+    /// </summary>
     [Description("販售中")]
     Active = 2,
 
+    /// <summary>
+    /// 售完
+    /// </summary>
     [Description("售完")]
     Sold = 3
 }

@@ -5,9 +5,14 @@ using OnlineShop.Data;
 using OnlineShop.Helpers;
 using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineShop.Controllers;
 
+/// <summary>
+/// 購物車操作 只有登入者可以操作
+/// </summary>
+[Authorize]
 public class CartController : Controller
 {
     private readonly OnlineShopContext _context;
@@ -136,12 +141,6 @@ public class CartController : Controller
         return RedirectToAction("Index");
     }
 
-    private string ViewImage(byte[] arrayImage)
-    {
-        string base64String = Convert.ToBase64String(arrayImage, 0, arrayImage.Length);
-        return "data:image/png;base64," + base64String;
-    }
-
     private CartItem CreateCartItem(Product product, ProductStyle productStyle, int amount)
     {
         return new CartItem()
@@ -156,4 +155,10 @@ public class CartController : Controller
             //imageSrc = ViewImage(product.Image) 或許可以使用picture/Download
         };
     }
+
+    //private string ViewImage(byte[] arrayImage)
+    //{
+    //    string base64String = Convert.ToBase64String(arrayImage, 0, arrayImage.Length);
+    //    return "data:image/png;base64," + base64String;
+    //}
 }

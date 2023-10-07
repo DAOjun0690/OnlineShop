@@ -261,13 +261,20 @@
                         url: '/Cart/AddtoCart',
                         data: param,
                         success: function (data) {
-                            debugger;
                             if (data?.success == false) {
                                 alert(data.message);
                             }
                             else {
                                 // 彈出 加入購物車 訊息
                                 ShowMessage();
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            // 如果沒有登入，則導至登入頁面
+                            if (xhr.status == 401) {
+                                var loginUrl = "/Identity/Account/Login";
+                                var returnUrl = window.location.pathname + window.location.search; // 獲取當前的相對路徑和查詢參數
+                                window.location.href = loginUrl + "?ReturnUrl=" + encodeURIComponent(returnUrl);
                             }
                         }
                     });

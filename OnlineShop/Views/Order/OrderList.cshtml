@@ -19,6 +19,7 @@
                 <th>付款狀態</th>
                 <th>配送狀態</th>
                 <th></th>
+                <th class="control"></th>
             </tr>
         </thead>
         <tbody>
@@ -70,7 +71,9 @@
                     {
                         <a class="btn btn-sm btn-danger" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="ship">未出貨</a>
                     }
-
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-danger " asp-action="Delete" asp-route-id="@item.Order.Id">刪除</a>
                 </td>
             </tr>
         </tbody>

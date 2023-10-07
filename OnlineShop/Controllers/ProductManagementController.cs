@@ -187,7 +187,8 @@ public class ProductManagementController : Controller
                 model.Description = dto.Description;
                 model.Promotion = dto.Promotion ?? string.Empty;
                 model.Content = dto.Content;
-                model.Status = dto.Status;
+                // 如果當前狀態為售完，但是款式數量>0，則商品狀態改為 販售中
+                model.Status = (dto.Status == ProductStatus.Sold && dto.ProductStyles.Any(x => x.Stock > 0)) ? ProductStatus.Active : dto.Status;
                 model.CategoryId = dto.CategoryId;
                 model.ManufacturingMethod = dto.ManufacturingMethod;
                 model.ManufacturingTime = dto.ManufacturingTime;

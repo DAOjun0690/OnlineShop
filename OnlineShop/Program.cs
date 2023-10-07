@@ -33,6 +33,7 @@ builder.Services
 // 啟用 Session
 builder.Services.AddSession();
 
+
 builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
 {
     // 密碼長度
@@ -49,10 +50,17 @@ builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
     .AddRoles<IdentityRole>() //角色
     .AddEntityFrameworkStores<OnlineShopContext>();
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 //builder.Services.AddScoped<IFileService, FileService>();
+
+// 登入頁面路徑
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+});
 
 var app = builder.Build();
 
