@@ -262,7 +262,7 @@ public class ProductManagementController : Controller
             }
         }
 
-        return View(nameof(Edit));
+        return RedirectToAction(nameof(Edit), new { id = dto.ProductId });
     }
 
 

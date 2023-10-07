@@ -13,7 +13,7 @@
                     <div class="card-body p-5">
                         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                             <h1 class="fs-2 card-title fw-bold mb-4">建立一個新帳號</h1>
-                            <div asp-validation-summary="ModelOnly" class="invalid-feedback"></div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="mb-3">
                                 <label asp-for="Input.Email" class="mb-2 text-muted"></label>
                                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
@@ -47,7 +47,7 @@
                                 </select>
                                 <span asp-validation-for="Input.Gender" class="text-danger"></span>
                             </div>
-                            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">註冊</button>
                         </form>
                     </div>
                 </div>
