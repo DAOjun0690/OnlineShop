@@ -92,11 +92,15 @@ public class PictureController : Controller
                     };
                     _context.ProductImage.Add(image);
 
-                    // 寫入本地資料夾裡面
-                    using (var stream = new MemoryStream())
+                    // 儲存原圖
+                    string saveName = guid + Path.GetExtension(file.FileName).ToLower();
+                    string originPath = Path.Combine(ServerDestinationPath, "origin", saveName);
+                    DirectoryExists(originPath);
+                    using (FileStream stream = new FileStream(originPath, FileMode.Create))
                     {
+                        // 程式寫入的本地資料夾裡面
                         await file.CopyToAsync(stream);
-                        string saveName = guid + Path.GetExtension(file.FileName).ToLower();
+
                         // Create two new image sizes
                         string thumbPath = Path.Combine(ServerDestinationPath, "thumb", saveName);
                         DirectoryExists(thumbPath);
@@ -272,7 +276,7 @@ public class PictureController : Controller
     /// <param name="imgStream"></param>
     /// <param name="filePath"></param>
     /// <param name="imgWidth"></param>
-    private void ResizeImage(MemoryStream imgStream, string filePath, int imgWidth)
+    private void ResizeImage(FileStream imgStream, string filePath, int imgWidth)
     {
         using (var image = new Bitmap(imgStream))
         {
@@ -296,7 +300,7 @@ public class PictureController : Controller
     /// <param name="imgStream"></param>
     /// <param name="filePath"></param>
     /// <param name="value"></param>
-    private void AdjustImgQualityLevel(MemoryStream imgStream, string filePath, long quality = 50L)
+    private void AdjustImgQualityLevel(FileStream imgStream, string filePath, long quality = 50L)
     {
         using (var image = new Bitmap(imgStream))
         {
