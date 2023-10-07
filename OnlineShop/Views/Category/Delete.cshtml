@@ -1,0 +1,22 @@
+﻿@model OnlineShop.Core.Models.Category
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h3>確定要將以下類別進行刪除?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-4 col-md-2">類別名稱</dt>
+        <dd class="col-8 col-md-10">
+            @Html.DisplayFor(m => m.Name)
+        </dd>
+    </dl>
+
+    <form class="gap-2" asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="確認刪除" class="btn btn-danger" />
+        <a class="btn btn-default" asp-action="Index">取消</a>
+    </form>
+</div>

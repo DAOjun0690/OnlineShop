@@ -43,7 +43,7 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="productMenuBtn">
                                     <a class="dropdown-item" asp-area="" asp-controller="ProductManagement" asp-action="Index">管理商品列表</a>
-                                    <a class="dropdown-item" asp-area="" asp-controller="ProductManagement" asp-action="CreateCategory">新增分類</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Category" asp-action="Index">管理類別</a>
                                 </div>
                             </li>
                             @* 商品管理 End *@
@@ -104,9 +104,6 @@
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">註冊帳號</a>
-                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">登入</a>
                             </li>

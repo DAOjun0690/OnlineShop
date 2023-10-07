@@ -363,27 +363,4 @@ public class ProductManagementController : Controller
 
         return View(viewModel);
     }
-
-    /// <summary>
-    /// 新增類別頁面
-    /// </summary>
-    /// <returns></returns>
-    public IActionResult CreateCategory()
-    {
-        return View();
-    }
-
-    /// <summary>
-    /// 新增類別 事件
-    /// </summary>
-    /// <param name="category"></param>
-    /// <returns></returns>
-    [HttpPost]
-    public async Task<IActionResult> CreateCategory(Category category)
-    {
-        _context.Category.Add(category);
-        await _context.SaveChangesAsync();
-        return View();
-    }
-
 }
