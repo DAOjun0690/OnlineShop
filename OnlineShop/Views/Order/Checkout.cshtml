@@ -103,6 +103,10 @@
                             <input asp-for="ReceiverFirstAddress" class="form-control" />
                             <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
                         </div>
+                        @* 以下欄位會使用到，但要進行隱藏 *@
+                        <div class="form-group" style="display:none">
+                            <input asp-for="ReceiverFirstAddress" class="form-control" />
+                        </div>
                     }
                 </div>
             </div>

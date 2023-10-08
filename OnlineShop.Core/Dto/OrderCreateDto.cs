@@ -44,7 +44,7 @@ public class OrderCreateDto
     /// </summary>
     [Required(ErrorMessage = "地址 是必填項目")]
     [MaxLength(2000)]
-    public string ReceiverSecondAddress { get; set; } = string.Empty;
+    public string ReceiverSecondAddress { get; set; } = ".";
 
     /// <summary>
     /// 收件人電話

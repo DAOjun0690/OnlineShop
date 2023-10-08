@@ -16,12 +16,17 @@ viewdata["title"] 改用 onlineShop
 更新時，放 自訂的 403圖片 在 app service上
 類別 頁面 新增按鈕放在 table內
 
+DNS server 換 cloudfare
+
 ### 已知問題
 1. rwd首頁隱藏之按鈕
 時間顯示
 
 ### 待確認
-
+footer 資料要給我
+11月 1 2天維護時間 來升級docker
+使用者帳號有沒有要修的
+購物車 返回上一頁操作 下拉選單 會變空白
 ----20231003 討論事項--------
 !!買商品的人，一定要登入!!
 網路很慢=>中華電信DNS改google
