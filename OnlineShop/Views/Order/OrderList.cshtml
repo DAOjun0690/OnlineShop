@@ -70,8 +70,8 @@
                         <a class="btn btn-sm btn-danger col-3 col-md-12 col-xl-3" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="ship">未出貨</a>
                     }
                 </td>
-                <td class="mt-2 mt-md-0 ps-0">
-                    <a class="btn btn-sm btn-danger w-100" asp-action="Delete" asp-route-id="@item.Order.Id">刪除</a>
+                <td class="mt-2 mt-md-0 pe-1">
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Order.Id">刪除</a>
                 </td>
             </tr>
         </tbody>

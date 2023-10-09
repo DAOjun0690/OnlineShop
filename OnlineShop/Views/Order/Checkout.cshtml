@@ -19,7 +19,7 @@
     </ul>
 </div>
 <hr />
-<h4 style="text-align: center;">合計: NT$ @Model.Total </h4>
+<h4 class="text-center">合計: NT$ @Model.Total </h4>
 <hr />
 <form asp-action="CreateOrder">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -104,7 +104,7 @@
                             <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
                         </div>
                         @* 以下欄位會使用到，但要進行隱藏 *@
-                        <div class="form-group" style="display:none">
+                        <div class="form-group d-none">
                             <input asp-for="ReceiverFirstAddress" class="form-control" />
                         </div>
                     }
