@@ -102,11 +102,11 @@ public class PictureController : Controller
                         // Create two new image sizes
                         string thumbPath = Path.Combine(ServerDestinationPath, "thumb", saveName);
                         DirectoryExists(thumbPath);
-                        ResizeImage(stream, thumbPath, 120);
+                        ResizeCompressImage(stream, thumbPath, 120);
 
                         string mediumPath = Path.Combine(ServerDestinationPath, "medium", saveName);
                         DirectoryExists(mediumPath);
-                        AdjustImgQuality(stream, mediumPath);
+                        ResizeCompressImage(stream, mediumPath, 800, 75);
                     }
 
                     seq += 1;
@@ -266,50 +266,27 @@ public class PictureController : Controller
     }
 
     /// <summary>
-    /// Resize an image to a specified width. Aspect ratio is preserved.
-    /// The source image is not altered.
-    /// This will work if hosted on Windows. Not tried on other platforms,
-    /// but unlikely to work as written.
+    /// 裁切圖片大小和壓縮圖片品質
     /// </summary>
     /// <param name="imgStream"></param>
     /// <param name="filePath"></param>
     /// <param name="imgWidth"></param>
-    private void ResizeImage(FileStream imgStream, string filePath, int imgWidth)
-    {
-        try
-        {
-            imgStream.Seek(0, SeekOrigin.Begin);
-            using (var image = new MagickImage(imgStream))
-            {
-                // Calculate the new height of the image given its desired width
-                int height = (int)Math.Round(image.Height * (imgWidth / (float)image.Width));
-
-                // Resize the image using ImageMagick
-                image.Resize(imgWidth, height);
-
-                // Save the resized image
-                image.Write(filePath);
-            }
-        }
-        catch (MagickException ex)
-        {
-            throw new Exception(ex.Message);
-        }
-    }
-
-    /// <summary>
-    /// 壓縮圖片品質
-    /// </summary>
-    /// <param name="imgStream"></param>
-    /// <param name="filePath"></param>
     /// <param name="quality"></param>
-    private void AdjustImgQuality(FileStream imgStream, string filePath, int quality = 50)
+    private void ResizeCompressImage(FileStream imgStream, string filePath, int? imgWidth, int quality = 100)
     {
         try
         {
             imgStream.Seek(0, SeekOrigin.Begin);
             using (var image = new MagickImage(imgStream))
             {
+                if (imgWidth.HasValue && imgWidth != 0)
+                {
+                    // Calculate the new height of the image given its desired width
+                    int height = (int)Math.Round(image.Height * (imgWidth.Value / (float)image.Width));
+
+                    // Resize the image using ImageMagick
+                    image.Resize(imgWidth.Value, height);
+                }
                 // Set the quality level
                 image.Quality = quality;
 
