@@ -15,72 +15,64 @@
     }
 }
 
-<h1>商品列表</h1>
-
-<div style="margin-bottom:8px;">
-    <div class="row">
-        <div class="col-2">
-            <p class="row justify-content-front">
-                當前查詢商品狀態: @ViewBag.StatusName
-            </p>
-        </div>
-        <div class="row col-8 justify-content-end">
-            <form asp-action="Index" class="col-6" method="get">
-                <div class="input-group input-group-sm ">
-                    <label class="m-1" for="ItemStatus">商品狀態: </label>
-                    <select asp-items="ViewBag.StatusList" name="Status" onchange="this.form.submit();">
-                        <option value="0">全部</option>
-                    </select>
-                    <input class="form-control" type="text" placeholder="Name" name="searchString" />
-                    <input class="btn btn-sm btn-primary" type="submit" value="Search" />
-                </div>
-            </form>
-        </div>
-        <div class="col-2">
-            <p class="row justify-content-end">
-                <a class="btn btn-primary btn-sm" style="padding-left:56px;padding-right:56px;" asp-action="Create">新增項目</a>
-            </p>
+<div class="row mb-2">
+    <div class="col-12 col-md-4">
+        <div class="row">
+            <div class="col-8 col-md-12">
+                <p>當前查詢商品狀態: @ViewBag.StatusName</p>
+            </div>
+            <div class="col-4 d-md-none">
+                <a class="btn btn-primary btn-sm w-100" asp-action="Create">新增項目</a>
+            </div>
         </div>
     </div>
-
+    <div class="col-12 col-md-8">
+        <div class="row justify-content-end">
+            <div class="col-12 col-md-8 col-lg-6">
+                <form asp-action="Index" method="get">
+                    <div class="input-group input-group-sm ">
+                        <label class="m-1" for="ItemStatus">商品狀態: </label>
+                        <select asp-items="ViewBag.StatusList" name="Status" onchange="this.form.submit();">
+                            <option value="0">全部</option>
+                        </select>
+                        <input class="form-control border-dark" type="text" placeholder="Name" name="searchString" />
+                        <input class="btn btn-sm btn-primary" type="submit" value="Search" />
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4 col-lg-2 d-none d-md-block">
+                <a class="btn btn-primary btn-sm w-100" asp-action="Create">新增項目</a>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="" style="min-height:45vh">
-    <table class="table table-index">
+<div style="min-height: 50vh;">
+    <table class="table table-mobile-responsive table-mobile-sided">
         <thead>
             <tr>
-                <th class="name">
-                    商品名稱
-                </th>
-                <th class="status">
-                    狀態
-                </th>
-                <th class="description">
-                    類別
-                </th>
-                <th class="price">
-                    單價
-                </th>
-                <th class="stock">
-                    庫存
-                </th>
-                <th class="control"></th>
+                <th scope="col" class="col-4">商品名稱</th>
+                <th scope="col" class="col-1">狀態</th>
+                <th scope="col" class="col-2">類別</th>
+                <th scope="col" class="col-1">單價</th>
+                <th scope="col" class="col-1">庫存</th>
+                <th scope="col" class="col-3"></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>
+                    <td scope="row" data-content="商品名稱">
                         @Html.DisplayFor(m => item.Name)
                     </td>
-                    <td>
+                    <td data-content="狀態">
                         <span class="@GetStatusClass(item.Status)">@item.Status.GetDescription()</span>
                     </td>
-                    <td>
+                    <td data-content="類別">
                         @Html.DisplayFor(m => item.Category.Name)
                     </td>
-                    <td>
+                    <td data-content="單價">
                         @if (item.ProductStyles.Min(x => x.Price) == item.ProductStyles.Max(x => x.Price))
                         {
                             <span>@item.ProductStyles.Min(x => x.Price)</span>
@@ -90,7 +82,7 @@
                             <span>@item.ProductStyles.Min(x => x.Price) ~ @item.ProductStyles.Max(x => x.Price)</span>
                         }
                     </td>
-                    <td>
+                    <td data-content="庫存">
                         @if (item.ProductStyles.Sum(x => x.Stock) > 0)
                         {
                             @Html.Raw("<span class=" + "\" badge bg-success text-white \"" + ">在庫中</span>")
@@ -100,12 +92,13 @@
                             @Html.Raw("<span class=" + "\" badge bg-warning text-dark \"" + ">缺貨中</span>")
                         }
                     </td>
-                    <td>
-                        <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
-                        <a class="btn btn-sm btn-light" href="@Url.Action("Details", "Products", new { Id = item.Id, fromWhere = "ProductManagement" })">
+                    <td class="row d-flex justify-content-end gap-2 ps-0">
+                        <a class="btn btn-sm btn-info col-3 col-md-3" asp-action="Edit" asp-route-id="@item.Id">編輯</a>
+                        <a class="btn btn-sm btn-light col-5 col-md-4"
+                           href="@Url.Action("Details", "Products", new { Id = item.Id, fromWhere = "ProductManagement" })">
                             詳細資料
-                        </a> |
-                        <a class="btn btn-sm btn-danger " asp-action="Delete" asp-route-id="@item.Id">刪除</a>
+                        </a>
+                        <a class="btn btn-sm btn-danger col-3 col-md-3" asp-action="Delete" asp-route-id="@item.Id">刪除</a>
                     </td>
                 </tr>
             }
@@ -144,36 +137,3 @@
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
        class="btn btn-default @nextDisabled">下一頁</a>
 </div>
-
-<style>
-    table.table-index {
-        table-layout: fixed;
-    }
-
-    .name {
-        width: 30%;
-    }
-
-    .status {
-        width: 10%;
-    }
-
-    .description {
-        width: 20%;
-    }
-
-    .overflow-text {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-        overflow: hidden;
-    }
-
-    .price, .stock {
-        width: 10%;
-    }
-
-    .control {
-        width: auto;
-    }
-</style>

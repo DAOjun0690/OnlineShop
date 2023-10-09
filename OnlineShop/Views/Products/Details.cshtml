@@ -256,6 +256,7 @@
                         Amount: amount
                     };
 
+                    $("#AddCartBtn").prop('disabled', true);
                     $.ajax({
                         type: 'POST',
                         url: '/Cart/AddtoCart',
@@ -277,6 +278,8 @@
                                 window.location.href = loginUrl + "?ReturnUrl=" + encodeURIComponent(returnUrl);
                             }
                         }
+                    }).done(function () {
+                        $("#AddCartBtn").prop('disabled', false);
                     });
                 }
                 else {

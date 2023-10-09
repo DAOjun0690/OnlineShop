@@ -125,6 +125,19 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function () {
+            $('form').submit(function () {
+                if ($(this).valid()) {
+                    let form = this;  // 儲存表單的參考
+                    $(':submit', form).prop('disabled', true);  // 使用儲存的表單參考
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        });
+    </script>
 }
 
 <style>

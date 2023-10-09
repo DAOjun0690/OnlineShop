@@ -1,39 +1,37 @@
 ﻿@model IEnumerable<OnlineShop.Core.ViewModel.OrderViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "訂單列表";
 }
 
-<div>　</div>
-<h3>訂單列表</h3>
+<h3>@ViewData["Title"]</h3>
 <hr />
-
 @foreach (var item in Model)
 {
-    <table class="table border shadow-sm rounded">
-        <thead class="">
+    <table class="table table-mobile-responsive table-mobile-sided border shadow-sm rounded p-2">
+        <thead>
             <tr>
-                <th>訂單編號：#@Html.DisplayFor(modelItem => item.Order.Id)</th>
-                <th>訂單日期：@Html.DisplayFor(modelItem => item.Order.OrderDate)</th>
-                <th>金額</th>
-                <th>付款狀態</th>
-                <th>配送狀態</th>
-                <th></th>
-                <th class="control"></th>
+                <th scope="col">訂單編號：#@Html.DisplayFor(modelItem => item.Order.Id)</th>
+                <th scope="col">訂單日期：@Html.DisplayFor(modelItem => item.Order.OrderDate)</th>
+                <th scope="col">金額</th>
+                <th scope="col">付款狀態</th>
+                <th scope="col">配送狀態</th>
+                <th scope="col"></th>
+                <th scope="col" class="col-1"></th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td colspan="2">
+                <td scope="row" colspan="2" class="d-block d-md-table-cell" data-content="訂單編號：#@Html.DisplayFor(modelItem => item.Order.Id)">
                     @foreach (var citem in item.CartItems)
                     {
-                        <p>@Html.DisplayFor(cartItem => citem.Product.Name) (@citem.ItemName)</p>
+                        <p class="text-end text-md-start">@Html.DisplayFor(cartItem => citem.Product.Name) (@citem.ItemName)</p>
                     }
                 </td>
-                <td>
-                    <span style="color:red">NT$@Html.DisplayFor(modelItem => item.Order.Total)</span>
+                <td data-content="金額">
+                    <p class="text-danger">NT$@Html.DisplayFor(modelItem => item.Order.Total)</p>
                 </td>
-                <td>
+                <td data-content="付款狀態">
                     @if (item.Order.isPaid)
                     {
                         <p>已付款</p>
@@ -43,7 +41,7 @@
                         <p>未付款</p>
                     }
                 </td>
-                <td>
+                <td data-content="配送狀態">
                     @if (item.Order.isShip)
                     {
                         <p>已出貨</p>
@@ -53,27 +51,27 @@
                         <p>未出貨</p>
                     }
                 </td>
-                <td>
-                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Order.Id">訂單詳細資訊</a>
+                <td class="row d-flex justify-content-between justify-content-md-end gap-2 px-3 border-0">
+                    <a class="btn btn-sm btn-outline-secondary col-5 col-md-12 col-xl-5" asp-action="Details" asp-route-id="@item.Order.Id">訂單詳細資訊</a>
                     @if (!item.Order.isPaid)
                     {
-                        <a class="btn btn-sm btn-success" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="paid">已收款</a>
+                        <a class="btn btn-sm btn-success col-3 col-md-12 col-xl-3" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="paid">已收款</a>
                     }
                     else
                     {
-                        <a class="btn btn-sm btn-danger" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="paid">未收款</a>
+                        <a class="btn btn-sm btn-danger col-3 col-md-12 col-xl-3" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="paid">未收款</a>
                     }
                     @if (!item.Order.isShip)
                     {
-                        <a class="btn btn-sm btn-success" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="ship">已出貨</a>
+                        <a class="btn btn-sm btn-success col-3 col-md-12 col-xl-3" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="ship">已出貨</a>
                     }
                     else
                     {
-                        <a class="btn btn-sm btn-danger" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="ship">未出貨</a>
+                        <a class="btn btn-sm btn-danger col-3 col-md-12 col-xl-3" asp-action="StatusChange" asp-route-id="@item.Order.Id" asp-route-code="ship">未出貨</a>
                     }
                 </td>
-                <td>
-                    <a class="btn btn-sm btn-danger " asp-action="Delete" asp-route-id="@item.Order.Id">刪除</a>
+                <td class="mt-2 mt-md-0 ps-0">
+                    <a class="btn btn-sm btn-danger w-100" asp-action="Delete" asp-route-id="@item.Order.Id">刪除</a>
                 </td>
             </tr>
         </tbody>

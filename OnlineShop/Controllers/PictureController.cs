@@ -2,9 +2,7 @@
 using Microsoft.CodeAnalysis;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Drawing;
+using ImageMagick;
 
 namespace OnlineShop.Controllers;
 
@@ -108,7 +106,7 @@ public class PictureController : Controller
 
                         string mediumPath = Path.Combine(ServerDestinationPath, "medium", saveName);
                         DirectoryExists(mediumPath);
-                        AdjustImgQualityLevel(stream, mediumPath);
+                        AdjustImgQuality(stream, mediumPath);
                     }
 
                     seq += 1;
@@ -278,19 +276,24 @@ public class PictureController : Controller
     /// <param name="imgWidth"></param>
     private void ResizeImage(FileStream imgStream, string filePath, int imgWidth)
     {
-        using (var image = new Bitmap(imgStream))
+        try
         {
-            // Calculate the new height of the image given its desired width
-            int height = (int)Math.Round(image.Height * (imgWidth / (float)image.Width));
-            var resized = new Bitmap(imgWidth, height);
-            using (var graphics = Graphics.FromImage(resized))
+            imgStream.Seek(0, SeekOrigin.Begin);
+            using (var image = new MagickImage(imgStream))
             {
-                graphics.CompositingQuality = CompositingQuality.HighSpeed;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.DrawImage(image, 0, 0, imgWidth, height);
-                resized.Save(filePath, ImageFormat.Jpeg);
+                // Calculate the new height of the image given its desired width
+                int height = (int)Math.Round(image.Height * (imgWidth / (float)image.Width));
+
+                // Resize the image using ImageMagick
+                image.Resize(imgWidth, height);
+
+                // Save the resized image
+                image.Write(filePath);
             }
+        }
+        catch (MagickException ex)
+        {
+            throw new Exception(ex.Message);
         }
     }
 
@@ -299,45 +302,24 @@ public class PictureController : Controller
     /// </summary>
     /// <param name="imgStream"></param>
     /// <param name="filePath"></param>
-    /// <param name="value"></param>
-    private void AdjustImgQualityLevel(FileStream imgStream, string filePath, long quality = 50L)
+    /// <param name="quality"></param>
+    private void AdjustImgQuality(FileStream imgStream, string filePath, int quality = 50)
     {
-        using (var image = new Bitmap(imgStream))
+        try
         {
-            ImageCodecInfo imgEncoder = GetEncoder(image.RawFormat);
-
-            // Create an Encoder object based on the GUID  
-            // for the Quality parameter category.
-            Encoder encoder = Encoder.Quality;
-
-            // Create an EncoderParameters object.  
-            // An EncoderParameters object has an array of EncoderParameter  
-            // objects. In this case, there is only one  
-            // EncoderParameter object in the array.  
-            EncoderParameters encoderParams = new EncoderParameters(1);
-
-            // Save the bitmap with 50 quality level compression.
-            encoderParams.Param[0] = new EncoderParameter(encoder, quality);
-
-            image.Save(filePath, imgEncoder, encoderParams);
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="format"></param>
-    /// <returns></returns>
-    private ImageCodecInfo GetEncoder(ImageFormat format)
-    {
-        ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
-        foreach (ImageCodecInfo codec in codecs)
-        {
-            if (codec.FormatID == format.Guid)
+            imgStream.Seek(0, SeekOrigin.Begin);
+            using (var image = new MagickImage(imgStream))
             {
-                return codec;
+                // Set the quality level
+                image.Quality = quality;
+
+                // Save the image with the specified quality
+                image.Write(filePath);
             }
         }
-        return null;
+        catch (MagickException ex)
+        {
+            throw new Exception(ex.Message);
+        }
     }
 }

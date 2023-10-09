@@ -1,23 +1,18 @@
 ﻿@model IEnumerable<OnlineShop.Core.Models.Category>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "管理類別";
 }
 
-<div class="row">
-    <div class="col-6 col-md-10">
-        <h3>管理類別</h3>
-    </div>
-    <div class="col-6 col-md-2">
-        <a class="btn btn-primary btn-sm w-100" asp-action="Create">新增類別</a>
-    </div>
-</div>
-<hr />
 <table class="table rounded">
     <thead>
         <tr>
             <th scope="col">類別名稱</th>
-            <th scope="col"></th>
+            <th scope="col">
+                <div class="row justify-content-end">
+                    <a class="btn btn-sm btn-primary col-8 col-md-4" asp-action="Create">新增類別</a>
+                </div>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -25,9 +20,11 @@
         {
             <tr>
                 <td>@item.Name</td>
-                <td class="row justify-content-end gap-2">
-                    <a class="btn btn-sm btn-info col-4 col-md-1" asp-action="Edit" asp-route-id="@item.Id">編輯</a>
-                    <a class="btn btn-sm btn-danger col-4 col-md-1" asp-action="Delete" asp-route-id="@item.Id">刪除</a>
+                <td>
+                    <div class="row justify-content-end gap-2">
+                        <a class="btn btn-sm btn-info col-4 col-md-2" asp-action="Edit" asp-route-id="@item.Id">編輯</a>
+                        <a class="btn btn-sm btn-danger col-4 col-md-2" asp-action="Delete" asp-route-id="@item.Id">刪除</a>
+                    </div>
                 </td>
             </tr>
         }

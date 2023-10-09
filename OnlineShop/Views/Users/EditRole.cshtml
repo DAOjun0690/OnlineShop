@@ -1,45 +1,46 @@
 ﻿@model Microsoft.AspNetCore.Identity.IdentityRole
 
 @{
-    ViewData["Title"] = "RoleEdit";
+    ViewData["Title"] = "編輯角色";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>EditRole</h1>
-
-<h4>ProjectRole</h4>
+<h3>@ViewData["Title"]</h3>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="EditRole">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            <div class="form-group mb-2">
                 <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" disabled class="form-control" />
+                <input asp-for="Id" class="form-control" disabled />
                 <span asp-validation-for="Id" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-2">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label class="control-label">Users in this role</label>
-                @foreach (var users in ViewBag.users)
+            <div class="form-group mb-2">
+                <label class="control-label">屬於此角色的使用者</label>
+                @if (ViewBag.users.Count > 0)
                 {
-                    <div class="form-control-sm">@users.Email</div>
+                    @foreach (var users in ViewBag.users)
+                    {
+                        <div class="form-control-sm">@users.Email</div>
+                    }
+                }
+                else
+                {
+                    <div class="form-control-sm">無</div>
                 }
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
+                <a class="btn btn-default" asp-action="RoleList">返回角色列表</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="RoleList">Back to List</a>
 </div>
 
