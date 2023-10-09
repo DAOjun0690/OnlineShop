@@ -33,8 +33,8 @@ public class OrderController : Controller
                 new DeliveryMethod { Id = 1, Name = "中華郵政", Price = 60, AddressId = 1 },
                 new DeliveryMethod { Id = 2, Name = "7-11", Price = 60, AddressId = 1 },
                 new DeliveryMethod { Id = 3, Name = "全家", Price = 60, AddressId = 1 },
-                new DeliveryMethod { Id = 4, Name = "順豐(貨到付款)", Price = 0, AddressId = 2 },
-                new DeliveryMethod { Id = 5, Name = "順豐(貨到付款)", Price = 0, AddressId = 3 },
+                new DeliveryMethod { Id = 4, Name = "順豐速運(貨到付款)", Price = 0, AddressId = 2 },
+                new DeliveryMethod { Id = 5, Name = "順豐速運(貨到付款)", Price = 0, AddressId = 3 },
             };
 
     public OrderController(OnlineShopContext context,

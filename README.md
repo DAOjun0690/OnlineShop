@@ -16,8 +16,6 @@ viewdata["title"] 改用 onlineShop
 更新時，放 自訂的 403圖片 在 app service上
 類別 頁面 新增按鈕放在 table內
 
-DNS server 換 cloudfare
-
 ### 已知問題
 1. rwd首頁隱藏之按鈕
 時間顯示
