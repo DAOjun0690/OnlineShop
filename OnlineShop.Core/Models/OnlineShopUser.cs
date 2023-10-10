@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace OnlineShop.Core.Models;
@@ -27,6 +28,11 @@ public class OnlineShopUser : IdentityUser
 
 public enum GenderType
 {
-    Male, Female, Unknown
+    [Description("男")]
+    Male,
+    [Description("女")]
+    Female,
+    [Description("不便透露")]
+    Unknown
 }
 

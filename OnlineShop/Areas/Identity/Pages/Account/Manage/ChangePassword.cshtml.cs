@@ -60,7 +60,7 @@ namespace OnlineShop.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required(ErrorMessage = "此欄位為必填欄位!")]
-            [StringLength(100, ErrorMessage = "{0} 至少介於 {2} 到 {1} 字元之間!", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "{0} 介於 {2} 到 {1} 字之間!", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "新密碼")]
             public string NewPassword { get; set; }

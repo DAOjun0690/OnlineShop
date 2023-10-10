@@ -75,7 +75,7 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "此欄位為必填欄位!")]
             [EmailAddress]
             [Display(Name = "Email帳號")]
             public string Email { get; set; }
@@ -84,8 +84,8 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "此欄位為必填欄位!")]
+            [StringLength(100, ErrorMessage = "{0} 介於 {2} 到 {1} 字之間!", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "密碼")]
             public string Password { get; set; }
@@ -96,20 +96,20 @@ namespace OnlineShop.Areas.Identity.Pages.Account
             /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "確認密碼")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Compare("Password", ErrorMessage = "密碼和確認密碼不符!")]
             public string ConfirmPassword { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "此欄位為必填欄位!")]
             [DataType(DataType.Text)]
             [Display(Name = "姓名")]
             public string Name { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "此欄位為必填欄位!")]
             [Display(Name = "生日")]
             [DataType(DataType.Date)]
             public DateTime DOB { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "此欄位為必填欄位!")]
             [Display(Name = "性別")]
             public GenderType Gender { get; set; }
             public DateTime RegistrationDate { get; set; }
