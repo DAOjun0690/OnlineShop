@@ -16,15 +16,15 @@
         margin: 0;
     }
 
-    .carousel-indicators [data-bs-target] {
-        border: 0;
-        width: 80px;
-        height: 80px;
-        text-indent: 0;
-        overflow: hidden;
-        position: relative;
-        opacity: 1;
-    }
+        .carousel-indicators [data-bs-target] {
+            border: 0;
+            width: 80px;
+            height: 80px;
+            text-indent: 0;
+            overflow: hidden;
+            position: relative;
+            opacity: 1;
+        }
 
     .selected-img {
         height: 60vh;
@@ -32,15 +32,15 @@
         position: relative;
     }
 
-    .carousel-indicators [data-bs-target] img, .selected-img img {
-        object-fit: cover;
-        object-position: center center;
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
+        .carousel-indicators [data-bs-target] img, .selected-img img {
+            object-fit: cover;
+            object-position: center center;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
 </style>
 
 <form id="DetailForm">
@@ -86,22 +86,20 @@
             <!-- 名稱 -->
             <h2 class="fw-bold">@Html.DisplayFor(m => m.Name)</h2>
             <!-- 簡介 -->
-            <div class="overflow-auto" style="max-height: 20vh;">
+            <div class="overflow-auto" style="max-height: 20vh; color: #9f9f9f;">
                 <pre>@Html.DisplayFor(m => m.Description)</pre>
             </div>
-            <!-- 製造方式 -->
-            <pre>製造方式: @Model.ManufacturingMethod.GetDescription()</pre>
-            <p>
-                當前狀態：
-                @if (Model.ManufacturingTime == ManufacturingTime.InStock)
-                {
-                    <span>@Model.ManufacturingTime.GetDescription()</span>
-                }
-                else if (Model.ManufacturingTime == ManufacturingTime.Custom)
-                {
-                    <span>接單訂製，付款後須等待 @Model.ManufacturingCustomDate 個工作天</span>
-                }
-            </p>
+            @{
+                string manufacturingMethod = Model.ManufacturingMethod.GetDescription();
+                string manufacturingTimeDescription = Model.ManufacturingTime == ManufacturingTime.InStock
+                ? Model.ManufacturingTime.GetDescription()
+                : $"接單訂製，付款後須等待 {Model.ManufacturingCustomDate} 個工作天";
+            }
+            <div>
+                <!-- 製造方式 -->
+                <pre style="margin-bottom: 0;">■ 製造方式: @manufacturingMethod</pre>
+                <pre style="margin-bottom: 0;">■ 當前狀態： <span>@manufacturingTimeDescription</span></pre>
+            </div>
             <hr />
             <!-- 促銷 -->
             <div class="overflow-auto" style="max-height: 20vh;">
@@ -120,9 +118,10 @@
                 </select>
             </div>
             <!-- 數量 -->
-            <div class="form-group mt-2">
-                <label class="control-label alert-light">數量</label>
-                <input type="number" id="Amount" class="form-control" value="0" min="0" />
+            <div class="input-group mt-2">
+                <button type="button" class="btn btn-outline-secondary" onclick="updateQuantity(-1)">-</button>
+                <input type="text" id="Amount" class="form-control" maxlength="5" oninput="validateInput()" />
+                <button type="button" class="btn btn-outline-secondary" onclick="updateQuantity(1)">+</button>
             </div>
             <!-- 回上一頁 -->
             @if (Model.fromWhere == "Products") // 產品來的
@@ -205,92 +204,117 @@
             toastr["success"]("商品已加入購物車！");
         }
 
+        /** 數量 增減 */
+        function updateQuantity(delta) {
+            let amountInput = document.getElementById('Amount');
+            let value = parseInt(amountInput.value, 10);
+            let stock = parseInt($('option:selected').attr('data-stock'), 10);
+            value = isNaN(value) ? 1 : value;
+            value += delta;
+            if (value < 1) {
+                value = 1;
+            } else if (value > stock) {
+                value = stock;
+            }
+            amountInput.value = value;
+        }
+        /**輸入的文字，只能為數字 */
+        function validateInput() {
+            let amountInput = document.getElementById('Amount');
+            let stock = parseInt($('option:selected').attr('data-stock'), 10);
+            let tmpValue = amountInput.value.replace(/[^0-9]/g, '');
+            if (tmpValue >= stock) {
+                tmpValue = stock;
+            }
+            amountInput.value = tmpValue;
+        }
+        // 款式下拉異動事件
+        function updateProductStyle() {
+            let price = $('option:selected', this).attr('data-price');
+            $('#price').text("NT$" + price);
+
+            let stock = $('option:selected', this).attr('data-stock');
+
+            if (stock == "0") {
+                $("#Amount").val("0");
+                $("#Amount").attr("readonly", true);
+                $("#Amount").prop("disabled", true);
+
+                $("#AddCartBtn").val("售完");
+                $("#AddCartBtn").attr("readonly", true);
+                $("#AddCartBtn").prop("disabled", true);
+
+            } else {
+                $("#Amount").val("1");
+                $("#Amount").attr("readonly", false);
+                $("#Amount").prop("disabled", false);
+
+                $("#AddCartBtn").val("加入購物車");
+                $("#AddCartBtn").attr("readonly", false);
+                $("#AddCartBtn").prop("disabled", false);
+            }
+        }
+
+        function addToCart(e) {
+            e.preventDefault();
+
+            let productId = '@Model.ProductId';
+            let productStyleId = $("#productStyles").val();
+            let amount = Number($("#Amount").val());
+
+            let stock = $('option:selected').attr('data-stock');
+
+            if (amount <= Number(stock)) {
+                let param = {
+                    ProductId: productId,
+                    ProductStyleId: productStyleId,
+                    Amount: amount
+                };
+
+                $("#AddCartBtn").prop('disabled', true);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Cart/AddtoCart',
+                    data: param,
+                    success: function (data) {
+                        if (data?.success == false) {
+                            alert(data.message);
+                        }
+                        else {
+                            // 彈出 加入購物車 訊息
+                            ShowMessage();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // 如果沒有登入，則導至登入頁面
+                        if (xhr.status == 401) {
+                            var loginUrl = "/Identity/Account/Login";
+                            var returnUrl = window.location.pathname + window.location.search; // 獲取當前的相對路徑和查詢參數
+                            window.location.href = loginUrl + "?ReturnUrl=" + encodeURIComponent(returnUrl);
+                        }
+                    }
+                }).done(function () {
+                    $("#AddCartBtn").prop('disabled', false);
+                });
+
+            } else {
+                alert("選取數量超過上限");
+            }
+        }
+
         $(document).ready(function () {
             // 綁定 款式異動事件
-            $('#productStyles').change(function () {
-                let price = $('option:selected', this).attr('data-price');
-                $('#price').text("NT$" + price);
-
-                let stock = $('option:selected', this).attr('data-stock');
-                $('#stock').text(stock); // 這欄位怎麼好像不見了
-
-                // 判斷當前款式庫存數量，判斷數量邏輯 addBtn
-                if (stock == "0") {
-                    // 數量inptu 改為以獨
-                    $("#Amount").prop("max", "0");
-                    $("#Amount").val("0");
-                    $("#Amount").attr("readonly", true);
-                    $("#Amount").prop("disabled", true);
-                    // addBtn 改為售完
-                    $("#AddCartBtn").val("售完");
-                    $("#AddCartBtn").attr("readonly", true);
-                    $("#AddCartBtn").prop("disabled", true);
-                    
-                } else {
-                    $("#Amount").prop("max", stock);
-                    $("#Amount").val("0");
-                    $("#Amount").attr("readonly", false);
-                    $("#Amount").prop("disabled", false);
-
-                    $("#AddCartBtn").val("加入購物車");
-                    $("#AddCartBtn").attr("readonly", false);
-                    $("#AddCartBtn").prop("disabled", false);
-                }
-
-            }).change();
-
+            $('#productStyles').change(updateProductStyle).change();
             // 加入購物車 form submit事件
-            $('#DetailForm').on('submit', function (e) {
-                e.preventDefault();
-
-                let productId = '@Model.ProductId';
-                let productStyleId = $("#productStyles").val();
-                let amount = Number($("#Amount").val());
-                let styleMax = Number($("#Amount").prop("max"));
-
-                // 前端數量驗證
-                if (amount <= styleMax) {
-                    let param = {
-                        ProductId: productId,
-                        ProductStyleId: productStyleId,
-                        Amount: amount
-                    };
-
-                    $("#AddCartBtn").prop('disabled', true);
-                    $.ajax({
-                        type: 'POST',
-                        url: '/Cart/AddtoCart',
-                        data: param,
-                        success: function (data) {
-                            if (data?.success == false) {
-                                alert(data.message);
-                            }
-                            else {
-                                // 彈出 加入購物車 訊息
-                                ShowMessage();
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            // 如果沒有登入，則導至登入頁面
-                            if (xhr.status == 401) {
-                                var loginUrl = "/Identity/Account/Login";
-                                var returnUrl = window.location.pathname + window.location.search; // 獲取當前的相對路徑和查詢參數
-                                window.location.href = loginUrl + "?ReturnUrl=" + encodeURIComponent(returnUrl);
-                            }
-                        }
-                    }).done(function () {
-                        $("#AddCartBtn").prop('disabled', false);
-                    });
-                }
-                else {
-                    alert("選取數量超過上限");
-                }
-            });
+            $('#DetailForm').on('submit', addToCart);
 
             // 如果款式數量 = 1(只有基本款)，則隱藏款式下拉選單
             if ('@Model.ProductStylesList.Count' <= 1) {
                 $("#styleArea").hide();
             }
+            // 初始化 數量 數量為1
+            $("#Amount").val("1");
 
             // 初始化 carousel & indicators
             $(".carousel-indicators .img-selector")?.first().addClass("active");

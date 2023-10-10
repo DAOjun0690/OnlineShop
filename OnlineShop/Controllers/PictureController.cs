@@ -102,11 +102,11 @@ public class PictureController : Controller
                         // Create two new image sizes
                         string thumbPath = Path.Combine(ServerDestinationPath, "thumb", saveName);
                         DirectoryExists(thumbPath);
-                        ResizeCompressImage(stream, thumbPath, 120);
+                        ResizeCompressImage(stream, thumbPath, 120, 100);
 
                         string mediumPath = Path.Combine(ServerDestinationPath, "medium", saveName);
                         DirectoryExists(mediumPath);
-                        ResizeCompressImage(stream, mediumPath, 800, 75);
+                        ResizeCompressImage(stream, mediumPath, 1200, 80);
                     }
 
                     seq += 1;
@@ -272,7 +272,7 @@ public class PictureController : Controller
     /// <param name="filePath"></param>
     /// <param name="imgWidth"></param>
     /// <param name="quality"></param>
-    private void ResizeCompressImage(FileStream imgStream, string filePath, int? imgWidth, int quality = 100)
+    private void ResizeCompressImage(FileStream imgStream, string filePath, int? imgWidth, int quality)
     {
         try
         {
