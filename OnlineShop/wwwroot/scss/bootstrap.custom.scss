@@ -1,0 +1,12 @@
+// 使用 小賴字體
+@font-face {
+    font-family: CustomFont;
+    src: url(../font/XiaolaiSC-Regular.ttf) format('truetype');
+}
+
+// 覆寫 全域網站字體
+$font-family-base: 'CustomFont', sans-serif;
+// 覆寫 特定元素字體
+$font-family-monospace: 'CustomFont', monospace;
+
+@import "../lib/bootstrap/scss/bootstrap";

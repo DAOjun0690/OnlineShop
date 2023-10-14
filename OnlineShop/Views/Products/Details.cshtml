@@ -58,7 +58,8 @@
                         {
                             var image = Model.ProductImage[i];
                             <button type="button" class="img-selector mb-1" data-bs-target="#product-carousel" data-bs-slide-to="@i">
-                                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "S" })>
+                                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "S" }) 
+                                     style="background-color: white;" >
                             </button>
                         }
                     </div>
@@ -66,7 +67,8 @@
                         @foreach (var image in Model.ProductImage)
                         {
                             <div class="carousel-item selected-img">
-                                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" })>
+                                <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" })
+                                     style="background-color: white;" >
                             </div>
                         }
                     </div>
@@ -98,7 +100,7 @@
             <div>
                 <!-- 製造方式 -->
                 <pre style="margin-bottom: 0;">■ 製造方式: @manufacturingMethod</pre>
-                <pre style="margin-bottom: 0;">■ 當前狀態： <span>@manufacturingTimeDescription</span></pre>
+                <pre style="margin-bottom: 0;">■ 當前狀態: <span>@manufacturingTimeDescription</span></pre>
             </div>
             <hr />
             <!-- 促銷 -->
@@ -168,7 +170,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>臺灣_中華郵政(含i郵箱/存局候領)</td>
+                            <td>臺灣-中華郵政(含i郵箱/存局候領)</td>
                             <td>轉帳/匯款/無摺</td>
                         </tr>
                         <tr>
