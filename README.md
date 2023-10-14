@@ -18,6 +18,7 @@ viewdata["title"] 改用 onlineShop
 ### 已知問題
 1. rwd首頁隱藏之按鈕
 時間顯示
+ckeditor 上傳圖片 要可以調大小
 
 ### 待確認
 11月 1 2天維護時間 來升級docker

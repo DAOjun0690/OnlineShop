@@ -59,7 +59,7 @@
                             var image = Model.ProductImage[i];
                             <button type="button" class="img-selector mb-1" data-bs-target="#product-carousel" data-bs-slide-to="@i">
                                 <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "S" }) 
-                                     style="background-color: white;" >
+                                     class="bg-white" >
                             </button>
                         }
                     </div>
@@ -68,7 +68,7 @@
                         {
                             <div class="carousel-item selected-img">
                                 <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" })
-                                     style="background-color: white;" >
+                                     class="bg-white">
                             </div>
                         }
                     </div>

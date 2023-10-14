@@ -10,6 +10,7 @@
 }
 
 body {
+  font-size: 18px;
   margin-bottom: 60px;
 }
 
@@ -20,7 +21,7 @@ body {
   --tmr-row-divider-color: $tmr-row-divider-color;
 }
 
-@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+@media only screen and (max-width: 767px) {
   [data-content]:before {
     content: attr(data-content);
   }
