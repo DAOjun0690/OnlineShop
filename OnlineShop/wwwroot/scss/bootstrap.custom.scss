@@ -1,7 +1,9 @@
+// 如果compiler 出來的 css 裡面第一行有Active code page: 936，那麼.css 與 .min.css 的此部分都要刪除
+@charset "UTF-8";
 // 使用 小賴字體
 @font-face {
     font-family: CustomFont;
-    src: url(../font/XiaolaiSC-Regular.ttf) format('truetype');
+    src: url(../font/XiaolaiSC-Regular.woff2) format('woff2');
 }
 
 // 覆寫 全域網站字體
