@@ -32,3 +32,17 @@ ckeditor 上傳圖片 要可以調大小
 訂單結帳，同時訂購 問題(十來個人搶)
 
 第一期學費 393
+
+---20231028 功能與需求---
+圖片改使用webp傳輸 看會不會快一點
+圖片跟js要用cache 
+個人資訊頁面 再多一些欄位可編輯 像是 生日、性別
+超商api 使用者自己倒出，或是ifrmae，像是: https://emap.pcsc.com.tw/ecmap/default.aspx
+註冊帳號的registrationdate 只要顯示日期就好 不用顯示到時分
+已售完 在線上商店首頁 還是調的醒目一點比較好
+
+5吋手機 神秘問題 跑馬燈正常，但是商品圖片沒有出來
+已知有問題手機型號
+iphone 15
+HTC 
+Oppo Reno6 pro
