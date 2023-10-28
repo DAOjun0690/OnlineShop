@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
 using ImageMagick;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace OnlineShop.Controllers;
 
@@ -16,10 +17,13 @@ public class PictureController : Controller
             {".png", "image/png"},
             {".jpg", "image/jpeg"},
             {".jpeg", "image/jpeg"},
-            {".gif", "image/gif"}
+            {".gif", "image/gif"},
+            {".webp","image/webp"}
         };
 
     private string ServerDestinationPath { get; set; }
+    // 20231028 商品圖片改以 webp 格式儲存
+    private MagickFormat _uploadDetailImgFormat = MagickFormat.WebP;
 
     public PictureController(OnlineShopContext context, IConfiguration configuration)
     {
@@ -99,14 +103,20 @@ public class PictureController : Controller
                         // 程式寫入的本地資料夾裡面
                         await file.CopyToAsync(stream);
 
+                        if (Path.HasExtension(saveName))
+                        {
+                            string saveFormat = _uploadDetailImgFormat.ToString().ToLower();
+                            // 20231028 改以 webp 格式儲存
+                            saveName = Path.ChangeExtension(saveName, saveFormat);
+                        }
                         // Create two new image sizes
                         string thumbPath = Path.Combine(ServerDestinationPath, "thumb", saveName);
                         DirectoryExists(thumbPath);
-                        ResizeCompressImage(stream, thumbPath, 120, 100);
+                        ResizeCompressImage(stream, thumbPath, 120, 100, _uploadDetailImgFormat);
 
                         string mediumPath = Path.Combine(ServerDestinationPath, "medium", saveName);
                         DirectoryExists(mediumPath);
-                        ResizeCompressImage(stream, mediumPath, 1200, 80);
+                        ResizeCompressImage(stream, mediumPath, 1200, 80, _uploadDetailImgFormat);
                     }
 
                     seq += 1;
@@ -210,7 +220,8 @@ public class PictureController : Controller
         {
             // 目前開兩種檔案大小
             string sizeDir = tag == "M" ? "medium" : "thumb";
-            filePath = Path.Combine(ServerDestinationPath, sizeDir, image.Guid + Path.GetExtension(image.FileName).ToLower());
+            string fileName = $"{image.Guid}.{_uploadDetailImgFormat.ToString().ToLower()}";
+            filePath = Path.Combine(ServerDestinationPath, sizeDir, fileName);
         }
 
         var memoryStream = new MemoryStream();
@@ -266,13 +277,13 @@ public class PictureController : Controller
     }
 
     /// <summary>
-    /// 裁切圖片大小和壓縮圖片品質
+    /// 裁切圖片大小和壓縮圖片品質，並以特定格式儲存
     /// </summary>
     /// <param name="imgStream"></param>
     /// <param name="filePath"></param>
     /// <param name="imgWidth"></param>
     /// <param name="quality"></param>
-    private void ResizeCompressImage(FileStream imgStream, string filePath, int? imgWidth, int quality)
+    private void ResizeCompressImage(FileStream imgStream, string filePath, int? imgWidth, int quality, MagickFormat format)
     {
         try
         {
@@ -290,8 +301,8 @@ public class PictureController : Controller
                 // Set the quality level
                 image.Quality = quality;
 
-                // Save the image with the specified quality
-                image.Write(filePath);
+                // Save the image with the specified quality and format
+                image.Write(filePath, format);
             }
         }
         catch (MagickException ex)
