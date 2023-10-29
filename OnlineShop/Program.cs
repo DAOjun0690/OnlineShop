@@ -29,10 +29,10 @@ builder.Services
 //    options.InstanceName = "SampleInstance";
 //});
 
-
+// 啟用 cache
+builder.Services.AddResponseCaching();
 // 啟用 Session
 builder.Services.AddSession();
-
 
 builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
 {
@@ -76,6 +76,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseResponseCaching();
 app.UseSession();
 
 app.UseAuthentication();
@@ -89,7 +90,6 @@ app.UseEndpoints(endpoints =>
 
     endpoints.MapRazorPages();
 });
-
 
 
 // 確認 上傳檔案資料夾 是否存在，不在的話，將其新增

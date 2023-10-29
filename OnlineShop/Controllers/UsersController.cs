@@ -90,10 +90,14 @@ public class UsersController : Controller
         return View();
     }
 
+    /// <summary>
+    /// 顯示 帳戶列表
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public async Task<IActionResult> UserList()
     {
-        List<OnlineShopUserViewModel> userViewModels = new List<OnlineShopUserViewModel>();
+        IList<OnlineShopUserViewModel> userViewModels = new List<OnlineShopUserViewModel>();
         var AllUsers = _userManager.Users.ToList();
         foreach (var user in AllUsers)
         {

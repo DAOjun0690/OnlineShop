@@ -11,18 +11,22 @@ public class OnlineShopUser : IdentityUser
     /// 名稱
     /// </summary>
     [MaxLength(200)]
+    [Display(Name = "名稱")]
     public string Name { get; set; }
     /// <summary>
     /// 生日
     /// </summary>
+    [Display(Name = "生日")]
     public DateTime DOB { get; set; }
     /// <summary>
     /// 性別
     /// </summary>
+    [Display(Name = "性別")]
     public GenderType Gender { get; set; }
     /// <summary>
     /// 註冊日期
     /// </summary>
+    [Display(Name = "註冊日期")]
     public DateTime RegistrationDate { get; set; }
 }
 

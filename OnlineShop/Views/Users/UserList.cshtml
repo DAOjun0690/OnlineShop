@@ -9,19 +9,19 @@
     <thead>
         <tr>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.User.Id)
+                @Html.DisplayNameFor(m => m.User.Id)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.User.Email)
+                @Html.DisplayNameFor(m => m.User.Email)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.User.Name)
+                @Html.DisplayNameFor(m => m.User.Name)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.User.RegistrationDate)
+                @Html.DisplayNameFor(m => m.User.RegistrationDate)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.RoleName)
+                @Html.DisplayNameFor(m => m.RoleName)
             </th>
             <th scope="col" class="col-2"></th>
         </tr>
@@ -30,19 +30,19 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td scope="row" data-content="@Html.DisplayNameFor(model => model.User.Id)">
+                <td scope="row" data-content="@Html.DisplayNameFor(m => m.User.Id)">
                     @Html.DisplayFor(modelItem => item.User.Id)
                 </td>
-                <td data-content="@Html.DisplayNameFor(model => model.User.Email)">
+                <td data-content="@Html.DisplayNameFor(m => m.User.Email)">
                     @Html.DisplayFor(modelItem => item.User.Email)
                 </td>
-                <td data-content="@Html.DisplayNameFor(model => model.User.Name)">
+                <td data-content="@Html.DisplayNameFor(m => m.User.Name)">
                     @Html.DisplayFor(modelItem => item.User.Name)
                 </td>
-                <td data-content="@Html.DisplayNameFor(model => model.User.RegistrationDate)">
+                <td data-content="@Html.DisplayNameFor(m => m.RegistrationDate)">
                     @Html.DisplayFor(modelItem => item.RegistrationDate)
                 </td>
-                <td data-content="@Html.DisplayNameFor(model => model.RoleName)">
+                <td data-content="@Html.DisplayNameFor(m => m.RoleName)">
                     @Html.DisplayFor(modelItem => item.RoleName)
                 </td>
                 <td class="ps-0">

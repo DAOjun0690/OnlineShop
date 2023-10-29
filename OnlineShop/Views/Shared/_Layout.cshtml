@@ -22,9 +22,9 @@
         <nav class="navbar navbar-expand-lg box-shadow mb-3 navbar-light" style="background-color: #F8EBC1;">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Products" asp-action="Index">
-                    <img src="~/image/logo.png" title="logo" class="logo" width="200" height="65" />
+                    <img src="~/image/logo.png" title="logo" class="logo" width="200" height="65" asp-append-version="true" />
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" 
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -84,8 +84,8 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <a  class="nav-link text-dark icons icon-person" 
-                                    asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                                <a class="nav-link text-dark icons icon-person"
+                                   asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                                     <img src="~/image/person.png" border="0" width="25" height="25">
                                 </a>
                             </li>

@@ -21,7 +21,7 @@
             <div class="carousel-item @(i == 0 ? "active" : "")">
                 <picture>
                     <source media="(min-width:720px)" srcset="~/image/resized_@(i + 1).jpg">
-                    <img src="~/image/full_image_@(i + 1).jpg" class="img-fluid" alt="...">
+                    <img src="~/image/full_image_@(i + 1).jpg" class="img-fluid" alt="..." asp-append-version="true">
                 </picture>
             </div>
         }
