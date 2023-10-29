@@ -60,6 +60,13 @@ namespace OnlineShop.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "電話號碼")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "生日")]
+            [DataType(DataType.Date)]
+            public DateTime DOB { get; set; }
+
+            [Display(Name = "性別")]
+            public GenderType Gender { get; set; }
         }
 
         private async Task LoadAsync(OnlineShopUser user)
@@ -71,7 +78,9 @@ namespace OnlineShop.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                DOB = user.DOB,
+                Gender = user.Gender
             };
         }
 
@@ -111,6 +120,10 @@ namespace OnlineShop.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
+            user.DOB = Input.DOB;
+            user.Gender = Input.Gender;
+            await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "個人資訊修改成功!";
