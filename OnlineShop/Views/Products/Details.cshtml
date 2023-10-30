@@ -121,9 +121,9 @@
             </div>
             <!-- 數量 -->
             <div class="input-group mt-2">
-                <button type="button" class="btn btn-outline-secondary" onclick="updateQuantity(-1)">-</button>
+                <button type="button" id="AmountPlus" class="btn btn-outline-secondary" onclick="updateQuantity(-1)">-</button>
                 <input type="text" id="Amount" class="form-control" maxlength="5" oninput="validateInput()" />
-                <button type="button" class="btn btn-outline-secondary" onclick="updateQuantity(1)">+</button>
+                <button type="button" id="AmountMinus" class="btn btn-outline-secondary" onclick="updateQuantity(1)">+</button>
             </div>
             <!-- 回上一頁 -->
             @if (Model.fromWhere == "Products") // 產品來的
@@ -241,6 +241,8 @@
                 $("#Amount").val("0");
                 $("#Amount").attr("readonly", true);
                 $("#Amount").prop("disabled", true);
+                $("#AmountPlus").prop("disabled", true);
+                $("#AmountMinus").prop("disabled", true);
 
                 $("#AddCartBtn").val("售完");
                 $("#AddCartBtn").attr("readonly", true);
@@ -250,6 +252,8 @@
                 $("#Amount").val("1");
                 $("#Amount").attr("readonly", false);
                 $("#Amount").prop("disabled", false);
+                $("#AmountPlus").prop("disabled", false);
+                $("#AmountMinus").prop("disabled", false);
 
                 $("#AddCartBtn").val("加入購物車");
                 $("#AddCartBtn").attr("readonly", false);
@@ -306,6 +310,8 @@
         }
 
         $(document).ready(function () {
+            // 初始化 數量 數量為1
+            $("#Amount").val("1");
             // 綁定 款式異動事件
             $('#productStyles').change(updateProductStyle).change();
             // 加入購物車 form submit事件
@@ -315,8 +321,6 @@
             if ('@Model.ProductStylesList.Count' <= 1) {
                 $("#styleArea").hide();
             }
-            // 初始化 數量 數量為1
-            $("#Amount").val("1");
 
             // 初始化 carousel & indicators
             $(".carousel-indicators .img-selector")?.first().addClass("active");

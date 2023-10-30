@@ -61,8 +61,17 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
 });
+// 將過大的js css進行gzip壓縮
+builder.Services.AddResponseCompression(options =>
+{
+    //options.EnableForHttps = true;
+    options.MimeTypes = new[] { "text/html", "text/css", "application/javascript" };
+});
 
 var app = builder.Build();
+
+// 將過大的js css進行gzip壓縮進行gzip壓縮
+app.UseResponseCompression();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

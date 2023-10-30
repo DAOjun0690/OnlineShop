@@ -99,7 +99,7 @@ public class UsersController : Controller
     public async Task<IActionResult> UserList(int pageNumber = 1)
     {
         IList<OnlineShopUserViewModel> userViewModels = new List<OnlineShopUserViewModel>();
-        var AllUsers = _userManager.Users.ToList();
+        var AllUsers = _userManager.Users.OrderByDescending(x => x.RegistrationDate).ToList();
         foreach (var user in AllUsers)
         {
             userViewModels.Add(new OnlineShopUserViewModel
