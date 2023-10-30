@@ -95,6 +95,16 @@
                             <input asp-for="ReceiverFirstAddress" class="form-control" />
                             <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
                         </div>
+                        <div class="float-end">
+                            @if (Model.SelectedDeliveryMethod == 2)
+                            {
+                                <a target="_blank" class="link-primary" href="https://emap.pcsc.com.tw/#">店舖查詢</a>
+                            }
+                            else if (Model.SelectedDeliveryMethod == 3)
+                            {
+                                <a target="_blank" class="link-primary" href="https://www.family.com.tw/Marketing/Map">店舖查詢</a>
+                            }
+                        </div>
                     }
                     else
                     {
