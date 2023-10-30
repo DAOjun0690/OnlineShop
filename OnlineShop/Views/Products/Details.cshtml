@@ -128,19 +128,19 @@
             <!-- 回上一頁 -->
             @if (Model.fromWhere == "Products") // 產品來的
             {
-                <div class="form-group mt-4">
+                <div class="mb-1 mt-4">
                     <input id="AddCartBtn" type="submit" value="加入購物車" class="btn btn-outline-primary w-100" />
                 </div>
             }
             else // 詳細頁面預覽
             {
                 <fieldset disabled>
-                    <div class="form-group mt-4">
+                    <div class="mb-1 mt-4">
                         <input type="submit" value="加入購物車" class="btn btn-outline-primary w-100" readonly />
                     </div>
                 </fieldset>
             }
-            <div class="form-group mt-3">
+            <div class="mb-1 mt-3">
                 <a asp-controller="@Model.fromWhere" asp-action="Index" class="btn btn-outline-secondary w-100">返回上一頁</a>
             </div>
         </div>

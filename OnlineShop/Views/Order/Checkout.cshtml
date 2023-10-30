@@ -34,7 +34,7 @@
                     <h5 class="card-header">付款人資料</h5>
                     <div class="card-body">
                         <input type="hidden" asp-for="UserId" />
-                        <div class="form-group mb-3">
+                        <div class="mb-3">
                             <label asp-for="UserName" class="mb-2 text-muted">付款人帳號</label>
                             <input asp-for="UserName" readonly class="form-control" />
                         </div>
@@ -59,12 +59,12 @@
             <div class="card mb-3">
                 <h5 class="card-header">收件人資料</h5>
                 <div class="card-body">
-                    <div class="form-group">
+                    <div class="mb-1">
                         <label asp-for="ReceiverName" class="control-label">收件人姓名</label>
                         <input asp-for="ReceiverName" class="form-control" />
                         <span asp-validation-for="ReceiverName" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
+                    <div class="mb-1">
                         <label asp-for="ReceiverPhone" class="control-label">收件人電話</label>
                         <input asp-for="ReceiverPhone" class="form-control" />
                         <span asp-validation-for="ReceiverPhone" class="text-danger"></span>
@@ -72,12 +72,12 @@
 
                     @if (Model.SelectedDeliveryAddress == 1 && Model.SelectedDeliveryMethod == 1)
                     {
-                        <div class="form-group">
+                        <div class="mb-1">
                             <label asp-for="ReceiverFirstAddress" class="control-label">郵遞區號</label>
                             <input asp-for="ReceiverFirstAddress" class="form-control" />
                             <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="mb-1">
                             <label asp-for="ReceiverSecondAddress" class="control-label">收件人地址</label>
                             <input asp-for="ReceiverSecondAddress" class="form-control" />
                             <span asp-validation-for="ReceiverSecondAddress" class="text-danger"></span>
@@ -85,12 +85,12 @@
                     }
                     else if (Model.SelectedDeliveryAddress == 1 && (Model.SelectedDeliveryMethod == 2 || Model.SelectedDeliveryMethod == 3))
                     {
-                        <div class="form-group">
+                        <div class="mb-1">
                             <label asp-for="ReceiverSecondAddress" class="control-label">店號</label>
                             <input asp-for="ReceiverSecondAddress" class="form-control" />
                             <span asp-validation-for="ReceiverSecondAddress" class="text-danger"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="mb-1">
                             <label asp-for="ReceiverFirstAddress" class="control-label">超商門市</label>
                             <input asp-for="ReceiverFirstAddress" class="form-control" />
                             <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
@@ -108,13 +108,13 @@
                     }
                     else
                     {
-                        <div class="form-group">
+                        <div class="mb-1">
                             <label asp-for="ReceiverFirstAddress" class="control-label">收件人地址</label>
                             <input asp-for="ReceiverFirstAddress" class="form-control" />
                             <span asp-validation-for="ReceiverFirstAddress" class="text-danger"></span>
                         </div>
                         @* 以下欄位會使用到，但要進行隱藏 *@
-                        <div class="form-group d-none">
+                        <div class="mb-1 d-none">
                             <input asp-for="ReceiverFirstAddress" class="form-control" />
                         </div>
                     }

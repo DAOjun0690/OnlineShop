@@ -37,14 +37,14 @@
             <div class="row">
                 <div class="col-6">
                     @* 商品狀態 *@
-                    <div class="form-group">
+                    <div class="mb-1">
                         <label class="control-label fw-bold">商品狀態</label>
                         <select class="form-select" asp-for="Status" asp-items="Model.Statuses"></select>
                     </div>
                 </div>
                 <div class="col-6">
                     @* 類別 *@
-                    <div class="form-group">
+                    <div class="mb-1">
                         <label class="control-label">類別</label>
                         <select class="form-select" asp-for="CategoryId" asp-items="Model.Categories"></select>
                     </div>
@@ -54,7 +54,7 @@
                 <div class="col-6">
                     @* 製造方式 *@
                     <label class="control-label fw-bold">製造方式</label>
-                    <div class="form-group">
+                    <div class="mb-1">
                         <div class="form-check">
                             <input class="form-check-input" type="radio" asp-for="ManufacturingMethod" value="@ManufacturingMethod.Manual" />
                             <label class="form-check-label">
@@ -72,7 +72,7 @@
                 <div class="col-6">
                     @* 製作時間 *@
                     <label class="control-label fw-bold">製作時間</label>
-                    <div class="form-group">
+                    <div class="mb-1">
                         <div class="form-check">
                             <input class="form-check-input" type="radio" asp-for="ManufacturingTime" value="@ManufacturingTime.InStock" />
                             <label class="form-check-label">
@@ -95,7 +95,7 @@
             <div class="row">
                 <div class="col">
                     @* 商品名稱 *@
-                    <div class="form-group">
+                    <div class="mb-1">
                         <label asp-for="Name" class="control-label fw-bold">商品名稱</label>
                         <input asp-for="Name" class="form-control" />
                         <span asp-validation-for="Name" class="text-danger"></span>
@@ -105,7 +105,7 @@
             <div class="row">
                 <div class="col">
                     @* 簡介 *@
-                    <div class="form-group">
+                    <div class="mb-1">
                         <label asp-for="Description" class="control-label fw-bold">簡介</label>
                         <textarea asp-for="Description" class="form-control" style="height:150px"></textarea>
                         <span asp-validation-for="Description" class="text-danger" id="editor01"></span>
@@ -115,7 +115,7 @@
             <div class="row">
                 <div class="col">
                     @* 促銷 *@
-                    <div class="form-group">
+                    <div class="mb-1">
                         <label asp-for="Promotion" class="control-label fw-bold">促銷</label>
                         <textarea asp-for="Promotion" class="form-control" style="height:150px"></textarea>
                     </div>
@@ -125,7 +125,7 @@
             <div class="row">
                 <div class="col">
                     @* 款式 *@
-                    <div class="form-group">
+                    <div class="mb-1">
                         <table id="prodectStyleTable" class="table table-bordered">
                             <tr>
                                 <th scope="col">款式名稱</th>
@@ -160,7 +160,7 @@
         <!-- 內容區塊 -->
         <div id="content-area" class="tab-pane fade" role="tabpanel" aria-labelledby="content-tab">
             @* 內容 *@
-            <div class="form-group">
+            <div class="mb-1">
                 <textarea asp-for="Content" class="form-control" id="editor"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
@@ -183,7 +183,7 @@
         </div>
     </div>
     <hr />
-    <div class="form-group">
+    <div class="mb-1">
         <input id="formSubmitBtn" type="submit" value="存檔" class="btn btn-outline-primary" />
     </div>
 </form>
@@ -191,7 +191,7 @@
 
 @using (Html.BeginForm("UploadDetail", "Picture", FormMethod.Post, new { id = "picForm", enctype = "multipart/form-data" }))
 {
-    <div class="form-group">
+    <div class="mb-1">
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.ProductId)
         <input type="file" style="display: none;" id="files" name="files" accept="image/*" onchange="imgFormSubmit();" multiple />

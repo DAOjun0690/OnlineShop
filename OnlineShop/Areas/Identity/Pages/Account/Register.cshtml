@@ -29,12 +29,12 @@
                                 <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
                                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                             </div>
-                            <div class="form-group mb-3">
+                            <div class="mb-3">
                                 <label asp-for="Input.Name" class="mb-2 text-muted"></label>
                                 <input asp-for="Input.Name" class="form-control" />
                                 <span asp-validation-for="Input.Name" class="text-danger"></span>
                             </div>
-                            <div class="form-group mb-3">
+                            <div class="mb-3">
                                 <label asp-for="Input.DOB" class="mb-2 text-muted"></label>
                                 <input asp-for="Input.DOB" class="form-control" />
                                 <span asp-validation-for="Input.DOB" class="text-danger"></span>
@@ -49,7 +49,7 @@
                                     })
                                     .ToList();
                             }
-                            <div class="form-group mb-3">
+                            <div class="mb-3">
                                 <label asp-for="Input.Gender" class="control-label mb-2 text-muted"></label>
                                 <select asp-for="Input.Gender" class="form-control"
                                         asp-items="@_genderTypeEnumList">
