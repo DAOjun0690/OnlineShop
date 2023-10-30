@@ -93,9 +93,10 @@ public class UsersController : Controller
     /// <summary>
     /// 顯示 帳戶列表
     /// </summary>
+    /// <param name="pageNumber">第幾頁</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> UserList()
+    public async Task<IActionResult> UserList(int pageNumber = 1)
     {
         IList<OnlineShopUserViewModel> userViewModels = new List<OnlineShopUserViewModel>();
         var AllUsers = _userManager.Users.ToList();
@@ -108,7 +109,9 @@ public class UsersController : Controller
             });
         }
 
-        return View(userViewModels);
+        // 列表一頁顯示筆數
+        int pageSize = 10;
+        return View(PaginatedList<OnlineShopUserViewModel>.Create(userViewModels, pageNumber, pageSize));
     }
 
     [HttpGet]

@@ -71,7 +71,7 @@ public class ProductManagementController : Controller
         var orderedResult = result.OrderByDescending(m => m.Id);
 
         // 列表一頁顯示筆數
-        int pageSize = 5;
+        int pageSize = 10;
         return View(await PaginatedList<Product>.CreateAsync(
             orderedResult.Include(p => p.Category)
                          .Include(p => p.ProductStyles)

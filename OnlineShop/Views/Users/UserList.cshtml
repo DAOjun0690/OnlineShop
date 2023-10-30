@@ -1,57 +1,91 @@
-﻿@model IEnumerable<OnlineShopUserViewModel>
+﻿@model PaginatedList<OnlineShopUserViewModel>
 
 @{
     ViewData["Title"] = "帳戶列表";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<table class="table table-mobile-responsive table-mobile-sided">
-    <thead>
-        <tr>
-            <th scope="col">
-                @Html.DisplayNameFor(m => m.User.Id)
-            </th>
-            <th scope="col">
-                @Html.DisplayNameFor(m => m.User.Email)
-            </th>
-            <th scope="col">
-                @Html.DisplayNameFor(m => m.User.Name)
-            </th>
-            <th scope="col">
-                @Html.DisplayNameFor(m => m.User.RegistrationDate)
-            </th>
-            <th scope="col">
-                @Html.DisplayNameFor(m => m.RoleName)
-            </th>
-            <th scope="col" class="col-2"></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+@if (Model != null && Model.Any())
+{
+    <table class="table table-mobile-responsive table-mobile-sided">
+        <thead>
             <tr>
-                <td scope="row" data-content="@Html.DisplayNameFor(m => m.User.Id)">
-                    @Html.DisplayFor(modelItem => item.User.Id)
-                </td>
-                <td data-content="@Html.DisplayNameFor(m => m.User.Email)">
-                    @Html.DisplayFor(modelItem => item.User.Email)
-                </td>
-                <td data-content="@Html.DisplayNameFor(m => m.User.Name)">
-                    @Html.DisplayFor(modelItem => item.User.Name)
-                </td>
-                <td data-content="@Html.DisplayNameFor(m => m.RegistrationDate)">
-                    @Html.DisplayFor(modelItem => item.RegistrationDate)
-                </td>
-                <td data-content="@Html.DisplayNameFor(m => m.RoleName)">
-                    @Html.DisplayFor(modelItem => item.RoleName)
-                </td>
-                <td class="ps-0">
-                    <div class="row d-flex justify-content-between justify-content-md-end w-100 gap-2">
-                        <a class="btn btn-sm btn-info col-5 col-md-12 col-lg-5" asp-action="EditUser" asp-route-id="@item.User.Id">編輯</a>
-                        <a class="btn btn-sm btn-danger col-5 col-md-12 col-lg-5" asp-action="DeleteUser" asp-route-id="@item.User.Id">刪除</a>
-                    </div>
-                </td>
+                <th scope="col">
+                    @Html.DisplayNameFor(m => m.First().User.Id)
+                </th>
+                <th scope="col">
+                    @Html.DisplayNameFor(m => m.First().User.Email)
+                </th>
+                <th scope="col">
+                    @Html.DisplayNameFor(m => m.First().User.Name)
+                </th>
+                <th scope="col">
+                    @Html.DisplayNameFor(m => m.First().User.RegistrationDate)
+                </th>
+                <th scope="col">
+                    @Html.DisplayNameFor(m => m.First().RoleName)
+                </th>
+                <th scope="col" class="col-2"></th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td scope="row" data-content="@Html.DisplayNameFor(m => item.User.Id)">
+                        @Html.DisplayFor(m => item.User.Id)
+                    </td>
+                    <td data-content="@Html.DisplayNameFor(m => item.User.Email)">
+                        @Html.DisplayFor(m => item.User.Email)
+                    </td>
+                    <td data-content="@Html.DisplayNameFor(m => item.User.Name)">
+                        @Html.DisplayFor(m => item.User.Name)
+                    </td>
+                    <td data-content="@Html.DisplayNameFor(m => item.RegistrationDate)">
+                        @Html.DisplayFor(m => item.RegistrationDate)
+                    </td>
+                    <td data-content="@Html.DisplayNameFor(m => item.RoleName)">
+                        @Html.DisplayFor(m => item.RoleName)
+                    </td>
+                    <td class="ps-0">
+                        <div class="row d-flex justify-content-between justify-content-md-end w-100 gap-2">
+                            <a class="btn btn-sm btn-info col-5 col-md-12 col-lg-5" asp-action="EditUser" asp-route-id="@item.User.Id">編輯</a>
+                            <a class="btn btn-sm btn-danger col-5 col-md-12 col-lg-5" asp-action="DeleteUser" asp-route-id="@item.User.Id">刪除</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+
+    <div class="d-flex justify-content-center">
+        <a asp-action="UserList"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           class="btn btn-default @prevDisabled">上一頁</a>
+        @for (int i = 1; i < Model.TotalPages + 1; i++)
+        {
+            if (Model.PageIndex == i)
+            {
+                <b>@i.ToString()</b>
+            }
+            else
+            {
+                <a asp-action="UserList"
+                   asp-route-pageNumber="@i.ToString()"
+                   class="btn btn-default">
+                    @i.ToString()
+                </a>
+            }
         }
-    </tbody>
-</table>
+        <a asp-action="UserList"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           class="btn btn-default @nextDisabled">下一頁</a>
+    </div>
+}
+else
+{
+    // 空列表
+}

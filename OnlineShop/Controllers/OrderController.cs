@@ -135,9 +135,10 @@ public class OrderController : Controller
     /// <summary>
     /// 列出所有訂單
     /// </summary>
+    /// <param name="pageNumber">第幾頁</param>
     /// <returns></returns>
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> OrderList()
+    public async Task<IActionResult> OrderList(int pageNumber = 1)
     {
         var userId = _userManager.GetUserId(User);
         var orderList = await _context.Order
@@ -153,7 +154,9 @@ public class OrderController : Controller
             .Where(ovm => ovm.CartItems.Any())
             .ToList();
 
-        return View(orderVM);
+        // 列表一頁顯示筆數
+        int pageSize = 10;
+        return View(PaginatedList<OrderViewModel>.Create(orderVM, pageNumber, pageSize));
     }
     //public async Task<IActionResult> OrderList(string searchString,
     //                                       string currentFilter,
