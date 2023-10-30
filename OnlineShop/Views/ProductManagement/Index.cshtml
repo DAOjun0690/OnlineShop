@@ -92,7 +92,7 @@
                             @Html.Raw("<span class=" + "\" badge bg-warning text-dark \"" + ">缺貨中</span>")
                         }
                     </td>
-                    <td class="row d-flex justify-content-end gap-2 ps-0">
+                    <td class="row d-sm-flex justify-content-end d-md-table-cell gap-2 ps-0">
                         <a class="btn btn-sm btn-info col-3 col-md-3" asp-action="Edit" asp-route-id="@item.Id">編輯</a>
                         <a class="btn btn-sm btn-light col-5 col-md-4"
                            href="@Url.Action("Details", "Products", new { Id = item.Id, fromWhere = "ProductManagement" })">
