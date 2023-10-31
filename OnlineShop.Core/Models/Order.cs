@@ -26,6 +26,14 @@ public class Order
     public int Total { get; set; }
 
     public int SelectedDeliveryAddress { get; set; }
+
+    /// <summary>
+    /// 送貨地點
+    /// 1-中華郵政(含i郵箱/存局候領)
+    /// 2-7-11
+    /// 3-全家
+    /// 4,5-順豐速運
+    /// </summary>
     public int SelectedDeliveryMethod { get; set; }
 
     /// <summary>
