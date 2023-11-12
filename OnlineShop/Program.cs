@@ -106,26 +106,43 @@ string uploadFolder = app.Configuration["UploadFolder:Debug"];
 #elif RELEASE
 string uploadFolder = app.Configuration["UploadFolder:Release"];
 #endif
+
 // 確認 放置資料資料夾 是否存在，不在的話，將其新增
 string dataFolder = Directory.GetParent(uploadFolder).Name;
 if (!Directory.Exists(dataFolder))
 {
+    Console.WriteLine("Create DataFolder");
     //新增 AppData 資料夾
     Directory.CreateDirectory(dataFolder);
 }
+
 // 確認 上傳檔案資料夾 是否存在，不在的話，將其新增
 if (!Directory.Exists(uploadFolder))
 {
+    Console.WriteLine("Create UploadFolder");
     //新增資料夾
     Directory.CreateDirectory(uploadFolder);
 }
 
 // 確認 db 檔案是否存在，不在的話，將其新增
 var sqliteConn = new SqliteConnectionStringBuilder(connString);
+// 檢查目錄是否存在
+string directoryPath = Path.GetDirectoryName(sqliteConn.DataSource);
+if (!Directory.Exists(directoryPath))
+{
+    Console.WriteLine("Create sqlite directoryPath");
+    // 如果目錄不存在，則建立它
+    Directory.CreateDirectory(directoryPath);
+}
+
+// 檢查檔案是否存在
 if (!File.Exists(sqliteConn.DataSource))
 {
-    File.Create(sqliteConn.DataSource);
+    Console.WriteLine("Create sqlite.db file");
+    // 如果檔案不存在，則建立它
+    File.WriteAllBytes(sqliteConn.DataSource, new byte[0]);
 }
+
 // 初始化資料
 await SeedData.SeedDatabase(app.Services.CreateAsyncScope().ServiceProvider);
 

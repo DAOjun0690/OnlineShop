@@ -12,7 +12,7 @@ RUN dotnet tool install --global dotnet-ef --version 6.0.21
 ENV PATH="$PATH:/root/.dotnet/tools"
 RUN dotnet tool restore
 # 執行 Update-database
-RUN dotnet ef database update
+#RUN dotnet ef database update
 
 # 發布
 FROM build AS publish
@@ -20,7 +20,10 @@ RUN dotnet publish "OnlineShop.csproj" -c Release -o /app/publish /p:UseAppHost=
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
+RUN mkdir -p /app
 EXPOSE 80
 EXPOSE 443
 COPY --from=publish /app/publish .
+# AppData 內存放需要備份的資料，故設定 VOLUME
+#VOLUME /app/AppData
 ENTRYPOINT ["dotnet", "OnlineShop.dll"]
