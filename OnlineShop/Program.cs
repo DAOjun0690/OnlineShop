@@ -2,19 +2,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
+using Microsoft.Data.Sqlite;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+#if DEBUG
+string connString = builder.Configuration.GetConnectionString("UseSqlite");
+#elif RELEASE
+string connString = builder.Configuration.GetConnectionString("Azure_UseSqlite");
+#endif
 builder.Services
     .AddDbContext<OnlineShopContext>(options =>
     {
-#if DEBUG
-        //options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopContext") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
-        options.UseSqlite(builder.Configuration.GetConnectionString("UseSqlite") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
-#elif RELEASE
-        options.UseSqlite(builder.Configuration.GetConnectionString("Azure_UseSqlite") ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
-#endif
+        options.UseSqlite(
+            connString ?? throw new InvalidOperationException("Connection string 'OnlineShopContext' not found."));
     });
 
 //builder.Services
@@ -100,19 +101,31 @@ app.UseEndpoints(endpoints =>
     endpoints.MapRazorPages();
 });
 
-
-// 確認 上傳檔案資料夾 是否存在，不在的話，將其新增
 #if DEBUG
-string uploadFolder = app.Configuration["UploadFolder"];
+string uploadFolder = app.Configuration["UploadFolder:Debug"];
 #elif RELEASE
-string uploadFolder = "\\mounts\\" + app.Configuration["UploadFolder"];
+string uploadFolder = app.Configuration["UploadFolder:Release"];
 #endif
+// 確認 放置資料資料夾 是否存在，不在的話，將其新增
+string dataFolder = Directory.GetParent(uploadFolder).Name;
+if (!Directory.Exists(dataFolder))
+{
+    //新增 AppData 資料夾
+    Directory.CreateDirectory(dataFolder);
+}
+// 確認 上傳檔案資料夾 是否存在，不在的話，將其新增
 if (!Directory.Exists(uploadFolder))
 {
     //新增資料夾
     Directory.CreateDirectory(uploadFolder);
 }
 
+// 確認 db 檔案是否存在，不在的話，將其新增
+var sqliteConn = new SqliteConnectionStringBuilder(connString);
+if (!File.Exists(sqliteConn.DataSource))
+{
+    File.Create(sqliteConn.DataSource);
+}
 // 初始化資料
 await SeedData.SeedDatabase(app.Services.CreateAsyncScope().ServiceProvider);
 
