@@ -8,8 +8,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>@ViewData["Title"]</title>    
     <link rel="stylesheet" href="~/css/bootstrap.custom.css" asp-append-version="true" />
+    @* 預先載入字型以加快字型導入速度 *@
+    <link rel="preload" href="~/font/XiaolaiSC-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     @* 導入fontawesome *@
     <link rel="stylesheet" href="~/css/fontawesome-free-5.15.4-web/css/all.css" />

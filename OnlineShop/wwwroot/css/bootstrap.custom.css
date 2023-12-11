@@ -1,7 +1,8 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 @font-face {
   font-family: CustomFont;
   src: url(../font/XiaolaiSC-Regular.woff2) format("woff2");
+  font-display: swap;
 }
 /*!
  * Bootstrap v5.1.0 (https://getbootstrap.com/)
