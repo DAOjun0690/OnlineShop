@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
+using System.Linq.Expressions;
 
 namespace OnlineShop.Controllers;
 
@@ -25,21 +26,22 @@ public class ProductsController : Controller
     public async Task<IActionResult> Index(int? cId)
     {
         List<DetailViewModel> dvm = new List<DetailViewModel>();
-        List<Product> products = new List<Product>();
+        Expression<Func<Product, bool>> lambda = null;
         if (cId != null)
         {
-            var result = await _context.Category.SingleAsync(x => x.Id.Equals(cId));
-            products = await _context.Entry(result).Collection(x => x.Products).Query().ToListAsync();
+            lambda = p => (p.Status != ProductStatus.Draft && p.CategoryId.Equals(cId));
         }
         else
         {
-            products = await _context.Product
-                                .Include(p => p.Category)
-                                .Include(p => p.ProductStyles).AsNoTracking()
-                                .Where(p => p.Status != ProductStatus.Draft).ToListAsync();
+            lambda = p => p.Status != ProductStatus.Draft;
         }
         // 目前先用 id 進行倒敘，之後要加上時間欄位
-        products = products.OrderByDescending(k => k.Id).ToList();
+        IList<Product> products = await _context.Product
+                                            .Include(p => p.Category)
+                                            .Include(p => p.ProductStyles).AsNoTracking()
+                                            .Where(lambda)
+                                            .OrderByDescending(k => k.Id)
+                                            .ToListAsync();
 
         foreach (var product in products)
         {

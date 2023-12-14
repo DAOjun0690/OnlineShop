@@ -32,9 +32,8 @@
                 </button>
                 <div class="collapse navbar-collapse flex-column-reverse" id="navbarSupportedContent">
                     <ul class="navbar-nav align-self-start">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">線上商店</a>
-                        </li>
+                        @* 產品類別連結列表 *@
+                        @await Component.InvokeAsync("CategoriesList")
 
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                         {
