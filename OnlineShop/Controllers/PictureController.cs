@@ -199,7 +199,6 @@ public class PictureController : Controller
     /// <param name="guid"></param>
     /// <param name="tag"></param>
     /// <returns></returns>
-    [ResponseCache(Duration = 60 * 60 * 24)] // Cache for 24 hours
     [HttpGet]
     public async Task<IActionResult> Download(int productId, Guid guid, string tag = "")
     {
