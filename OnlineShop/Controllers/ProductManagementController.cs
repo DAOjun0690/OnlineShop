@@ -148,7 +148,7 @@ public class ProductManagementController : Controller
         // 再從db撈 當前 productId的 detail圖片
         var imageList =
             _context.ProductImage.Where(x => x.ProductId == product.Id && x.Type == ProductImageType.Detail);
-        viewModel.ProductImage = imageList.ToList();
+        viewModel.ProductImage = imageList.OrderBy(x => x.Sequence).ToList();
 
         // 商品狀態
         viewModel.Statuses = new SelectList(_productStatusEnumList, "Value", "Text", product.Status);
