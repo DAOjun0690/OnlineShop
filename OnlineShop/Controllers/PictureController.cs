@@ -299,6 +299,10 @@ public class PictureController : Controller
                     // Resize the image using ImageMagick
                     image.Resize(imgWidth.Value, height);
                 }
+                // 將圖片顯示轉正
+                image.AutoOrient();
+                // Remove all EXIF data
+                image.Strip();
                 // Set the quality level
                 image.Quality = quality;
 
