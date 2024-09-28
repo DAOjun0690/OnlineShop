@@ -6,41 +6,44 @@
 }
 
 <style>
+    #product-carousel {
+        height: 60vh;
+    }
+
     .carousel-indicators {
-        width: 130px;
         max-height: 60vh;
         position: unset;
-        flex-direction: column;
         overflow: hidden auto;
-        z-index: 1;
         margin: 0;
     }
 
-        .carousel-indicators [data-bs-target] {
-            border: 0;
-            width: 80px;
-            height: 80px;
-            text-indent: 0;
-            overflow: hidden;
-            position: relative;
-            opacity: 1;
-        }
-
-    .selected-img {
-        height: 60vh;
-        overflow: hidden;
-        position: relative;
+    .carousel-indicators [data-bs-target] {
+        max-height: fit-content;
+        border-top: 0;
+        border-bottom: 0;
+        width: auto;
+        height: auto;
+        text-indent: 0;
     }
 
-        .carousel-indicators [data-bs-target] img, .selected-img img {
-            object-fit: cover;
-            object-position: center center;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+    .carousel-item img,
+    .carousel-indicators [data-bs-target] img {
+        max-width: 100%;
+    }
+
+    .carousel-item img {
+        max-height: 60vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .carousel-indicators [data-bs-target] img {
+        width: -moz-available;
+        width: -webkit-fill-available;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+    }
 </style>
 
 <form id="DetailForm">
@@ -53,7 +56,7 @@
             {
                 <div id="product-carousel" class="carousel carousel-dark slide d-flex mb-4" data-bs-touch="false" data-bs-interval="false">
                     <!-- carousel indicators hidden on xs and sm -->
-                    <div class="carousel-indicators d-none d-md-block">
+                    <div class="carousel-indicators d-none d-md-grid align-content-start">
                         @for (int i = 0; i < Model.ProductImage.Count; i++)
                         {
                             var image = Model.ProductImage[i];
@@ -63,12 +66,12 @@
                             </button>
                         }
                     </div>
-                    <div class="carousel-inner shadow-sm">
+                    <div class="carousel-inner align-self-center text-center">
                         @foreach (var image in Model.ProductImage)
                         {
-                            <div class="carousel-item selected-img">
+                            <div class="carousel-item">
                                 <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" })
-                                     class="bg-white">
+                                     class="bg-white shadow">
                             </div>
                         }
                     </div>
