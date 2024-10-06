@@ -6,10 +6,6 @@
 }
 
 <style>
-    #product-carousel {
-        height: 60vh;
-    }
-
     .carousel-indicators {
         max-height: 60vh;
         position: unset;
@@ -71,7 +67,7 @@
                         {
                             <div class="carousel-item">
                                 <img src=@Url.Action("Download", "Picture", new { ProductId = image.ProductId, Guid = image.Guid, tag = "M" })
-                                     class="bg-white shadow">
+                                     class="bg-white">
                             </div>
                         }
                     </div>
