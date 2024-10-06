@@ -21,6 +21,10 @@ body {
     margin-bottom: 60px;
 }
 
+.fonts-loaded body {
+    font-family: 'CustomFont', sans-serif;
+}
+
 :root {
     --tmr-bootstrap-border-color: $tmr-bootstrap-border-color;
     --tmr-white: $tmr-white;
