@@ -8,6 +8,7 @@ using OnlineShop.Core.Dto;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
+using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
 
@@ -16,14 +17,17 @@ public class ProductManagementController : Controller
 {
     private readonly OnlineShopContext _context;
     private readonly List<SelectListItem> _productStatusEnumList;
+    private readonly SiteSettingsService _siteSettingsService;
 
     /// <summary>
     /// 建構子
     /// </summary>
     /// <param name="context"></param>
-    public ProductManagementController(OnlineShopContext context)
+    /// <param name="siteSettingsService"></param>
+    public ProductManagementController(OnlineShopContext context, SiteSettingsService siteSettingsService)
     {
         _context = context;
+        _siteSettingsService = siteSettingsService;
         _productStatusEnumList = Enum.GetValues(typeof(ProductStatus))
                              .Cast<ProductStatus>()
                              .Select(e => new SelectListItem
@@ -41,19 +45,25 @@ public class ProductManagementController : Controller
     /// <param name="currentFilter">舊有的查詢條件</param>
     /// <param name="pageNumber">第幾頁</param>
     /// <param name="status">商品狀態</param>
+    /// <param name="sortOrder">排序方式</param>
     /// <returns></returns>
     [HttpGet]
     public async Task<IActionResult> Index(string searchString,
                                            string currentFilter,
                                            int? pageNumber,
-                                           ProductStatus status
-                                           )
+                                           ProductStatus status,
+                                           string sortOrder = "")
     {
         // 儲存當前搜尋狀態
         ViewData["CurrentFilter"] = searchString ?? currentFilter;
         // 商品狀態列表
         ViewData["StatusList"] = new SelectList(_productStatusEnumList, "Value", "Text", (int)status);
         ViewData["StatusName"] = status != 0 ? status.GetDescription() : "全部";
+
+        // 排序相關
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["IdSortParam"] = sortOrder == "id_desc" ? "id" : "id_desc";
+        ViewData["PublishTimeSortParam"] = sortOrder == "publish_desc" ? "publish" : "publish_desc";
 
         var result = _context.Product.AsQueryable();
 
@@ -67,8 +77,36 @@ public class ProductManagementController : Controller
         {
             result = result.Where(p => p.Status == status);
         }
-        // 目前先對id進行排序，之後可能會使用 商品建立時間
-        var orderedResult = result.OrderByDescending(m => m.Id);
+
+        // 如果有指定排序方式，則保存排序設定
+        if (!string.IsNullOrEmpty(sortOrder))
+        {
+            // 將排序方式轉換為 ProductSortOrder 枚舉
+            ProductSortOrder productSortOrder = sortOrder switch
+            {
+                "id" => ProductSortOrder.IdAsc,
+                "id_desc" => ProductSortOrder.IdDesc,
+                "publish" => ProductSortOrder.PublishTimeAsc,
+                "publish_desc" => ProductSortOrder.PublishTimeDesc,
+                _ => ProductSortOrder.IdDesc
+            };
+
+            // 保存排序設定
+            _siteSettingsService.SetProductSortOrder(productSortOrder);
+        }
+
+        // 獲取排序設定
+        var productSortOrderSetting = _siteSettingsService.GetProductSortOrder();
+
+        // 根據排序設定進行排序
+        var orderedResult = productSortOrderSetting switch
+        {
+            ProductSortOrder.IdAsc => result.OrderBy(m => m.Id),
+            ProductSortOrder.IdDesc => result.OrderByDescending(m => m.Id),
+            ProductSortOrder.PublishTimeAsc => result.OrderBy(m => m.PublishTime),
+            ProductSortOrder.PublishTimeDesc => result.OrderByDescending(m => m.PublishTime),
+            _ => result.OrderByDescending(m => m.Id)
+        };
 
         // 列表一頁顯示筆數
         int pageSize = 10;
@@ -101,7 +139,8 @@ public class ProductManagementController : Controller
                 Name = "新項目",
                 Status = ProductStatus.Draft,
                 CategoryId = _context.Category.First().Id,
-                ProductStyles = new List<ProductStyle> { style }
+                ProductStyles = new List<ProductStyle> { style },
+                PublishTime = DateTime.Now // 預設上架時間為當前時間
             };
 
             _context.Add(product);
@@ -193,6 +232,7 @@ public class ProductManagementController : Controller
                 model.ManufacturingMethod = dto.ManufacturingMethod;
                 model.ManufacturingTime = dto.ManufacturingTime;
                 model.ManufacturingCustomDate = dto.ManufacturingCustomDate;
+                model.PublishTime = dto.PublishTime;
                 // 更新 商品 資料
                 _context.Update(model);
 
@@ -308,6 +348,7 @@ public class ProductManagementController : Controller
                 ManufacturingMethod = product.ManufacturingMethod,
                 ManufacturingTime = product.ManufacturingTime,
                 ManufacturingCustomDate = product.ManufacturingCustomDate,
+                PublishTime = product.PublishTime,
                 CategoryId = product.CategoryId,
                 DeleteTime = DateTime.UtcNow.AddHours(8)
             };

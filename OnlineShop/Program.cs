@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
 using OnlineShop.Core.Models;
 using Microsoft.Data.Sqlite;
+using OnlineShop.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +55,9 @@ builder.Services.AddDefaultIdentity<OnlineShopUser>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// 註冊 SiteSettingsService
+builder.Services.AddScoped<SiteSettingsService>();
 
 //builder.Services.AddScoped<IFileService, FileService>();
 

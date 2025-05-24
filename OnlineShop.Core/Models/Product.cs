@@ -49,6 +49,11 @@ public class Product
     public int ManufacturingCustomDate { get; set; }
 
     /// <summary>
+    /// 上架時間
+    /// </summary>
+    public DateTime? PublishTime { get; set; }
+
+    /// <summary>
     /// 類別 (Foreign Key)
     /// </summary>
     public int CategoryId { get; set; }

@@ -1,0 +1,17 @@
+@{
+    bool isEditMode = ViewBag.IsEditMode;
+    string sortOrderText = ViewBag.SortOrderText;
+}
+
+@if (isEditMode)
+{
+    <div class="mt-2">
+        <span class="badge bg-info text-white">目前排序設定：@sortOrderText</span>
+    </div>
+}
+else
+{
+    <div class="text-center mb-3">
+        <small class="text-muted">排序方式：@sortOrderText</small>
+    </div>
+} 

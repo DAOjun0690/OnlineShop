@@ -1,4 +1,5 @@
 ﻿@model PaginatedList<OnlineShop.Core.Models.Product>
+@using OnlineShop.Core.Models
 
 @{
     ViewData["Title"] = "管理商品列表";
@@ -12,6 +13,11 @@
             ProductStatus.Sold => "text-warning",
             _ => ""
         };
+    }
+
+    string GetSortClass(string currentSort, string sortParam)
+    {
+        return currentSort == sortParam ? "fw-bold text-primary" : "";
     }
 }
 
@@ -48,6 +54,14 @@
 </div>
 
 <div style="min-height: 50vh;">
+    <div class="mb-3">
+        <span class="me-2">排序方式:</span>
+        <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]" class="@GetSortClass(ViewData["CurrentSort"] as string, ViewData["IdSortParam"] as string)">ID</a> |
+        <a asp-action="Index" asp-route-sortOrder="@ViewData["PublishTimeSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]" class="@GetSortClass(ViewData["CurrentSort"] as string, ViewData["PublishTimeSortParam"] as string)">上架時間</a>
+        <span class="ms-3 text-muted">(排序設定將會套用到前台商品顯示)</span>
+        
+        @await Component.InvokeAsync("ProductSortOrder", new { isEditMode = true })
+    </div>
     <table class="table table-mobile-responsive table-mobile-sided">
         <thead>
             <tr>

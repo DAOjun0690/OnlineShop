@@ -5,16 +5,19 @@ using OnlineShop.Data;
 using OnlineShop.Core.Models;
 using OnlineShop.Core.ViewModel;
 using System.Linq.Expressions;
+using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
 
 public class ProductsController : Controller
 {
     private readonly OnlineShopContext _context;
+    private readonly SiteSettingsService _siteSettingsService;
 
-    public ProductsController(OnlineShopContext context)
+    public ProductsController(OnlineShopContext context, SiteSettingsService siteSettingsService)
     {
         _context = context;
+        _siteSettingsService = siteSettingsService;
     }
 
     /// <summary>
@@ -35,13 +38,25 @@ public class ProductsController : Controller
         {
             lambda = p => p.Status != ProductStatus.Draft;
         }
-        // 目前先用 id 進行倒敘，之後要加上時間欄位
-        IList<Product> products = await _context.Product
-                                            .Include(p => p.Category)
-                                            .Include(p => p.ProductStyles).AsNoTracking()
-                                            .Where(lambda)
-                                            .OrderByDescending(k => k.Id)
-                                            .ToListAsync();
+
+        // 獲取排序設定
+        var productSortOrder = _siteSettingsService.GetProductSortOrder();
+
+        // 根據排序設定進行排序
+        IQueryable<Product> query = _context.Product
+                                    .Include(p => p.Category)
+                                    .Include(p => p.ProductStyles).AsNoTracking()
+                                    .Where(lambda);
+
+        // 根據排序設定進行排序
+        IList<Product> products = productSortOrder switch
+        {
+            ProductSortOrder.IdAsc => await query.OrderBy(m => m.Id).ToListAsync(),
+            ProductSortOrder.IdDesc => await query.OrderByDescending(m => m.Id).ToListAsync(),
+            ProductSortOrder.PublishTimeAsc => await query.OrderBy(m => m.PublishTime).ToListAsync(),
+            ProductSortOrder.PublishTimeDesc => await query.OrderByDescending(m => m.PublishTime).ToListAsync(),
+            _ => await query.OrderByDescending(m => m.Id).ToListAsync()
+        };
 
         foreach (var product in products)
         {

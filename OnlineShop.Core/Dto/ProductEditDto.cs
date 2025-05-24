@@ -39,6 +39,11 @@ public class ProductEditDto
     /// </summary>
     public int ManufacturingCustomDate { get; set; }
 
+    /// <summary>
+    /// 上架時間
+    /// </summary>
+    public DateTime? PublishTime { get; set; }
+
     public int CategoryId { get; set; }
 
     public IList<ProductStyleDto> ProductStyles { get; set; }

@@ -78,6 +78,8 @@
 <!-- 標題 -->
 <h4 class="text-center fw-bold">最新上架</h4>
 
+@await Component.InvokeAsync("ProductSortOrder", new { isEditMode = false })
+
 <!-- 商品頁面 -->
 <div class="row pt-5">
     @foreach (var item in Model)
@@ -91,8 +93,17 @@
                         @* <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid })
                 class="card-img-top" title="@item.ProductName" data-bs-toggle="modal" data-bs-target="#subDetailsModal" data-bs-pId="@item.ProductId"> *@
                         <a href="@Url.Action("Details", new { Id = item.ProductId, fromWhere = "Products" })">
-                            <img src=@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid, tag = "M" })
-                                 alt="..." class='@(item.Stock >= 1 ? "card-img-top" : "card-img-top opacity-50")' title="@item.ProductName" />
+                            <img srcset="@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid, tag = "M" }) 300w,
+                                         @Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid, tag = "M" }) 600w,
+                                         @Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid, tag = "M" }) 900w"
+                                 sizes="(max-width: 320px) 280px,
+                                        (max-width: 640px) 580px,
+                                        800px"
+                                 src="@Url.Action("Download", "Picture", new { ProductId = item.ProductId, Guid = item.Image.Guid, tag = "M" })"
+                                 alt="..." 
+                                 class='@(item.Stock >= 1 ? "card-img-top" : "card-img-top opacity-50")' 
+                                 loading="lazy" 
+                                 title="@item.ProductName" />
                         </a>
                     }
                     else
